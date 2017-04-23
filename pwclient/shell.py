@@ -13,17 +13,12 @@ import os
 import sys
 import argparse
 import subprocess
-try:
-    import ConfigParser
-except ImportError:
-    # Python 3 has renamed things.
-    import configparser as ConfigParser
-import shutil
 
 from . import checks
 from . import patches
 from . import projects
 from . import states
+from . import utils
 from . import xmlrpc
 
 
@@ -238,47 +233,18 @@ installed locales.
     do_three_way = args.get('3way')
 
     # grab settings from config files
-    config = ConfigParser.ConfigParser()
+    config = utils.configparser.ConfigParser()
     config.read([CONFIG_FILE])
 
     if not config.has_section('options') and os.path.exists(CONFIG_FILE):
-        sys.stderr.write('%s is in the old format. Migrating it...' %
-                         CONFIG_FILE)
-
-        old_project = config.get('base', 'project')
-
-        new_config = ConfigParser.ConfigParser()
-        new_config.add_section('options')
-
-        new_config.set('options', 'default', old_project)
-        new_config.add_section(old_project)
-
-        new_config.set(old_project, 'url', config.get('base', 'url'))
-        if config.has_option('auth', 'username'):
-            new_config.set(
-                old_project, 'username', config.get('auth', 'username'))
-        if config.has_option('auth', 'password'):
-            new_config.set(
-                old_project, 'password', config.get('auth', 'password'))
-
-        old_config_file = CONFIG_FILE + '.orig'
-        shutil.copy2(CONFIG_FILE, old_config_file)
-
-        with open(CONFIG_FILE, 'wb') as fd:
-            new_config.write(fd)
-
-        sys.stderr.write(' Done.\n')
-        sys.stderr.write(
-            'Your old %s was saved to %s\n' % (CONFIG_FILE, old_config_file))
-        sys.stderr.write(
-            'and was converted to the new format. You may want to\n')
-        sys.stderr.write('inspect it before continuing.\n')
+        utils.migrate_old_config_file(CONFIG_FILE, config)
         sys.exit(1)
 
     if not project_str:
         try:
             project_str = config.get('options', 'default')
-        except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+        except (utils.configparser.NoSectionError,
+                utils.configparser.NoOptionError):
             sys.stderr.write(
                 'No default project configured in %s\n' % CONFIG_FILE)
             sys.exit(1)
