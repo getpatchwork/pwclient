@@ -569,23 +569,22 @@ installed locales.
     format_str = args.get('f')
     patch_ids = args.get('id') or []
     msgid_str = args.get('m')
+    commit_str = args.get('c')
 
-    if args.get('c'):
-        # update multiple IDs with a single commit-hash does not make sense
-        if action == 'update' and patch_ids and len(patch_ids) > 1:
-            update_parser.error(
-                "Declining update with COMMIT-REF on multiple IDs")
-        commit_str = args.get('c')
+    # update multiple IDs with a single commit-hash does not make sense
+    if commit_str and len(patch_ids) > 1 and action == 'update':
+        update_parser.error(
+            "Declining update with COMMIT-REF on multiple IDs")
 
     if state_str is None and archived_str is None and action == 'update':
         update_parser.error(
             'Must specify one or more update options (-a or -s)')
 
-    if args.get('n') is not None:
-        filt.add("max_count", args.get('n'))
+    if args.get('n'):
+        filt.add('max_count', args.get('n'))
 
-    if args.get('N') is not None:
-        filt.add("max_count", 0 - args.get('N'))
+    if args.get('N'):
+        filt.add('max_count', 0 - args.get('N'))
 
     do_signoff = args.get('signoff')
     do_three_way = args.get('3way')
@@ -644,6 +643,7 @@ installed locales.
         sys.stderr.write(
             'No URL for project %s in %s\n' % (project_str, CONFIG_FILE))
         sys.exit(1)
+
     if not do_signoff and config.has_option('options', 'signoff'):
         do_signoff = config.getboolean('options', 'signoff')
     if not do_signoff and config.has_option(project_str, 'signoff'):
