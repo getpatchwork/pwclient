@@ -392,14 +392,14 @@ auth_actions = ['check_create', 'update']
 def main(argv=sys.argv[1:]):
     hash_parser = argparse.ArgumentParser(add_help=False)
     hash_parser.add_argument(
-        '-h', metavar='HASH', dest='hash', action='store',
-        help="lookup by patch hash")
-    hash_parser.add_argument(
-        'id', metavar='ID', nargs='*', action='store', type=int,
-        help="patch ID")
+        '-h', action='store_true',
+        help='lookup patch(es) by hash instead of ID')
     hash_parser.add_argument(
         '-p', metavar='PROJECT',
         help="lookup patch in project")
+    hash_parser.add_argument(
+        'id', metavar='PATCH_ID', nargs='+', action='store',
+        help="patch ID")
 
     filter_parser = argparse.ArgumentParser(add_help=False)
     filter_parser.add_argument(
@@ -555,25 +555,21 @@ installed locales.
     args = dict(vars(args))
     action = args.get('subcmd')
 
-    if args.get('hash') and len(args.get('id')):
-        # mimic mutual exclusive group
-        locals()[action + '_parser'].error(
-            "[-h HASH] and [ID [ID ...]] are mutually exclusive")
-
     # set defaults
     filt = Filter()
     commit_str = None
     url = DEFAULT_URL
 
+    use_hashes = args.get('h')
     archived_str = args.get('a')
     state_str = args.get('s')
     project_str = args.get('p')
     submitter_str = args.get('w')
     delegate_str = args.get('d')
     format_str = args.get('f')
-    hash_str = args.get('hash')
-    patch_ids = args.get('id')
+    patch_ids = args.get('id') or []
     msgid_str = args.get('m')
+
     if args.get('c'):
         # update multiple IDs with a single commit-hash does not make sense
         if action == 'update' and patch_ids and len(patch_ids) > 1:
@@ -688,23 +684,14 @@ installed locales.
         sys.stderr.write("Unable to connect to %s\n" % url)
         sys.exit(1)
 
-    # It should be safe to assume hash_str is not zero, but who knows..
-    if hash_str is not None:
-        patch_ids = [patch_id_from_hash(rpc, project_str, hash_str)]
-
-    # helper for non_empty() to print correct helptext
-    h = locals()[action + '_parser']
-
-    # Require either hash_str or IDs for
-    def non_empty(h, patch_ids):
-        """Error out if no patch IDs were specified"""
-        if patch_ids is None or len(patch_ids) < 1:
-            sys.stderr.write("Error: Missing Argument! Either [-h HASH] or "
-                             "[ID [ID ...]] are required\n")
-            if h:
-                h.print_help()
-            sys.exit(1)
-        return patch_ids
+    if use_hashes:
+        patch_ids = [
+            patch_id_from_hash(rpc, project_str, x) for x in patch_ids]
+    else:
+        try:
+            patch_ids = [int(x) for x in patch_ids]
+        except ValueError:
+            hash_parser.error('Patch IDs must be integers')
 
     if action == 'list' or action == 'search':
         if args.get('patch_name') is not None:
@@ -725,7 +712,7 @@ installed locales.
             )
         if pager:
             i = list()
-            for patch_id in non_empty(h, patch_ids):
+            for patch_id in patch_ids:
                 s = rpc.patch_get_mbox(patch_id)
                 if len(s) > 0:
                     i.append(s)
@@ -733,21 +720,21 @@ installed locales.
                 pager.communicate(input="\n".join(i).encode("utf-8"))
             pager.stdin.close()
         else:
-            for patch_id in non_empty(h, patch_ids):
+            for patch_id in patch_ids:
                 s = rpc.patch_get_mbox(patch_id)
                 if len(s) > 0:
                     print(s)
 
     elif action == 'info':
-        for patch_id in non_empty(h, patch_ids):
+        for patch_id in patch_ids:
             action_info(rpc, patch_id)
 
     elif action == 'get':
-        for patch_id in non_empty(h, patch_ids):
+        for patch_id in patch_ids:
             action_get(rpc, patch_id)
 
     elif action == 'apply':
-        for patch_id in non_empty(h, patch_ids):
+        for patch_id in patch_ids:
             ret = action_apply(rpc, patch_id)
             if ret:
                 sys.stderr.write("Apply failed with exit status %d\n" % ret)
@@ -759,17 +746,17 @@ installed locales.
             cmd.append('-s')
         if do_three_way:
             cmd.append('-3')
-        for patch_id in non_empty(h, patch_ids):
+        for patch_id in patch_ids:
             ret = action_apply(rpc, patch_id, cmd)
             if ret:
                 sys.stderr.write("'git am' failed with exit status %d\n" % ret)
                 sys.exit(1)
 
     elif action == 'update':
-        for patch_id in non_empty(h, patch_ids):
-            action_update_patch(rpc, patch_id, state=state_str,
-                                archived=archived_str, commit=commit_str
-                                )
+        for patch_id in patch_ids:
+            action_update_patch(
+                rpc, patch_id, state=state_str, archived=archived_str,
+                commit=commit_str)
 
     elif action == 'check_list':
         action_check_list(rpc)
@@ -779,7 +766,7 @@ installed locales.
         action_check_info(rpc, check_id)
 
     elif action == 'check_create':
-        for patch_id in non_empty(h, patch_ids):
+        for patch_id in patch_ids:
             action_check_create(
                 rpc, patch_id, args['c'], args['s'], args['u'], args['d'])
 

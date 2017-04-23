@@ -343,17 +343,6 @@ def test_get__hash_ids(mock_action, mock_hash, mock_server, mock_config):
         mock_server.return_value, 'defaultproject', '698fa7f')
 
 
-def test_get__hash_and_ids(capsys):
-
-    with pytest.raises(SystemExit):
-        shell.main(['get', '1', '-h', '698fa7f'])
-
-    captured = capsys.readouterr()
-
-    assert '[-h HASH] and [ID [ID ...]] are mutually exclusive' in captured.err
-    assert captured.out == ''
-
-
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
 @mock.patch.object(shell.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_get')
@@ -368,8 +357,8 @@ def test_get__no_ids(mock_action, mock_server, mock_config, capsys):
 
     captured = capsys.readouterr()
 
-    assert 'Either [-h HASH] or [ID [ID ...]] are required' in captured.err
-    assert 'usage: pwclient get [--help]' in captured.out
+    assert 'pwclient get: error: too few arguments' in captured.err
+    assert captured.out == ''
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
