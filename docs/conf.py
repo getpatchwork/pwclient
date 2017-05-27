@@ -16,7 +16,10 @@ needs_sphinx = '1.5'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['reno.sphinxext']
+extensions = [
+    'reno.sphinxext',
+    'sphinxcontrib.autoprogram',
+]
 
 # The master toctree document.
 master_doc = 'contents'

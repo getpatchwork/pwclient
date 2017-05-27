@@ -1,4 +1,5 @@
 Usage
 =====
 
-TODO
+.. autoprogram:: pwclient.parser:get_parser()
+   :prog: pwclient
