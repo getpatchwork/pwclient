@@ -47,8 +47,7 @@ Once dependencies are installed, clone this repo and run ``setup.py``:
 
    $ git clone https://github.com/getpatchwork/pwclient
    $ cd pwclient
-   $ pip install --user .  # or 'sudo python setup.py'
-
+   $ pip install --user .  # or 'sudo python setup.py install'
 
 Getting Started
 ---------------
