@@ -22,6 +22,7 @@ import shutil
 import re
 import io
 
+from . import checks
 from . import people
 from . import projects
 from . import xmlrpc
@@ -155,33 +156,6 @@ def action_list(rpc, filter, submitter_str, delegate_str, format_str=None):
 
     patches = rpc.patch_list(filter.d)
     list_patches(patches, format_str)
-
-
-def action_check_list(rpc):
-    checks = rpc.check_list()
-    print("%-5s %-16s %-8s %s" % ("ID", "Context", "State", "Patch"))
-    print("%-5s %-16s %-8s %s" % ("--", "-------", "-----", "-----"))
-    for check in checks:
-        print("%-5s %-16s %-8s %s" % (check['id'],
-                                      check['context'],
-                                      check['state'],
-                                      check['patch']))
-
-
-def action_check_info(rpc, check_id):
-    check = rpc.check_get(check_id)
-    s = "Information for check id %d" % (check_id)
-    print(s)
-    print('-' * len(s))
-    for key, value in sorted(check.items()):
-        print("- %- 14s: %s" % (key, value))
-
-
-def action_check_create(rpc, patch_id, context, state, url, description):
-    try:
-        rpc.check_create(patch_id, context, state, url, description)
-    except xmlrpc.xmlrpclib.Fault as f:
-        sys.stderr.write("Error creating check: %s\n" % f.faultString)
 
 
 def action_states(rpc):
@@ -680,15 +654,15 @@ installed locales.
                 commit=commit_str)
 
     elif action == 'check_list':
-        action_check_list(rpc)
+        checks.action_list(rpc)
 
     elif action == 'check_info':
         check_id = args['check_id']
-        action_check_info(rpc, check_id)
+        checks.action_info(rpc, check_id)
 
     elif action == 'check_create':
         for patch_id in patch_ids:
-            action_check_create(
+            checks.action_create(
                 rpc, patch_id, args['c'], args['s'], args['u'], args['d'])
 
 
