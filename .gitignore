@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+
+# Unit test / coverage reports
+.tox/
+
+# Sphinx documentation
+docs/_build/
+
+# pbr
+AUTHORS
+ChangeLog
+
+# virtualenv
+/.venv
