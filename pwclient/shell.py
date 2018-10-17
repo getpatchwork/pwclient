@@ -11,11 +11,6 @@ from __future__ import unicode_literals
 
 import os
 import sys
-try:
-    import xmlrpclib
-except ImportError:
-    # Python 3 has merged/renamed things.
-    import xmlrpc.client as xmlrpclib
 import argparse
 import subprocess
 try:
@@ -26,6 +21,8 @@ except ImportError:
 import shutil
 import re
 import io
+
+from . import xmlrpc
 
 
 # Default Patchwork remote XML-RPC server URL
@@ -80,55 +77,6 @@ class Filter(object):
     def __str__(self):
         """Return human-readable description of the filter."""
         return str(self.d)
-
-
-if sys.version_info[0] < 3:
-    # the python 2.7 reference implementation tries to re-encode to
-    # ascii bytes here but leaves unicode if it fails. Do not try to
-    # re-encode to ascii byte string to have a more predictive behavior.
-    xmlrpclib._stringify = lambda s: s
-
-
-class Transport(xmlrpclib.SafeTransport):
-
-    def __init__(self, url):
-        xmlrpclib.SafeTransport.__init__(self)
-        self.credentials = None
-        self.host = None
-        self.proxy = None
-        self.scheme = url.split('://', 1)[0]
-        self.https = url.startswith('https')
-        if self.https:
-            self.proxy = os.environ.get('https_proxy')
-        else:
-            self.proxy = os.environ.get('http_proxy')
-        if self.proxy:
-            self.https = self.proxy.startswith('https')
-
-    def set_credentials(self, username=None, password=None):
-        self.credentials = '%s:%s' % (username, password)
-
-    def make_connection(self, host):
-        self.host = host
-        if self.proxy:
-            host = self.proxy.split('://', 1)[-1].rstrip('/')
-        if self.credentials:
-            host = '@'.join([self.credentials, host])
-        if self.https:
-            return xmlrpclib.SafeTransport.make_connection(self, host)
-        else:
-            return xmlrpclib.Transport.make_connection(self, host)
-
-    if sys.version_info[0] == 2:
-        def send_request(self, connection, handler, request_body):
-            handler = '%s://%s%s' % (self.scheme, self.host, handler)
-            xmlrpclib.Transport.send_request(self, connection, handler,
-                                             request_body)
-    else:  # Python 3
-        def send_request(self, host, handler, request_body, debug):
-            handler = '%s://%s%s' % (self.scheme, host, handler)
-            return xmlrpclib.Transport.send_request(self, host, handler,
-                                                    request_body, debug)
 
 
 def project_id_by_name(rpc, linkname):
@@ -260,7 +208,7 @@ def action_check_info(rpc, check_id):
 def action_check_create(rpc, patch_id, context, state, url, description):
     try:
         rpc.check_create(patch_id, context, state, url, description)
-    except xmlrpclib.Fault as f:
+    except xmlrpc.xmlrpclib.Fault as f:
         sys.stderr.write("Error creating check: %s\n" % f.faultString)
 
 
@@ -357,7 +305,7 @@ def action_update_patch(rpc, patch_id, state=None, archived=None, commit=None):
     success = False
     try:
         success = rpc.patch_set(patch_id, params)
-    except xmlrpclib.Fault as f:
+    except xmlrpc.xmlrpclib.Fault as f:
         sys.stderr.write("Error updating patch: %s\n" % f.faultString)
 
     if not success:
@@ -367,7 +315,7 @@ def action_update_patch(rpc, patch_id, state=None, archived=None, commit=None):
 def patch_id_from_hash(rpc, project, hash):
     try:
         patch = rpc.patch_get_by_project_hash(project, hash)
-    except xmlrpclib.Fault:
+    except xmlrpc.xmlrpclib.Fault:
         # the server may not have the newer patch_get_by_project_hash function,
         # so fall back to hash-only.
         patch = rpc.patch_get_by_hash(hash)
@@ -655,7 +603,7 @@ installed locales.
 
     url = config.get(project_str, 'url')
 
-    transport = Transport(url)
+    transport = xmlrpc.Transport(url)
     if action in auth_actions:
         if config.has_option(project_str, 'username') and \
                 config.has_option(project_str, 'password'):
@@ -680,7 +628,7 @@ installed locales.
         filt.add("msgid", msgid_str)
 
     try:
-        rpc = xmlrpclib.Server(url, transport=transport)
+        rpc = xmlrpc.xmlrpclib.Server(url, transport=transport)
     except (IOError, OSError):
         sys.stderr.write("Unable to connect to %s\n" % url)
         sys.exit(1)

@@ -2,6 +2,7 @@ import mock
 import pytest
 
 from pwclient import shell
+from pwclient import xmlrpc
 
 from . import fakes
 
@@ -158,9 +159,9 @@ def test_migrate_config(mock_open, mock_config, capsys):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_server_error(mock_action, mock_server, mock_config, capsys):
 
     mock_config.return_value = FakeConfig()
@@ -176,9 +177,9 @@ def test_server_error(mock_action, mock_server, mock_config, capsys):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_apply(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -203,9 +204,9 @@ def test_apply(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_apply__failed(mock_action, mock_server, mock_config, capsys):
 
     mock_config.return_value = FakeConfig()
@@ -225,9 +226,9 @@ def test_apply__failed(mock_action, mock_server, mock_config, capsys):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_check_create')
-@mock.patch.object(shell, 'Transport')
+@mock.patch.object(xmlrpc, 'Transport')
 def test_check_create(mock_transport, mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig({
@@ -248,9 +249,9 @@ def test_check_create(mock_transport, mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_check_create')
-@mock.patch.object(shell, 'Transport')
+@mock.patch.object(xmlrpc, 'Transport')
 def test_check_create__no_auth(
         mock_transport, mock_action, mock_server, mock_config, capsys):
 
@@ -268,9 +269,9 @@ def test_check_create__no_auth(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_check_info')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_check_info(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -281,9 +282,9 @@ def test_check_info(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_check_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_check_list(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -294,9 +295,9 @@ def test_check_list(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_get')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_get__numeric_id(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -308,9 +309,9 @@ def test_get__numeric_id(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_get')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_get__multiple_ids(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -326,10 +327,10 @@ def test_get__multiple_ids(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'patch_id_from_hash')
 @mock.patch.object(shell, 'action_get')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_get__hash_ids(mock_action, mock_hash, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -344,9 +345,9 @@ def test_get__hash_ids(mock_action, mock_hash, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_get')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_get__no_ids(mock_action, mock_server, mock_config, capsys):
 
     mock_config.return_value = FakeConfig()
@@ -362,9 +363,9 @@ def test_get__no_ids(mock_action, mock_server, mock_config, capsys):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_git_am__no_args(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -390,9 +391,9 @@ def test_git_am__no_args(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_git_am__threeway_option(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -405,9 +406,9 @@ def test_git_am__threeway_option(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_git_am__signoff_option(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -421,9 +422,9 @@ def test_git_am__signoff_option(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_git_am__threeway_global_conf(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig({
@@ -440,9 +441,9 @@ def test_git_am__threeway_global_conf(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_git_am__signoff_global_conf(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig({
@@ -460,9 +461,9 @@ def test_git_am__signoff_global_conf(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_git_am__threeway_project_conf(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig({
@@ -479,9 +480,9 @@ def test_git_am__threeway_project_conf(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_git_am__signoff_project_conf(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig({
@@ -499,9 +500,9 @@ def test_git_am__signoff_project_conf(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_apply')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_git_am__failure(mock_action, mock_server, mock_config, capsys):
 
     mock_config.return_value = FakeConfig()
@@ -521,9 +522,9 @@ def test_git_am__failure(mock_action, mock_server, mock_config, capsys):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_info')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_info(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -548,10 +549,10 @@ def test_info(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'Filter')
 @mock.patch.object(shell, 'action_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_list__no_options(mock_action, mock_filter, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -566,10 +567,10 @@ def test_list__no_options(mock_action, mock_filter, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'Filter')
 @mock.patch.object(shell, 'action_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_list__state_filter(
         mock_action, mock_filter, mock_server, mock_config):
 
@@ -586,10 +587,10 @@ def test_list__state_filter(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'Filter')
 @mock.patch.object(shell, 'action_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_list__archived_filter(
         mock_action, mock_filter, mock_server, mock_config):
 
@@ -606,10 +607,10 @@ def test_list__archived_filter(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'Filter')
 @mock.patch.object(shell, 'action_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_list__project_filter(
         mock_action, mock_filter, mock_server, mock_config):
 
@@ -629,10 +630,10 @@ def test_list__project_filter(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'Filter')
 @mock.patch.object(shell, 'action_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_list__submitter_filter(
         mock_action, mock_filter, mock_server, mock_config):
 
@@ -649,10 +650,10 @@ def test_list__submitter_filter(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'Filter')
 @mock.patch.object(shell, 'action_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_list__delegate_filter(
         mock_action, mock_filter, mock_server, mock_config):
 
@@ -669,10 +670,10 @@ def test_list__delegate_filter(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'Filter')
 @mock.patch.object(shell, 'action_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_list__msgid_filter(
         mock_action, mock_filter, mock_server, mock_config):
 
@@ -689,10 +690,10 @@ def test_list__msgid_filter(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'Filter')
 @mock.patch.object(shell, 'action_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_list__name_filter(
         mock_action, mock_filter, mock_server, mock_config):
 
@@ -709,10 +710,10 @@ def test_list__name_filter(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'Filter')
 @mock.patch.object(shell, 'action_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_list__limit_filter(
         mock_action, mock_filter, mock_server, mock_config):
 
@@ -729,10 +730,10 @@ def test_list__limit_filter(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'Filter')
 @mock.patch.object(shell, 'action_list')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_list__limit_reverse_filter(
         mock_action, mock_filter, mock_server, mock_config):
 
@@ -749,9 +750,9 @@ def test_list__limit_reverse_filter(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_projects')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_projects(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -762,9 +763,9 @@ def test_projects(mock_action, mock_server, mock_config):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_states')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_states(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
@@ -785,9 +786,9 @@ def test_update__no_options(capsys):
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_update_patch')
-@mock.patch.object(shell, 'Transport')
+@mock.patch.object(xmlrpc, 'Transport')
 def test_update__no_auth(
         mock_transport, mock_action, mock_server, mock_config, capsys):
 
@@ -804,9 +805,9 @@ def test_update__no_auth(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_update_patch')
-@mock.patch.object(shell, 'Transport')
+@mock.patch.object(xmlrpc, 'Transport')
 def test_update__state_option(
         mock_transport, mock_action, mock_server, mock_config):
 
@@ -827,9 +828,9 @@ def test_update__state_option(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_update_patch')
-@mock.patch.object(shell, 'Transport')
+@mock.patch.object(xmlrpc, 'Transport')
 def test_update__archive_option(
         mock_transport, mock_action, mock_server, mock_config):
 
@@ -850,9 +851,9 @@ def test_update__archive_option(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_update_patch')
-@mock.patch.object(shell, 'Transport')
+@mock.patch.object(xmlrpc, 'Transport')
 def test_update__commitref_option(
         mock_transport, mock_action, mock_server, mock_config):
 
@@ -873,9 +874,9 @@ def test_update__commitref_option(
 
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(shell, 'action_update_patch')
-@mock.patch.object(shell, 'Transport')
+@mock.patch.object(xmlrpc, 'Transport')
 def test_update__commitref_with_multiple_patches(
         mock_transport, mock_action, mock_server, mock_config, capsys):
 
@@ -899,8 +900,8 @@ def test_update__commitref_with_multiple_patches(
 @mock.patch.object(shell.os.environ, 'get')
 @mock.patch.object(shell.subprocess, 'Popen')
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_view__no_pager(
         mock_server, mock_config, mock_popen, mock_env, capsys):
 
@@ -946,8 +947,8 @@ def test_view__no_pager(
 @mock.patch.object(shell.os.environ, 'get')
 @mock.patch.object(shell.subprocess, 'Popen')
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
-@mock.patch.object(shell.xmlrpclib, 'Server')
-@mock.patch.object(shell, 'Transport', new=mock.Mock())
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
+@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_view__with_pager(
         mock_server, mock_config, mock_popen, mock_env, capsys):
 
@@ -1140,7 +1141,7 @@ def test_patch_id_from_hash():
 
 def test_patch_id_from_hash__legacy_function():
     rpc = mock.Mock()
-    rpc.patch_get_by_project_hash.side_effect = shell.xmlrpclib.Fault(1, 'x')
+    rpc.patch_get_by_project_hash.side_effect = xmlrpc.xmlrpclib.Fault(1, 'x')
     rpc.patch_get_by_hash.return_value = {'id': '1'}
 
     result = shell.patch_id_from_hash(rpc, 'foo', '698fa7f')
@@ -1368,7 +1369,7 @@ def test_action_check_create():
 
 def test_action_check_create__error(capsys):
     rpc = mock.Mock()
-    rpc.check_create.side_effect = shell.xmlrpclib.Fault(1, 'x')
+    rpc.check_create.side_effect = xmlrpc.xmlrpclib.Fault(1, 'x')
 
     args = (1, 'hello-world', 'success', 'https://example.com',
             'This is a sample check')
@@ -1598,7 +1599,7 @@ def test_action_update_patch__invalid_state(mock_get_state, capsys):
 def test_action_update_patch__error(capsys):
     rpc = mock.Mock()
     rpc.patch_get.return_value = fakes.fake_patches()[0]
-    rpc.patch_set.side_effect = shell.xmlrpclib.Fault(1, 'x')
+    rpc.patch_set.side_effect = xmlrpc.xmlrpclib.Fault(1, 'x')
 
     shell.action_update_patch(rpc, 1157169)
 
