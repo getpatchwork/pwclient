@@ -1,6 +1,7 @@
 import mock
 import pytest
 
+from pwclient import projects
 from pwclient import shell
 from pwclient import xmlrpc
 
@@ -751,7 +752,7 @@ def test_list__limit_reverse_filter(
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(shell, 'action_projects')
+@mock.patch.object(projects, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_projects(mock_action, mock_server, mock_config):
 
@@ -996,42 +997,6 @@ def test_view__with_pager(
         mock.call(3),
     ])
     assert captured.out == ''
-
-
-def test_project_id_by_name__empty_linkname():
-    rpc = mock.Mock()
-
-    result = shell.project_id_by_name(rpc, '')
-
-    assert result == 0
-    rpc.project_list.assert_not_called()
-
-
-def test_project_id_by_name__no_matches():
-    rpc = mock.Mock()
-    rpc.project_list.return_value = [
-        {'id': 1, 'linkname': 'bar'},
-        {'id': 2, 'linkname': 'baz'},
-    ]
-
-    result = shell.project_id_by_name(rpc, 'foo')
-
-    assert result == 0
-    rpc.project_list.assert_called_once_with('foo', 0)
-
-
-def test_project_id_by_name():
-    rpc = mock.Mock()
-    rpc.project_list.return_value = [
-        {'id': 1, 'linkname': 'bar'},
-        {'id': 2, 'linkname': 'baz'},
-        {'id': 3, 'linkname': 'foo'},
-    ]
-
-    result = shell.project_id_by_name(rpc, 'foo')
-
-    assert result == 3
-    rpc.project_list.assert_called_once_with('foo', 0)
 
 
 def test_state_id_by_name__empty_name():
@@ -1304,21 +1269,6 @@ def test_action_list__delegate_filter_no_matches(
     rpc.person_get.assert_not_called()
     mock_person_lookup.assert_called_once_with(rpc, 'John Doe')
     mock_list_patches.assert_not_called()
-
-
-def test_action_projects(capsys):
-    rpc = mock.Mock()
-    rpc.project_list.return_value = fakes.fake_projects()
-
-    shell.action_projects(rpc)
-
-    captured = capsys.readouterr()
-
-    assert captured.out == """\
-ID    Name                     Description
---    ----                     -----------
-1     patchwork                Patchwork
-"""
 
 
 def test_action_check_list(capsys):

@@ -22,6 +22,7 @@ import shutil
 import re
 import io
 
+from . import projects
 from . import xmlrpc
 
 
@@ -67,7 +68,7 @@ class Filter(object):
                 self.d['state_id'] = id
 
         if self.project is not None:
-            id = project_id_by_name(rpc, self.project)
+            id = projects.project_id_by_name(rpc, self.project)
             if id == 0:
                 sys.stderr.write("Note: No Project found matching %s, "
                                  "ignoring filter\n" % self.project)
@@ -77,17 +78,6 @@ class Filter(object):
     def __str__(self):
         """Return human-readable description of the filter."""
         return str(self.d)
-
-
-def project_id_by_name(rpc, linkname):
-    """Given a project short name, look up the Project ID."""
-    if len(linkname) == 0:
-        return 0
-    projects = rpc.project_list(linkname, 0)
-    for project in projects:
-        if project['linkname'] == linkname:
-            return project['id']
-    return 0
 
 
 def state_id_by_name(rpc, name):
@@ -173,16 +163,6 @@ def action_list(rpc, filter, submitter_str, delegate_str, format_str=None):
 
     patches = rpc.patch_list(filter.d)
     list_patches(patches, format_str)
-
-
-def action_projects(rpc):
-    projects = rpc.project_list("", 0)
-    print("%-5s %-24s %s" % ("ID", "Name", "Description"))
-    print("%-5s %-24s %s" % ("--", "----", "-----------"))
-    for project in projects:
-        print("%-5d %-24s %s" % (project['id'],
-                                 project['linkname'],
-                                 project['name']))
 
 
 def action_check_list(rpc):
@@ -648,7 +628,7 @@ installed locales.
         action_list(rpc, filt, submitter_str, delegate_str, format_str)
 
     elif action.startswith('project'):
-        action_projects(rpc)
+        projects.action_list(rpc)
 
     elif action.startswith('state'):
         action_states(rpc)
