@@ -25,6 +25,7 @@ import io
 from . import checks
 from . import people
 from . import projects
+from . import states
 from . import xmlrpc
 
 
@@ -62,7 +63,7 @@ class Filter(object):
     def resolve_ids(self, rpc):
         """Resolve State, Project, and Person IDs based on filter strings."""
         if self.state != "":
-            id = state_id_by_name(rpc, self.state)
+            id = states.state_id_by_name(rpc, self.state)
             if id == 0:
                 sys.stderr.write("Note: No State found matching %s*, "
                                  "ignoring filter\n" % self.state)
@@ -80,17 +81,6 @@ class Filter(object):
     def __str__(self):
         """Return human-readable description of the filter."""
         return str(self.d)
-
-
-def state_id_by_name(rpc, name):
-    """Given a partial state name, look up the state ID."""
-    if len(name) == 0:
-        return 0
-    states = rpc.state_list(name, 0)
-    for state in states:
-        if state['name'].lower().startswith(name.lower()):
-            return state['id']
-    return 0
 
 
 def list_patches(patches, format_str=None):
@@ -156,14 +146,6 @@ def action_list(rpc, filter, submitter_str, delegate_str, format_str=None):
 
     patches = rpc.patch_list(filter.d)
     list_patches(patches, format_str)
-
-
-def action_states(rpc):
-    states = rpc.state_list("", 0)
-    print("%-5s %s" % ("ID", "Name"))
-    print("%-5s %s" % ("--", "----"))
-    for state in states:
-        print("%-5d %s" % (state['id'], state['name']))
 
 
 def action_info(rpc, patch_id):
@@ -236,7 +218,7 @@ def action_update_patch(rpc, patch_id, state=None, archived=None, commit=None):
     params = {}
 
     if state:
-        state_id = state_id_by_name(rpc, state)
+        state_id = states.state_id_by_name(rpc, state)
         if state_id == 0:
             sys.stderr.write("Error: No State found matching %s*\n" % state)
             sys.exit(1)
@@ -597,7 +579,7 @@ installed locales.
         projects.action_list(rpc)
 
     elif action.startswith('state'):
-        action_states(rpc)
+        states.action_list(rpc)
 
     elif action == 'view':
         pager = os.environ.get('PAGER')

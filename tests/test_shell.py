@@ -5,6 +5,7 @@ from pwclient import checks
 from pwclient import people
 from pwclient import projects
 from pwclient import shell
+from pwclient import states
 from pwclient import xmlrpc
 
 from . import fakes
@@ -767,7 +768,7 @@ def test_projects(mock_action, mock_server, mock_config):
 
 @mock.patch.object(shell.ConfigParser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(shell, 'action_states')
+@mock.patch.object(states, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
 def test_states(mock_action, mock_server, mock_config):
 
@@ -1001,42 +1002,6 @@ def test_view__with_pager(
     assert captured.out == ''
 
 
-def test_state_id_by_name__empty_name():
-    rpc = mock.Mock()
-
-    result = shell.state_id_by_name(rpc, '')
-
-    assert result == 0
-    rpc.state_list.assert_not_called()
-
-
-def test_state_id_by_name__no_matches():
-    rpc = mock.Mock()
-    rpc.state_list.return_value = [
-        {'id': 1, 'name': 'bar'},
-        {'id': 2, 'name': 'baz'},
-    ]
-
-    result = shell.state_id_by_name(rpc, 'foo')
-
-    assert result == 0
-    rpc.state_list.assert_called_once_with('foo', 0)
-
-
-def test_state_id_by_name():
-    rpc = mock.Mock()
-    rpc.state_list.return_value = [
-        {'id': 1, 'name': 'bar'},
-        {'id': 2, 'name': 'baz'},
-        {'id': 3, 'name': 'foo'},
-    ]
-
-    result = shell.state_id_by_name(rpc, 'foo')
-
-    assert result == 3
-    rpc.state_list.assert_called_once_with('foo', 0)
-
-
 def test_patch_id_from_hash__no_matches(capsys):
     rpc = mock.Mock()
     rpc.patch_get_by_project_hash.return_value = {}
@@ -1241,21 +1206,6 @@ def test_action_list__delegate_filter_no_matches(
     mock_list_patches.assert_not_called()
 
 
-def test_action_states(capsys):
-    rpc = mock.Mock()
-    rpc.state_list.return_value = fakes.fake_states()
-
-    shell.action_states(rpc)
-
-    captured = capsys.readouterr()
-
-    assert captured.out == """\
-ID    Name
---    ----
-1     New
-"""
-
-
 def test_action_info(capsys):
     rpc = mock.Mock()
     rpc.patch_get.return_value = fakes.fake_patches()[0]
@@ -1424,7 +1374,7 @@ def test_action_update_patch__invalid_id(capsys):
     assert captured.err == 'Error getting information on patch ID 1\n'
 
 
-@mock.patch.object(shell, 'state_id_by_name')
+@mock.patch.object(states, 'state_id_by_name')
 def test_action_update_patch(mock_get_state, capsys):
     rpc = mock.Mock()
     rpc.patch_get.return_value = fakes.fake_patches()[0]
@@ -1438,7 +1388,7 @@ def test_action_update_patch(mock_get_state, capsys):
     mock_get_state.assert_called_once_with(rpc, 'Accepted')
 
 
-@mock.patch.object(shell, 'state_id_by_name')
+@mock.patch.object(states, 'state_id_by_name')
 def test_action_update_patch__invalid_state(mock_get_state, capsys):
     rpc = mock.Mock()
     rpc.patch_get.return_value = fakes.fake_patches()[0]
