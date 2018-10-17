@@ -22,6 +22,7 @@ import shutil
 import re
 import io
 
+from . import people
 from . import projects
 from . import xmlrpc
 
@@ -91,15 +92,6 @@ def state_id_by_name(rpc, name):
     return 0
 
 
-def person_ids_by_name(rpc, name):
-    """Given a partial name or email address, return a list of the
-    person IDs that match."""
-    if len(name) == 0:
-        return []
-    people = rpc.person_list(name, 0)
-    return [x['id'] for x in people]
-
-
 def list_patches(patches, format_str=None):
     """Dump a list of patches to stdout."""
     if format_str:
@@ -130,7 +122,7 @@ def action_list(rpc, filter, submitter_str, delegate_str, format_str=None):
     filter.resolve_ids(rpc)
 
     if submitter_str is not None:
-        ids = person_ids_by_name(rpc, submitter_str)
+        ids = people.person_ids_by_name(rpc, submitter_str)
         if len(ids) == 0:
             sys.stderr.write("Note: Nobody found matching *%s*\n" %
                              submitter_str)
@@ -146,7 +138,7 @@ def action_list(rpc, filter, submitter_str, delegate_str, format_str=None):
         return
 
     if delegate_str is not None:
-        ids = person_ids_by_name(rpc, delegate_str)
+        ids = people.person_ids_by_name(rpc, delegate_str)
         if len(ids) == 0:
             sys.stderr.write("Note: Nobody found matching *%s*\n" %
                              delegate_str)

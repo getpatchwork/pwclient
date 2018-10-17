@@ -1,6 +1,7 @@
 import mock
 import pytest
 
+from pwclient import people
 from pwclient import projects
 from pwclient import shell
 from pwclient import xmlrpc
@@ -1035,38 +1036,6 @@ def test_state_id_by_name():
     rpc.state_list.assert_called_once_with('foo', 0)
 
 
-def test_person_ids_by_name__empty_name():
-    rpc = mock.Mock()
-
-    result = shell.person_ids_by_name(rpc, '')
-
-    assert result == []
-    rpc.person_list.assert_not_called()
-
-
-def test_person_ids_by_name__no_matches():
-    rpc = mock.Mock()
-    rpc.person_list.return_value = []
-
-    result = shell.person_ids_by_name(rpc, 'foo')
-
-    assert result == []
-    rpc.person_list.assert_called_once_with('foo', 0)
-
-
-def test_person_ids_by_name():
-    rpc = mock.Mock()
-    rpc.person_list.return_value = [
-        {'id': 3, 'name': 'foo'},
-        {'id': 35, 'name': 'foobar'},
-    ]
-
-    result = shell.person_ids_by_name(rpc, 'foo')
-
-    assert result == [3, 35]
-    rpc.person_list.assert_called_once_with('foo', 0)
-
-
 def test_patch_id_from_hash__no_matches(capsys):
     rpc = mock.Mock()
     rpc.patch_get_by_project_hash.return_value = {}
@@ -1178,7 +1147,7 @@ def test_action_list__no_submitter_no_delegate(mock_list_patches, capsys):
 
 
 @mock.patch.object(shell, 'list_patches')
-@mock.patch.object(shell, 'person_ids_by_name')
+@mock.patch.object(people, 'person_ids_by_name')
 def test_action_list__submitter_filter(
         mock_person_lookup, mock_list_patches, capsys):
 
@@ -1204,7 +1173,7 @@ def test_action_list__submitter_filter(
 
 
 @mock.patch.object(shell, 'list_patches')
-@mock.patch.object(shell, 'person_ids_by_name')
+@mock.patch.object(people, 'person_ids_by_name')
 def test_action_list__submitter_filter_no_matches(
         mock_person_lookup, mock_list_patches, capsys):
 
@@ -1225,7 +1194,7 @@ def test_action_list__submitter_filter_no_matches(
 
 
 @mock.patch.object(shell, 'list_patches')
-@mock.patch.object(shell, 'person_ids_by_name')
+@mock.patch.object(people, 'person_ids_by_name')
 def test_action_list__delegate_filter(
         mock_person_lookup, mock_list_patches, capsys):
 
@@ -1251,7 +1220,7 @@ def test_action_list__delegate_filter(
 
 
 @mock.patch.object(shell, 'list_patches')
-@mock.patch.object(shell, 'person_ids_by_name')
+@mock.patch.object(people, 'person_ids_by_name')
 def test_action_list__delegate_filter_no_matches(
         mock_person_lookup, mock_list_patches, capsys):
 
