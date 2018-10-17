@@ -393,59 +393,46 @@ def main(argv=sys.argv[1:]):
     hash_parser = argparse.ArgumentParser(add_help=False)
     hash_parser.add_argument(
         '-h', metavar='HASH', dest='hash', action='store',
-        help='''Lookup by patch hash'''
-    )
+        help="lookup by patch hash")
     hash_parser.add_argument(
         'id', metavar='ID', nargs='*', action='store', type=int,
-        help='Patch ID',
-    )
+        help="patch ID")
     hash_parser.add_argument(
         '-p', metavar='PROJECT',
-        help='''Lookup patch in project'''
-    )
+        help="lookup patch in project")
 
     filter_parser = argparse.ArgumentParser(add_help=False)
     filter_parser.add_argument(
         '-s', metavar='STATE',
-        help='''Filter by patch state (e.g., 'New', 'Accepted', etc.)'''
-    )
+        help="filter by patch state (e.g., 'New', 'Accepted', etc.)")
     filter_parser.add_argument(
         '-a', choices=['yes', 'no'],
-        help='''Filter by patch archived state'''
-    )
+        help="filter by patch archived state")
     filter_parser.add_argument(
         '-p', metavar='PROJECT',
-        help='''Filter by project name (see 'projects' for list)'''
-    )
+        help="filter by project name (see 'projects' for list)")
     filter_parser.add_argument(
         '-w', metavar='WHO',
-        help='''Filter by submitter (name, e-mail substring search)'''
-    )
+        help="filter by submitter (name, e-mail substring search)")
     filter_parser.add_argument(
         '-d', metavar='WHO',
-        help='''Filter by delegate (name, e-mail substring search)'''
-    )
+        help="filter by delegate (name, e-mail substring search)")
     filter_parser.add_argument(
         '-n', metavar='MAX#', type=int,
-        help='''Return first n results'''
-    )
+        help="limit results to first n")
     filter_parser.add_argument(
         '-N', metavar='MAX#', type=int,
-        help='''Return last N results'''
-    )
+        help="limit results to last N")
     filter_parser.add_argument(
         '-m', metavar='MESSAGEID',
-        help='''Filter by Message-Id'''
-    )
+        help="filter by Message-Id")
     filter_parser.add_argument(
         '-f', metavar='FORMAT',
-        help='''Print output in the given format. You can use tags matching '''
-        '''fields, e.g. %%{id}, %%{state}, or %%{msgid}.'''
-    )
+        help=("print output in the given format. You can use tags matching "
+              "fields, e.g. %%{id}, %%{state}, or %%{msgid}."))
     filter_parser.add_argument(
         'patch_name', metavar='STR', nargs='?',
-        help='substring to search for patches by name',
-    )
+        help='substring to search for patches by name')
 
     action_parser = argparse.ArgumentParser(
         prog='pwclient',
@@ -462,60 +449,57 @@ installed locales.
     subparsers = action_parser.add_subparsers(
         title='Commands',
     )
+
     apply_parser = subparsers.add_parser(
         'apply', parents=[hash_parser], conflict_handler='resolve',
-        help='''Apply a patch (in the current dir, using -p1)'''
-    )
+        help="apply a patch in the current directory using 'patch -p1'")
     apply_parser.set_defaults(subcmd='apply')
+
     git_am_parser = subparsers.add_parser(
         'git-am', parents=[hash_parser], conflict_handler='resolve',
-        help='''Apply a patch to current git branch using "git am".'''
-    )
+        help="apply a patch to current git branch using 'git am'")
+    git_am_parser.add_argument(
+        '-s', '--signoff', action='store_true',
+        help="pass '--signoff' to 'git-am'")
+    git_am_parser.add_argument(
+        '-3', '--3way', action='store_true',
+        help="pass '--3way' to 'git-am'")
     git_am_parser.set_defaults(subcmd='git_am')
-    git_am_parser.add_argument(
-        '-s', '--signoff',
-        action='store_true',
-        help='''pass --signoff to git-am'''
-    )
-    git_am_parser.add_argument(
-        '-3', '--3way',
-        action='store_true',
-        help='''pass --3way to git-am'''
-    )
+
     get_parser = subparsers.add_parser(
         'get', parents=[hash_parser], conflict_handler='resolve',
-        help='''Download a patch and save it locally'''
+        help="download a patch and save it locally"
     )
     get_parser.set_defaults(subcmd='get')
+
     info_parser = subparsers.add_parser(
         'info', parents=[hash_parser], conflict_handler='resolve',
-        help='''Display patchwork info about a given patch ID'''
-    )
+        help="show information for a given patch ID")
     info_parser.set_defaults(subcmd='info')
+
     projects_parser = subparsers.add_parser(
         'projects',
-        help='''List all projects'''
-    )
+        help="list all projects")
     projects_parser.set_defaults(subcmd='projects')
+
     check_list_parser = subparsers.add_parser(
         'check-list',
         add_help=False,
-        help='''List all checks'''
+        help="list all checks"
     )
     check_list_parser.set_defaults(subcmd='check_list')
+
     check_info_parser = subparsers.add_parser(
-        'check-info',
-        add_help=False,
-        help='''Show information for a given check'''
-    )
-    check_info_parser.set_defaults(subcmd='check_info')
+        'check-info', add_help=False,
+        help="show information for a given check")
     check_info_parser.add_argument(
         'check_id', metavar='ID', action='store', type=int,
-        help='Check ID',)
+        help="check ID")
+    check_info_parser.set_defaults(subcmd='check_info')
+
     check_create_parser = subparsers.add_parser(
         'check-create', parents=[hash_parser], conflict_handler='resolve',
-        help='Add a check to a patch')
-    check_create_parser.set_defaults(subcmd='check_create')
+        help="add a check to a patch")
     check_create_parser.add_argument(
         '-c', metavar='CONTEXT')
     check_create_parser.add_argument(
@@ -524,46 +508,45 @@ installed locales.
         '-u', metavar='TARGET_URL', default="")
     check_create_parser.add_argument(
         '-d', metavar='DESCRIPTION', default="")
+    check_create_parser.set_defaults(subcmd='check_create')
+
     states_parser = subparsers.add_parser(
         'states',
-        help='''Show list of potential patch states'''
-    )
+        help="show list of potential patch states")
     states_parser.set_defaults(subcmd='states')
+
     view_parser = subparsers.add_parser(
         'view', parents=[hash_parser], conflict_handler='resolve',
-        help='''View a patch'''
-    )
+        help="view a patch")
     view_parser.set_defaults(subcmd='view')
+
     update_parser = subparsers.add_parser(
         'update', parents=[hash_parser], conflict_handler='resolve',
-        help='''Update patch''',
-        epilog='''Using a COMMIT-REF allows for only one ID to be specified''',
-    )
+        help="update patch",
+        epilog="using a COMMIT-REF allows for only one ID to be specified")
     update_parser.add_argument(
         '-c', metavar='COMMIT-REF',
-        help='''commit reference hash'''
-    )
+        help="commit reference hash")
     update_parser.add_argument(
         '-s', metavar='STATE',
-        help='''Set patch state (e.g., 'Accepted', 'Superseded' etc.)'''
-    )
+        help="set patch state (e.g., 'Accepted', 'Superseded' etc.)")
     update_parser.add_argument(
         '-a', choices=['yes', 'no'],
-        help='''Set patch archived state'''
-    )
+        help="set patch archived state")
     update_parser.set_defaults(subcmd='update')
+
     list_parser = subparsers.add_parser(
         'list', parents=[filter_parser],
-        help='List patches using optional filters')
+        help='list patches using optional filters')
     list_parser.set_defaults(subcmd='list')
-    search_parser = subparsers.add_parser("search",
-                                          parents=[filter_parser],
-                                          help='''Alias for "list"'''
-                                          )
-    # Poor man's argparse aliases:
-    # We register the "search" parser but effectively use "list" for the
-    # help-text.
+
+    # Poor man's argparse aliases: we register the "search" parser but
+    # effectively use "list" for the help-text.
+    search_parser = subparsers.add_parser(
+        "search", parents=[filter_parser],
+        help="alias for 'list'")
     search_parser.set_defaults(subcmd='list')
+
     if not argv:
         action_parser.print_help()
         sys.exit(0)
