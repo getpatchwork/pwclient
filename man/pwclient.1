@@ -1,0 +1,309 @@
+.TH pwclient "1" Manual
+.SH NAME
+pwclient
+.SH SYNOPSIS
+.B pwclient
+[-h] {apply,git-am,get,info,projects,check-list,check-info,check-create,states,view,update,list,search} ...
+.SH OPTIONS
+
+
+.SS
+\fBSub-commands\fR
+.TP
+\fBpwclient\fR \fI\,apply\/\fR
+apply a patch in the current directory using 'patch -p1'
+.TP
+\fBpwclient\fR \fI\,git-am\/\fR
+apply a patch to current git branch using 'git am'
+.TP
+\fBpwclient\fR \fI\,get\/\fR
+download a patch and save it locally
+.TP
+\fBpwclient\fR \fI\,info\/\fR
+show information for a given patch ID
+.TP
+\fBpwclient\fR \fI\,projects\/\fR
+list all projects
+.TP
+\fBpwclient\fR \fI\,check-list\/\fR
+list all checks
+.TP
+\fBpwclient\fR \fI\,check-info\/\fR
+show information for a given check
+.TP
+\fBpwclient\fR \fI\,check-create\/\fR
+add a check to a patch
+.TP
+\fBpwclient\fR \fI\,states\/\fR
+show list of potential patch states
+.TP
+\fBpwclient\fR \fI\,view\/\fR
+view a patch
+.TP
+\fBpwclient\fR \fI\,update\/\fR
+update patch
+.TP
+\fBpwclient\fR \fI\,list\/\fR
+list patches using optional filters
+.TP
+\fBpwclient\fR \fI\,search\/\fR
+alias for 'list'
+.SH OPTIONS 'pwclient apply'
+usage: pwclient apply [--help] [-h] [-p PROJECT] PATCH_ID [PATCH_ID ...]
+
+.TP
+\fBPATCH_ID\fR
+patch ID
+
+.TP
+\fB\-h\fR
+lookup by patch hash
+
+.TP
+\fB\-p\fR PROJECT
+lookup patch in project
+
+.SH OPTIONS 'pwclient git-am'
+usage: pwclient git-am [--help] [-h] [-p PROJECT] [-s] [-3]
+                       PATCH_ID [PATCH_ID ...]
+
+.TP
+\fBPATCH_ID\fR
+patch ID
+
+.TP
+\fB\-h\fR
+lookup by patch hash
+
+.TP
+\fB\-p\fR PROJECT
+lookup patch in project
+
+.TP
+\fB\-s\fR, \fB\-\-signoff\fR
+pass '\-\-signoff' to 'git\-am'
+
+.TP
+\fB\-3\fR, \fB\-\-3way\fR
+pass '\-\-3way' to 'git\-am'
+
+.SH OPTIONS 'pwclient get'
+usage: pwclient get [--help] [-h] [-p PROJECT] PATCH_ID [PATCH_ID ...]
+
+.TP
+\fBPATCH_ID\fR
+patch ID
+
+.TP
+\fB\-h\fR
+lookup by patch hash
+
+.TP
+\fB\-p\fR PROJECT
+lookup patch in project
+
+.SH OPTIONS 'pwclient info'
+usage: pwclient info [--help] [-h] [-p PROJECT] PATCH_ID [PATCH_ID ...]
+
+.TP
+\fBPATCH_ID\fR
+patch ID
+
+.TP
+\fB\-h\fR
+lookup by patch hash
+
+.TP
+\fB\-p\fR PROJECT
+lookup patch in project
+
+.SH OPTIONS 'pwclient projects'
+usage: pwclient projects [-h]
+
+
+
+.SH OPTIONS 'pwclient check-list'
+usage: pwclient check-list
+
+
+
+.SH OPTIONS 'pwclient check-info'
+usage: pwclient check-info ID
+
+.TP
+\fBID\fR
+check ID
+
+
+.SH OPTIONS 'pwclient check-create'
+usage: pwclient check-create [--help] [-h] [-p PROJECT] [-c CONTEXT]
+                             [-s {pending,success,warning,fail}]
+                             [-u TARGET_URL] [-d DESCRIPTION]
+                             PATCH_ID [PATCH_ID ...]
+
+.TP
+\fBPATCH_ID\fR
+patch ID
+
+.TP
+\fB\-h\fR
+lookup by patch hash
+
+.TP
+\fB\-p\fR PROJECT
+lookup patch in project
+
+.TP
+\fB\-c\fR CONTEXT
+.TP
+\fB\-s\fR {pending,success,warning,fail}
+.TP
+\fB\-u\fR TARGET_URL
+.TP
+\fB\-d\fR DESCRIPTION
+.SH OPTIONS 'pwclient states'
+usage: pwclient states [-h]
+
+
+
+.SH OPTIONS 'pwclient view'
+usage: pwclient view [--help] [-h] [-p PROJECT] PATCH_ID [PATCH_ID ...]
+
+.TP
+\fBPATCH_ID\fR
+patch ID
+
+.TP
+\fB\-h\fR
+lookup by patch hash
+
+.TP
+\fB\-p\fR PROJECT
+lookup patch in project
+
+.SH OPTIONS 'pwclient update'
+usage: pwclient update [--help] [-h] [-p PROJECT] [-c COMMIT-REF] [-s STATE]
+                       [-a {yes,no}]
+                       PATCH_ID [PATCH_ID ...]
+
+.TP
+\fBPATCH_ID\fR
+patch ID
+
+.TP
+\fB\-h\fR
+lookup by patch hash
+
+.TP
+\fB\-p\fR PROJECT
+lookup patch in project
+
+.TP
+\fB\-c\fR COMMIT\-REF
+commit reference hash
+
+.TP
+\fB\-s\fR STATE
+set patch state (e.g., 'Accepted', 'Superseded' etc.)
+
+.TP
+\fB\-a\fR {yes,no}
+set patch archived state
+
+.SH OPTIONS 'pwclient list'
+usage: pwclient list [-h] [-s STATE] [-a {yes,no}] [-p PROJECT] [-w WHO]
+                     [-d WHO] [-n MAX#] [-N MAX#] [-m MESSAGEID] [-f FORMAT]
+                     [STR]
+
+.TP
+\fBSTR\fR
+substring to search for patches by name
+
+.TP
+\fB\-s\fR STATE
+filter by patch state (e.g., 'New', 'Accepted', etc.)
+
+.TP
+\fB\-a\fR {yes,no}
+filter by patch archived state
+
+.TP
+\fB\-p\fR PROJECT
+filter by project name (see 'projects' for list)
+
+.TP
+\fB\-w\fR WHO
+filter by submitter (name, e\-mail substring search)
+
+.TP
+\fB\-d\fR WHO
+filter by delegate (name, e\-mail substring search)
+
+.TP
+\fB\-n\fR MAX#
+limit results to first n
+
+.TP
+\fB\-N\fR MAX#
+limit results to last N
+
+.TP
+\fB\-m\fR MESSAGEID
+filter by Message\-Id
+
+.TP
+\fB\-f\fR FORMAT
+print output in the given format. You can use tags matching fields, e.g. %{id}, %{state}, or %{msgid}.
+
+.SH OPTIONS 'pwclient search'
+usage: pwclient search [-h] [-s STATE] [-a {yes,no}] [-p PROJECT] [-w WHO]
+                       [-d WHO] [-n MAX#] [-N MAX#] [-m MESSAGEID] [-f FORMAT]
+                       [STR]
+
+.TP
+\fBSTR\fR
+substring to search for patches by name
+
+.TP
+\fB\-s\fR STATE
+filter by patch state (e.g., 'New', 'Accepted', etc.)
+
+.TP
+\fB\-a\fR {yes,no}
+filter by patch archived state
+
+.TP
+\fB\-p\fR PROJECT
+filter by project name (see 'projects' for list)
+
+.TP
+\fB\-w\fR WHO
+filter by submitter (name, e\-mail substring search)
+
+.TP
+\fB\-d\fR WHO
+filter by delegate (name, e\-mail substring search)
+
+.TP
+\fB\-n\fR MAX#
+limit results to first n
+
+.TP
+\fB\-N\fR MAX#
+limit results to last N
+
+.TP
+\fB\-m\fR MESSAGEID
+filter by Message\-Id
+
+.TP
+\fB\-f\fR FORMAT
+print output in the given format. You can use tags matching fields, e.g. %{id}, %{state}, or %{msgid}.
+
+.SH AUTHORS
+.B pwclient
+was written by Patchwork Developers <patchwork@lists.ozlabs.org>.
+.SH DISTRIBUTION
+The latest version of pwclient may be downloaded from
+.UR https://github.com/getpatchwork/patchwork
+.UE
