@@ -19,6 +19,8 @@ docs/_build/
 # pbr
 AUTHORS
 ChangeLog
+RELEASENOTES.rst
+releasenotes/notes/reno.cache
 
 # virtualenv
 /.venv
