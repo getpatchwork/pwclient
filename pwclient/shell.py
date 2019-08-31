@@ -658,11 +658,11 @@ installed locales.
 
     if not config.has_section(project_str):
         sys.stderr.write(
-            'No section for project %s in %s\n' % (CONFIG_FILE, project_str))
+            'No section for project %s in %s\n' % (project_str, CONFIG_FILE))
         sys.exit(1)
     if not config.has_option(project_str, 'url'):
         sys.stderr.write(
-            'No URL for project %s in %s\n' % (CONFIG_FILE, project_str))
+            'No URL for project %s in %s\n' % (project_str, CONFIG_FILE))
         sys.exit(1)
     if not do_signoff and config.has_option('options', 'signoff'):
         do_signoff = config.getboolean('options', 'signoff')
