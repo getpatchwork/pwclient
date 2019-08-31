@@ -810,7 +810,7 @@ installed locales.
 if __name__ == "__main__":
     try:
         main()
-    except (UnicodeEncodeError, UnicodeDecodeError) as e:
+    except (UnicodeEncodeError, UnicodeDecodeError):
         import traceback
         traceback.print_exc()
         sys.stderr.write('Try exporting the LANG or LC_ALL env vars. See '
