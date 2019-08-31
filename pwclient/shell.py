@@ -389,7 +389,7 @@ def patch_id_from_hash(rpc, project, hash):
 auth_actions = ['check_create', 'update']
 
 
-def main():
+def main(argv=sys.argv[1:]):
     hash_parser = argparse.ArgumentParser(add_help=False)
     hash_parser.add_argument(
         '-h', metavar='HASH', dest='hash', action='store',
@@ -564,11 +564,11 @@ installed locales.
     # We register the "search" parser but effectively use "list" for the
     # help-text.
     search_parser.set_defaults(subcmd='list')
-    if len(sys.argv) < 2:
+    if not argv:
         action_parser.print_help()
         sys.exit(0)
 
-    args = action_parser.parse_args()
+    args = action_parser.parse_args(argv)
     args = dict(vars(args))
     action = args.get('subcmd')
 
