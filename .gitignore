@@ -24,3 +24,7 @@ releasenotes/notes/reno.cache
 
 # virtualenv
 /.venv
+
+# coverage
+/.coverage
+htmlcov
