@@ -801,11 +801,6 @@ installed locales.
             action_check_create(
                 rpc, patch_id, args['c'], args['s'], args['u'], args['d'])
 
-    else:
-        sys.stderr.write("Unknown action '%s'\n" % action)
-        action_parser.print_help()
-        sys.exit(1)
-
 
 if __name__ == "__main__":
     try:
