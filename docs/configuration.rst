@@ -15,7 +15,7 @@ __ https://patchwork.ozlabs.org/project/patchwork/pwclientrc/
 Format
 ------
 
-The ``.pwclientrc`` file is an `INI-style`__ config file, containing an
+The ``.pwclientrc`` file is an `INI-style`__ config file, **containing** an
 ``options`` section along with a section for each project.
 
 The ``options`` section provides the following configuration options:
@@ -60,20 +60,22 @@ In addition, the following options are optional:
 __ https://en.wikipedia.org/wiki/INI_file
 
 
+Example
+-------
+
+::
+
+    [base]
+    default = patchwork
+
+    [patchwork]
+    url = http://patchwork.ozlabs.org/xmlrpc/
+    username = johndoe
+    password = password
+
 Legacy Format
 -------------
 
 Older Patchwork instances may provide a legacy version of the ``.pwclientrc``
 file that did not support multiple projects. *pwclient* will automatically
 convert this version of the file to the latest version.
-
-
-Example
--------
-
-::
-
-    [patchwork]
-    url = http://patchwork.ozlabs.org/xmlrpc/
-    username = johndoe
-    password = password
