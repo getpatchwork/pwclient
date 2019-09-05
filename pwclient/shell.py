@@ -17,7 +17,6 @@ except ImportError:
     # Python 3 has merged/renamed things.
     import xmlrpc.client as xmlrpclib
 import argparse
-import string
 import subprocess
 try:
     import ConfigParser
@@ -173,7 +172,7 @@ def list_patches(patches, format_str=None):
 
             if fieldname == "_msgid_":
                 # naive way to strip < and > from message-id
-                val = string.strip(str(patch["msgid"]), "<>")
+                val = str(patch["msgid"]).strip("<>")
             else:
                 val = str(patch[fieldname])
 
