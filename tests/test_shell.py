@@ -901,17 +901,14 @@ def test_update__commitref_with_multiple_patches(
     assert 'Declining update with COMMIT-REF on multiple IDs' in captured.err
 
 
-@mock.patch.object(shell.os.environ, 'get')
-@mock.patch.object(shell.subprocess, 'Popen')
+@mock.patch.object(patches, 'action_view')
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_view__no_pager(
-        mock_server, mock_config, mock_popen, mock_env, capsys):
+def test_view(mock_server, mock_config, mock_view, capsys):
 
     fake_config = FakeConfig()
 
-    mock_env.return_value = None
     mock_config.return_value = fake_config
     mock_server.return_value.patch_get_mbox.return_value = 'foo'
 
@@ -919,84 +916,4 @@ def test_view__no_pager(
 
     shell.main(['view', '1'])
 
-    captured = capsys.readouterr()
-
-    mock_popen.assert_not_called()
-    mock_server.return_value.patch_get_mbox.assert_has_calls([
-        mock.call(1),
-    ])
-
-    assert captured.out == 'foo\n'
-
-    # then with multiple patch IDs
-
-    mock_server.reset_mock()
-    mock_server.return_value.patch_get_mbox.side_effect = [
-        'foo', 'bar', 'baz'
-    ]
-
-    shell.main(['view', '1', '2', '3'])
-
-    captured = capsys.readouterr()
-
-    mock_popen.assert_not_called()
-    mock_server.return_value.patch_get_mbox.assert_has_calls([
-        mock.call(1),
-        mock.call(2),
-        mock.call(3),
-    ])
-    assert captured.out == 'foo\nbar\nbaz\n'
-
-
-@mock.patch.object(shell.os.environ, 'get')
-@mock.patch.object(shell.subprocess, 'Popen')
-@mock.patch.object(utils.configparser, 'ConfigParser')
-@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_view__with_pager(
-        mock_server, mock_config, mock_popen, mock_env, capsys):
-
-    fake_config = FakeConfig()
-
-    mock_env.return_value = 'less'
-    mock_config.return_value = fake_config
-    mock_server.return_value.patch_get_mbox.return_value = 'foo'
-
-    # test firstly with a single patch ID
-
-    shell.main(['view', '1'])
-
-    captured = capsys.readouterr()
-
-    mock_popen.assert_called_once_with(['less'], stdin=mock.ANY)
-    mock_popen.return_value.communicate.assert_has_calls([
-        mock.call(input=b'foo'),
-    ])
-    mock_server.return_value.patch_get_mbox.assert_has_calls([
-        mock.call(1),
-    ])
-
-    assert captured.out == ''
-
-    # then with multiple patch IDs
-
-    mock_popen.reset_mock()
-    mock_server.reset_mock()
-    mock_server.return_value.patch_get_mbox.side_effect = [
-        'foo', 'bar', 'baz'
-    ]
-
-    shell.main(['view', '1', '2', '3'])
-
-    captured = capsys.readouterr()
-
-    mock_popen.assert_called_once_with(['less'], stdin=mock.ANY)
-    mock_popen.return_value.communicate.assert_has_calls([
-        mock.call(input=b'foo\nbar\nbaz'),
-    ])
-    mock_server.return_value.patch_get_mbox.assert_has_calls([
-        mock.call(1),
-        mock.call(2),
-        mock.call(3),
-    ])
-    assert captured.out == ''
+    mock_view.assert_called_once_with(mock_server.return_value, [1])

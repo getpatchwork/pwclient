@@ -289,6 +289,74 @@ def test_action_get__invalid_id(capsys):
     assert captured.err == 'Unable to get patch 1\n'
 
 
+@mock.patch.object(patches.os.environ, 'get')
+@mock.patch.object(patches.subprocess, 'Popen')
+def test_action_view__no_pager(mock_popen, mock_env, capsys):
+    rpc = mock.Mock()
+    rpc.patch_get_mbox.return_value = 'foo'
+    mock_env.return_value = None
+
+    patches.action_view(rpc, [1])
+
+    mock_popen.assert_not_called()
+    rpc.patch_get_mbox.assert_called_once_with(1)
+
+    captured = capsys.readouterr()
+
+    assert captured.out == 'foo\n'
+
+
+@mock.patch.object(patches.os.environ, 'get')
+@mock.patch.object(patches.subprocess, 'Popen')
+def test_action_view__no_pager_multiple_patches(mock_popen, mock_env, capsys):
+    rpc = mock.Mock()
+    rpc.patch_get_mbox.side_effect = ['foo', 'bar', 'baz']
+    mock_env.return_value = None
+
+    patches.action_view(rpc, [1, 2, 3])
+
+    captured = capsys.readouterr()
+
+    mock_popen.assert_not_called()
+    assert captured.out == 'foo\nbar\nbaz\n'
+
+
+@mock.patch.object(patches.os.environ, 'get')
+@mock.patch.object(patches.subprocess, 'Popen')
+def test_view__with_pager(mock_popen, mock_env, capsys):
+    rpc = mock.Mock()
+    rpc.patch_get_mbox.return_value = 'foo'
+    mock_env.return_value = 'less'
+
+    patches.action_view(rpc, [1])
+
+    mock_popen.assert_called_once_with(['less'], stdin=mock.ANY)
+    mock_popen.return_value.communicate.assert_has_calls([
+        mock.call(input=b'foo'),
+    ])
+
+    captured = capsys.readouterr()
+    assert captured.out == ''
+
+
+@mock.patch.object(patches.os.environ, 'get')
+@mock.patch.object(patches.subprocess, 'Popen')
+def test_view__with_pager_multiple_ids(mock_popen, mock_env, capsys):
+    rpc = mock.Mock()
+    rpc.patch_get_mbox.side_effect = ['foo', 'bar', 'baz']
+    mock_env.return_value = 'less'
+
+    patches.action_view(rpc, [1, 2, 3])
+
+    mock_popen.assert_called_once_with(['less'], stdin=mock.ANY)
+    mock_popen.return_value.communicate.assert_has_calls([
+        mock.call(input=b'foo\nbar\nbaz'),
+    ])
+
+    captured = capsys.readouterr()
+    assert captured.out == ''
+
+
 @mock.patch.object(patches.subprocess, 'Popen')
 def _test_action_apply(apply_cmd, mock_popen):
     rpc = mock.Mock()

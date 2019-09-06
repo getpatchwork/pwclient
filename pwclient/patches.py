@@ -184,6 +184,28 @@ def action_get(rpc, patch_id):
         print('Saved patch to %s' % fname)
 
 
+def action_view(rpc, patch_ids):
+    pager = os.environ.get('PAGER')
+    if pager:
+        pager = subprocess.Popen(
+            pager.split(), stdin=subprocess.PIPE
+        )
+    if pager:
+        i = list()
+        for patch_id in patch_ids:
+            s = rpc.patch_get_mbox(patch_id)
+            if len(s) > 0:
+                i.append(s)
+        if len(i) > 0:
+            pager.communicate(input="\n".join(i).encode("utf-8"))
+        pager.stdin.close()
+    else:
+        for patch_id in patch_ids:
+            s = rpc.patch_get_mbox(patch_id)
+            if len(s) > 0:
+                print(s)
+
+
 def action_apply(rpc, patch_id, apply_cmd=None):
     patch = rpc.patch_get(patch_id)
     if patch == {}:

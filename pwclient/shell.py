@@ -11,7 +11,6 @@ from __future__ import unicode_literals
 
 import os
 import sys
-import subprocess
 
 from . import checks
 from . import parser
@@ -167,25 +166,7 @@ def main(argv=sys.argv[1:]):
         states.action_list(rpc)
 
     elif action == 'view':
-        pager = os.environ.get('PAGER')
-        if pager:
-            pager = subprocess.Popen(
-                pager.split(), stdin=subprocess.PIPE
-            )
-        if pager:
-            i = list()
-            for patch_id in patch_ids:
-                s = rpc.patch_get_mbox(patch_id)
-                if len(s) > 0:
-                    i.append(s)
-            if len(i) > 0:
-                pager.communicate(input="\n".join(i).encode("utf-8"))
-            pager.stdin.close()
-        else:
-            for patch_id in patch_ids:
-                s = rpc.patch_get_mbox(patch_id)
-                if len(s) > 0:
-                    print(s)
+        patches.action_view(rpc, patch_ids)
 
     elif action == 'info':
         for patch_id in patch_ids:
