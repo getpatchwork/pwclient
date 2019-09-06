@@ -166,9 +166,9 @@ def action_info(rpc, patch_id):
 
 def action_get(rpc, patch_id):
     patch = rpc.patch_get(patch_id)
-    s = rpc.patch_get_mbox(patch_id)
+    mbox = rpc.patch_get_mbox(patch_id)
 
-    if patch == {} or len(s) == 0:
+    if patch == {} or len(mbox) == 0:
         sys.stderr.write("Unable to get patch %d\n" % patch_id)
         sys.exit(1)
 
@@ -180,7 +180,7 @@ def action_get(rpc, patch_id):
         i += 1
 
     with io.open(fname, 'w', encoding='utf-8') as f:
-        f.write(s)
+        f.write(mbox)
         print('Saved patch to %s' % fname)
 
 
@@ -191,19 +191,19 @@ def action_view(rpc, patch_ids):
             pager.split(), stdin=subprocess.PIPE
         )
     if pager:
-        i = list()
+        mboxes = []
         for patch_id in patch_ids:
-            s = rpc.patch_get_mbox(patch_id)
-            if len(s) > 0:
-                i.append(s)
-        if len(i) > 0:
-            pager.communicate(input="\n".join(i).encode("utf-8"))
+            mbox = rpc.patch_get_mbox(patch_id)
+            if len(mbox) > 0:
+                mboxes.append(mbox)
+        if len(mboxes) > 0:
+            pager.communicate(input="\n".join(mboxes).encode("utf-8"))
         pager.stdin.close()
     else:
         for patch_id in patch_ids:
-            s = rpc.patch_get_mbox(patch_id)
-            if len(s) > 0:
-                print(s)
+            mbox = rpc.patch_get_mbox(patch_id)
+            if len(mbox) > 0:
+                print(mbox)
 
 
 def action_apply(rpc, patch_id, apply_cmd=None):
@@ -221,10 +221,10 @@ def action_apply(rpc, patch_id, apply_cmd=None):
               (patch_id, ' '.join(apply_cmd)))
 
     print('Description: %s' % patch['name'])
-    s = rpc.patch_get_mbox(patch_id)
-    if len(s) > 0:
+    mbox = rpc.patch_get_mbox(patch_id)
+    if len(mbox) > 0:
         proc = subprocess.Popen(apply_cmd, stdin=subprocess.PIPE)
-        proc.communicate(s.encode('utf-8'))
+        proc.communicate(mbox.encode('utf-8'))
         return proc.returncode
     else:
         sys.stderr.write("Error: No patch content found\n")
