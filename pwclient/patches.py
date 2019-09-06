@@ -197,12 +197,19 @@ def action_view(rpc, patch_ids):
 
     pager = os.environ.get('PAGER')
     if pager:
-        pager = subprocess.Popen(
-            pager.split(), stdin=subprocess.PIPE
-        )
-    if pager:
-        pager.communicate(input="\n".join(mboxes).encode("utf-8"))
-        pager.stdin.close()
+        # TODO(stephenfin): Use as a context manager when we drop support for
+        # Python 2.7
+        pager = subprocess.Popen(pager.split(), stdin=subprocess.PIPE)
+        try:
+            pager.communicate(input='\n'.join(mboxes).encode('utf-8'))
+        finally:
+            if pager.stdout:
+                pager.stdout.close()
+            if pager.stderr:
+                pager.stderr.close()
+            if pager.stdin:
+                pager.stdin.close()
+            pager.wait()
     else:
         for mbox in mboxes:
             print(mbox)
