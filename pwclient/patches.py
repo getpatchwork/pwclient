@@ -185,25 +185,27 @@ def action_get(rpc, patch_id):
 
 
 def action_view(rpc, patch_ids):
+    mboxes = []
+
+    for patch_id in patch_ids:
+        mbox = rpc.patch_get_mbox(patch_id)
+        if mbox:
+            mboxes.append(mbox)
+
+    if not mboxes:
+        return
+
     pager = os.environ.get('PAGER')
     if pager:
         pager = subprocess.Popen(
             pager.split(), stdin=subprocess.PIPE
         )
     if pager:
-        mboxes = []
-        for patch_id in patch_ids:
-            mbox = rpc.patch_get_mbox(patch_id)
-            if len(mbox) > 0:
-                mboxes.append(mbox)
-        if len(mboxes) > 0:
-            pager.communicate(input="\n".join(mboxes).encode("utf-8"))
+        pager.communicate(input="\n".join(mboxes).encode("utf-8"))
         pager.stdin.close()
     else:
-        for patch_id in patch_ids:
-            mbox = rpc.patch_get_mbox(patch_id)
-            if len(mbox) > 0:
-                print(mbox)
+        for mbox in mboxes:
+            print(mbox)
 
 
 def action_apply(rpc, patch_id, apply_cmd=None):
