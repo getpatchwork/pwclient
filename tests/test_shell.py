@@ -779,7 +779,20 @@ def test_states(mock_action, mock_server, mock_config):
     mock_action.assert_called_once_with(mock_server.return_value)
 
 
-def test_update__no_options(capsys):
+@mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(xmlrpc.xmlrpclib, 'Server')
+@mock.patch.object(patches, 'action_update')
+@mock.patch.object(xmlrpc, 'Transport')
+def test_update__no_options(
+        mock_transport, mock_action, mock_server, mock_config, capsys):
+
+    mock_config.return_value = FakeConfig({
+        DEFAULT_PROJECT: {
+            'username': 'user',
+            'password': 'pass',
+        },
+    })
+
     with pytest.raises(SystemExit):
         shell.main(['update', '1'])
 
@@ -897,7 +910,8 @@ def test_update__commitref_with_multiple_patches(
     captured = capsys.readouterr()
 
     mock_action.assert_not_called()
-    mock_transport.return_value.set_credentials.assert_not_called()
+    mock_transport.return_value.set_credentials.assert_called_once_with(
+        'user', 'pass')
     assert 'Declining update with COMMIT-REF on multiple IDs' in captured.err
 
 
