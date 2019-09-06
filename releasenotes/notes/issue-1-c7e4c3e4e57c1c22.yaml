@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    The ``pwclient view`` command will now decode received mboxes on Python
+    2.7.
