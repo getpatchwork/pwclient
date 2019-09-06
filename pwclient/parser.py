@@ -16,7 +16,7 @@ def _get_hash_parser():
         '-p', '--project', metavar='PROJECT',
         help="lookup patch in project")
     hash_parser.add_argument(
-        'id', metavar='PATCH_ID', nargs='+', action='store',
+        'id', metavar='PATCH_ID', nargs='+', action='store', default=[],
         help="patch ID")
 
     return hash_parser
@@ -89,7 +89,7 @@ installed locales.
         '-s', '--signoff', action='store_true',
         help="pass '--signoff' to 'git-am'")
     git_am_parser.add_argument(
-        '-3', '--3way', action='store_true',
+        '-3', '--3way', action='store_true', dest='three_way',
         help="pass '--3way' to 'git-am'")
     git_am_parser.set_defaults(subcmd='git_am')
 
@@ -168,7 +168,7 @@ installed locales.
     # Poor man's argparse aliases: we register the "search" parser but
     # effectively use "list" for the help-text.
     search_parser = subparsers.add_parser(
-        "search", parents=[filter_parser],
+        'search', parents=[filter_parser],
         help="alias for 'list'")
     search_parser.set_defaults(subcmd='list')
 

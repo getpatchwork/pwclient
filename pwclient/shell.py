@@ -33,9 +33,9 @@ def main(argv=sys.argv[1:]):
         action_parser.print_help()
         sys.exit(0)
 
-    args = dict(vars(action_parser.parse_args(argv)))
+    args = action_parser.parse_args(argv)
 
-    action = args.get('subcmd')
+    action = args.subcmd
 
     # grab settings from config files
     config = utils.configparser.ConfigParser()
@@ -45,8 +45,9 @@ def main(argv=sys.argv[1:]):
         utils.migrate_old_config_file(CONFIG_FILE, config)
         sys.exit(1)
 
-    project_str = args.get('project')
-    if not project_str:
+    if 'project' in args and args.project:
+        project_str = args.project
+    else:
         try:
             project_str = config.get('options', 'default')
         except (utils.configparser.NoSectionError,
@@ -66,8 +67,8 @@ def main(argv=sys.argv[1:]):
         sys.exit(1)
 
     url = config.get(project_str, 'url')
-
     transport = xmlrpc.Transport(url)
+
     if action in auth_actions:
         if config.has_option(project_str, 'username') and \
                 config.has_option(project_str, 'password'):
@@ -85,8 +86,8 @@ def main(argv=sys.argv[1:]):
         sys.stderr.write("Unable to connect to %s\n" % url)
         sys.exit(1)
 
-    patch_ids = args.get('id') or []
-    if args.get('use_hashes'):
+    patch_ids = args.id if 'id' in args and args.id else []
+    if 'use_hashes' in args and args.use_hashes:
         patch_ids = [
             patches.patch_id_from_hash(rpc, project_str, x) for x in patch_ids]
     else:
@@ -99,30 +100,30 @@ def main(argv=sys.argv[1:]):
     if action == 'list' or action == 'search':
         filt = patches.Filter()
 
-        if args.get('n'):
-            filt.add('max_count', args.get('n'))
+        if args.n:
+            filt.add('max_count', args.n)
 
-        if args.get('N'):
-            filt.add('max_count', 0 - args.get('N'))
+        if args.N:
+            filt.add('max_count', 0 - args.N)
 
         if project_str:
             filt.add('project', project_str)
 
-        if args.get('state'):
-            filt.add('state', args.get('state'))
+        if args.state:
+            filt.add('state', args.state)
 
-        if args.get('archived'):
-            filt.add('archived', args.get('archived') == 'yes')
+        if args.archived:
+            filt.add('archived', args.archived == 'yes')
 
-        if args.get('msgid'):
-            filt.add('msgid', args.get('msgid'))
+        if args.msgid:
+            filt.add('msgid', args.msgid)
 
-        if args.get('patch_name'):
-            filt.add('name__icontains', args.get('patch_name'))
+        if args.patch_name:
+            filt.add('name__icontains', args.patch_name)
 
-        submitter_str = args.get('submitter')
-        delegate_str = args.get('delegate')
-        format_str = args.get('format')
+        submitter_str = args.submitter
+        delegate_str = args.delegate
+        format_str = args.format
 
         patches.action_list(rpc, filt, submitter_str, delegate_str, format_str)
 
@@ -154,8 +155,8 @@ def main(argv=sys.argv[1:]):
         cmd = ['git', 'am']
 
         do_signoff = None
-        if args.get('signoff'):
-            do_signoff = args.get('signoff')
+        if args.signoff:
+            do_signoff = args.signoff
         elif config.has_option('options', 'signoff'):
             do_signoff = config.getboolean('options', 'signoff')
         elif config.has_option(project_str, 'signoff'):
@@ -165,8 +166,8 @@ def main(argv=sys.argv[1:]):
             cmd.append('-s')
 
         do_three_way = None
-        if args.get('3way'):
-            do_three_way = args.get('3way')
+        if args.three_way:
+            do_three_way = args.three_way
         elif config.has_option('options', '3way'):
             do_three_way = config.getboolean('options', '3way')
         elif config.has_option(project_str, '3way'):
@@ -182,38 +183,34 @@ def main(argv=sys.argv[1:]):
                 sys.exit(1)
 
     elif action == 'update':
-        commit_str = args.get('commit_ref')
-        state_str = args.get('state')
-        archived_str = args.get('archived')
-
-        if commit_str and len(patch_ids) > 1:
+        if args.commit_ref and len(patch_ids) > 1:
             # update multiple IDs with a single commit-hash does not make sense
             sys.stderr.write(
                 'Declining update with COMMIT-REF on multiple IDs')
             sys.exit(1)
 
-        if state_str is None and archived_str is None:
+        if not any([args.state, args.archived]):
             sys.stderr.write(
                 'Must specify one or more update options (-a or -s)\n')
             sys.exit(1)
 
         for patch_id in patch_ids:
             patches.action_update(
-                rpc, patch_id, state=state_str, archived=archived_str,
-                commit=commit_str)
+                rpc, patch_id, state=args.state, archived=args.archived,
+                commit=args.commit_ref)
 
     elif action == 'check_list':
         checks.action_list(rpc)
 
     elif action == 'check_info':
-        check_id = args['check_id']
+        check_id = args.check_id
         checks.action_info(rpc, check_id)
 
     elif action == 'check_create':
         for patch_id in patch_ids:
             checks.action_create(
-                rpc, patch_id, args.get('context'), args.get('state'),
-                args.get('target_url'), args.get('description'))
+                rpc, patch_id, args.context, args.state, args.target_url,
+                args.description)
 
 
 if __name__ == "__main__":
