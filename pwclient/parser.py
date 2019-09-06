@@ -10,10 +10,10 @@ import argparse
 def _get_hash_parser():
     hash_parser = argparse.ArgumentParser(add_help=False)
     hash_parser.add_argument(
-        '-h', action='store_true',
+        '-h', '--use-hashes', action='store_true',
         help="lookup by patch hash")
     hash_parser.add_argument(
-        '-p', metavar='PROJECT',
+        '-p', '--project', metavar='PROJECT',
         help="lookup patch in project")
     hash_parser.add_argument(
         'id', metavar='PATCH_ID', nargs='+', action='store',
@@ -25,19 +25,19 @@ def _get_hash_parser():
 def _get_filter_parser():
     filter_parser = argparse.ArgumentParser(add_help=False)
     filter_parser.add_argument(
-        '-s', metavar='STATE',
+        '-s', '--state', metavar='STATE',
         help="filter by patch state (e.g., 'New', 'Accepted', etc.)")
     filter_parser.add_argument(
-        '-a', choices=['yes', 'no'],
+        '-a', '--archived', choices=['yes', 'no'],
         help="filter by patch archived state")
     filter_parser.add_argument(
-        '-p', metavar='PROJECT',
+        '-p', '--project', metavar='PROJECT',
         help="filter by project name (see 'projects' for list)")
     filter_parser.add_argument(
-        '-w', metavar='WHO',
+        '-w', '--submitter', metavar='WHO',
         help="filter by submitter (name, e-mail substring search)")
     filter_parser.add_argument(
-        '-d', metavar='WHO',
+        '-d', '--delegate', metavar='WHO',
         help="filter by delegate (name, e-mail substring search)")
     filter_parser.add_argument(
         '-n', metavar='MAX#', type=int,
@@ -46,10 +46,10 @@ def _get_filter_parser():
         '-N', metavar='MAX#', type=int,
         help="limit results to last N")
     filter_parser.add_argument(
-        '-m', metavar='MESSAGEID',
+        '-m', '--msgid', metavar='MESSAGEID',
         help="filter by Message-Id")
     filter_parser.add_argument(
-        '-f', metavar='FORMAT',
+        '-f', '--format', metavar='FORMAT',
         help=("print output in the given format. You can use tags matching "
               "fields, e.g. %%{id}, %%{state}, or %%{msgid}."))
     filter_parser.add_argument(
@@ -109,8 +109,7 @@ installed locales.
     projects_parser.set_defaults(subcmd='projects')
 
     check_list_parser = subparsers.add_parser(
-        'check-list',
-        add_help=False,
+        'check-list', add_help=False,
         help="list all checks"
     )
     check_list_parser.set_defaults(subcmd='check_list')
@@ -127,13 +126,13 @@ installed locales.
         'check-create', parents=[hash_parser], conflict_handler='resolve',
         help="add a check to a patch")
     check_create_parser.add_argument(
-        '-c', metavar='CONTEXT')
+        '-c', '--context', metavar='CONTEXT')
     check_create_parser.add_argument(
-        '-s', choices=('pending', 'success', 'warning', 'fail'))
+        '-s', '--state', choices=('pending', 'success', 'warning', 'fail'))
     check_create_parser.add_argument(
-        '-u', metavar='TARGET_URL', default="")
+        '-u', '--target-url', metavar='TARGET_URL', default='')
     check_create_parser.add_argument(
-        '-d', metavar='DESCRIPTION', default="")
+        '-d', '--description', metavar='DESCRIPTION', default='')
     check_create_parser.set_defaults(subcmd='check_create')
 
     states_parser = subparsers.add_parser(
@@ -151,13 +150,13 @@ installed locales.
         help="update patch",
         epilog="using a COMMIT-REF allows for only one ID to be specified")
     update_parser.add_argument(
-        '-c', metavar='COMMIT-REF',
+        '-c', '--commit-ref', metavar='COMMIT-REF',
         help="commit reference hash")
     update_parser.add_argument(
-        '-s', metavar='STATE',
+        '-s', '--state', metavar='STATE',
         help="set patch state (e.g., 'Accepted', 'Superseded' etc.)")
     update_parser.add_argument(
-        '-a', choices=['yes', 'no'],
+        '-a', '--archived', choices=['yes', 'no'],
         help="set patch archived state")
     update_parser.set_defaults(subcmd='update')
 

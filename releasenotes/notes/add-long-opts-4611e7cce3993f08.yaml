@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Most options now have a long opt equivalent. For example:
+
+       $ pwclient update --archived yes 123

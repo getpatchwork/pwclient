@@ -45,7 +45,7 @@ def main(argv=sys.argv[1:]):
         utils.migrate_old_config_file(CONFIG_FILE, config)
         sys.exit(1)
 
-    project_str = args.get('p')
+    project_str = args.get('project')
     if not project_str:
         try:
             project_str = config.get('options', 'default')
@@ -86,7 +86,7 @@ def main(argv=sys.argv[1:]):
         sys.exit(1)
 
     patch_ids = args.get('id') or []
-    if args.get('h'):
+    if args.get('use_hashes'):
         patch_ids = [
             patches.patch_id_from_hash(rpc, project_str, x) for x in patch_ids]
     else:
@@ -108,21 +108,21 @@ def main(argv=sys.argv[1:]):
         if project_str:
             filt.add('project', project_str)
 
-        if args.get('s'):
-            filt.add('state', args.get('s'))
+        if args.get('state'):
+            filt.add('state', args.get('state'))
 
-        if args.get('a'):
-            filt.add('archived', args.get('a') == 'yes')
+        if args.get('archived'):
+            filt.add('archived', args.get('archived') == 'yes')
 
-        if args.get('m'):
-            filt.add('msgid', args.get('m'))
+        if args.get('msgid'):
+            filt.add('msgid', args.get('msgid'))
 
         if args.get('patch_name'):
             filt.add('name__icontains', args.get('patch_name'))
 
-        submitter_str = args.get('w')
-        delegate_str = args.get('d')
-        format_str = args.get('f')
+        submitter_str = args.get('submitter')
+        delegate_str = args.get('delegate')
+        format_str = args.get('format')
 
         patches.action_list(rpc, filt, submitter_str, delegate_str, format_str)
 
@@ -182,9 +182,9 @@ def main(argv=sys.argv[1:]):
                 sys.exit(1)
 
     elif action == 'update':
-        commit_str = args.get('c')
-        state_str = args.get('s')
-        archived_str = args.get('a')
+        commit_str = args.get('commit_ref')
+        state_str = args.get('state')
+        archived_str = args.get('archived')
 
         if commit_str and len(patch_ids) > 1:
             # update multiple IDs with a single commit-hash does not make sense
@@ -212,7 +212,8 @@ def main(argv=sys.argv[1:]):
     elif action == 'check_create':
         for patch_id in patch_ids:
             checks.action_create(
-                rpc, patch_id, args['c'], args['s'], args['u'], args['d'])
+                rpc, patch_id, args.get('context'), args.get('state'),
+                args.get('target_url'), args.get('description'))
 
 
 if __name__ == "__main__":
