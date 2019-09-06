@@ -66,19 +66,20 @@ def main(argv=sys.argv[1:]):
             'No URL for project %s in %s\n' % (project_str, CONFIG_FILE))
         sys.exit(1)
 
-    url = config.get(project_str, 'url')
-    transport = xmlrpc.Transport(url)
-
     if action in auth_actions:
-        if config.has_option(project_str, 'username') and \
-                config.has_option(project_str, 'password'):
-            transport.set_credentials(
-                config.get(project_str, 'username'),
-                config.get(project_str, 'password'))
-        else:
+        if not (config.has_option(project_str, 'username') and
+                config.has_option(project_str, 'password')):
             sys.stderr.write("The %s action requires authentication, but no "
                              "username or password\nis configured\n" % action)
             sys.exit(1)
+
+    url = config.get(project_str, 'url')
+
+    transport = xmlrpc.Transport(url)
+    if action in auth_actions:
+        transport.set_credentials(
+            config.get(project_str, 'username'),
+            config.get(project_str, 'password'))
 
     try:
         rpc = xmlrpc.xmlrpclib.Server(url, transport=transport)
