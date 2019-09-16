@@ -18,13 +18,13 @@ jobs:
   include:
   - stage: deploy
     python: 3.7
-    install: skip  # no tests, no depedencies needed
+    install: skip  # no tests, no dependencies needed
     script: skip  # we're not running tests
     deploy:
       provider: pypi
       user: stephenfin
       password:
-        secure: "zzp6VaPEwB0cYbPNkREQ86+FfdoJC8/wPXlEX8M6Vo0hT7hw+nrDFkkPS6teIdsV2aOjanrEfaOQ+O44qKUuUaAq5eetNXgchXv0/3DGVHCoJoZxGHWCziNW9qGxDAC4YPOpxu4TgRWbtYjoKfOJHhPJcwdHLayReOeMjZuzic/c1/qVNd/xyOEXFFLTGzJXUsEvutWRVZO7/pay1FE0PrMYOIJRqOD9+BF4ZCLK8QXUTT37s0nKCj4ksoGL5UIJiveOEG11UPFbP//0w6jG2xpP7pZqe6h4/DYg6s0G6JQQAIvZ5YGKYTe3w+6YfB4aW1BaqdeuLcvuCaPXpcgNaVTBaDeGQsHug5Q44SpIeaauOEigE2rM1FMPOISXeqahp08JcGaoPJxd4V7K43fLRT6cGoMS/f0MtobyWr4yHaEAAC4b7Tsxx8QijOvGkZURdyWSsa4aVBRnSC6RXECb71NbGkUDaBxJpU2xc8VOEBdFx1dCGbS4Q6w+BFr3cmZJGgGa0M7H3kwDDrDYK06DpMnbvqW45jm9rA7HDcjwmihp1I8UwNA4mZVgIb9K+wHCGTA3wJdeF5YeegfVHfRJJH4QtZs6i9MU3f1ktyO8Le6RyW7f6d+PUePy/DP7kL3TQED3CY04Rw+tQB/K/7MYX1Rxp+EnCjuqxGA1UubZxzI="
+        secure: PC4vWiSLNi8WmBZMaJbIpCvRwUpn9iXmu+HN9PyXx1QX+9YN6oARlrx31QZ8lzyxoy1Omq2+rhiSGYdFVAdIc10pQAz0jEGuBzTaEQZxYt49SXhtd6EQqtzPPaeQNHdLQvSCpV6D5knjqh++u51IWawEbke0JPSY3+J0bhZ9w0JrlXaaujIYb7AgmbiExLE+2RC4Ra4KXIMCn2k4OwsrJqhQ2hKAFXShsuh3mdyF7l+6GS2uAYjpRE88Ejxn2k7i5mx+s+cXhkwsXzS7EE5n1iuyq3liHQuh/J/A1uFFJ1Ddnylpoz2m+cdaZbq31Fjuy1E4VEaoTigQwSvqgqy+XFCw7I2yi+tL6SAeWyZd3w7znpNKUcVZJfxTPFBJmXQj9mwgmx5yToltFT7inQKzSiALauOeCJ/adDToBvr4nyOi3y/frjtnIKngpmldvxojrUiHXM8zeT7krxtdbJ9X5gZ4B3ibYMBEXzrXnt8i1QShsXq45348JgKxyoEtxtPzNH0IdtKCr9HM+T4HsndmqJ7FIRbSWN9sfFEyqDaTWoU6n5mLi7byAP2JRBm41PqVAe40HFAVopp5IntJH+/VFXrLdQ3DY1iq4bS9m3dF4BTfei/LhdgOCojZk8Fkr7tmLz0oYR+LX/shJBQR1FuWW+bcH3eKkCGDKQHfDFcpDW0=
       on:
         tags: true
       distributions: sdist bdist_wheel
