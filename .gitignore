@@ -26,6 +26,9 @@ __pycache__/
 # virtualenv
 /.venv
 
+# Mypy
+/.mypy_cache
+
 # coverage
 /.coverage
 /htmlcov
