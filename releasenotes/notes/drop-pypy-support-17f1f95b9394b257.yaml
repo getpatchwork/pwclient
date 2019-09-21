@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    PyPy is no longer officially supported.
