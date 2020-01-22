@@ -64,7 +64,7 @@ lookup by patch hash
 lookup patch in project
 
 .SH OPTIONS 'pwclient git-am'
-usage: pwclient git-am [--help] [-h] [-p PROJECT] [-s] [-3]
+usage: pwclient git-am [--help] [-h] [-p PROJECT] [-s] [-3] [-m]
                        PATCH_ID [PATCH_ID ...]
 
 .TP
@@ -86,6 +86,10 @@ pass '\-\-signoff' to 'git\-am'
 .TP
 \fB\-3\fR, \fB\-\-3way\fR
 pass '\-\-3way' to 'git\-am'
+
+.TP
+\fB\-m\fR, \fB\-\-msgid\fR
+pass '\-\-message\-id' to 'git\-am'
 
 .SH OPTIONS 'pwclient get'
 usage: pwclient get [--help] [-h] [-p PROJECT] PATCH_ID [PATCH_ID ...]

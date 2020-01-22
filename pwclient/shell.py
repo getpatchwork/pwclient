@@ -177,6 +177,17 @@ def main(argv=sys.argv[1:]):
         if do_three_way:
             cmd.append('-3')
 
+        do_msg_id = None
+        if args.msg_id:
+            do_msg_id = args.msg_id
+        elif config.has_option('options', 'msgid'):
+            do_msg_id = config.getboolean('options', 'msgid')
+        elif config.has_option(project_str, 'msgid'):
+            do_msg_id = config.getboolean(project_str, 'msgid')
+
+        if do_msg_id:
+            cmd.append('-m')
+
         for patch_id in patch_ids:
             ret = patches.action_apply(rpc, patch_id, cmd)
             if ret:

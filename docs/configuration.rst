@@ -32,6 +32,10 @@ The ``options`` section provides the following configuration options:
   Enable three-way merge when applying patches using the :command:`git-am`
   command. Defaults to ``False``.
 
+``msgid``
+  Add a ``Message-Id:`` line to commit messages when applying patches using
+  the :command:`git-am` command. Defaults to ``False``.
+
 The names of the project sections must correspond to the project names in
 Patchwork, as reflected in the project's URL in Patchwork. Multiple projects
 can be defined, but no two projects can share the same name. Project sections

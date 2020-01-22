@@ -91,6 +91,9 @@ installed locales.
     git_am_parser.add_argument(
         '-3', '--3way', action='store_true', dest='three_way',
         help="pass '--3way' to 'git-am'")
+    git_am_parser.add_argument(
+        '-m', '--msgid', action='store_true', dest='msg_id',
+        help="pass '--message-id' to 'git-am'")
     git_am_parser.set_defaults(subcmd='git_am')
 
     get_parser = subparsers.add_parser(
