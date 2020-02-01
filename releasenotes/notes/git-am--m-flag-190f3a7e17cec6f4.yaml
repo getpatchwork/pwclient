@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The ``pwclient git-am`` command can now passthrough the ``-m`` flag to
+    ``-m``.
