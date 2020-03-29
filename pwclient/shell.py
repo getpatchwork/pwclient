@@ -91,6 +91,10 @@ def main(argv=sys.argv[1:]):
     if 'use_hashes' in args and args.use_hashes:
         patch_ids = [
             patches.patch_id_from_hash(rpc, project_str, x) for x in patch_ids]
+    elif 'use_msgids' in args and args.use_msgids:
+        patch_ids = [
+            patches.patch_id_from_msgid(rpc, project_str, x) for x in
+            patch_ids]
     else:
         try:
             patch_ids = [int(x) for x in patch_ids]

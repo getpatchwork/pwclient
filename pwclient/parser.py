@@ -13,6 +13,9 @@ def _get_hash_parser():
         '-h', '--use-hashes', action='store_true',
         help="lookup by patch hash")
     hash_parser.add_argument(
+        '-i', '--use-msgids', action='store_true',
+        help="lookup by Message-ID")
+    hash_parser.add_argument(
         '-p', '--project', metavar='PROJECT',
         help="lookup patch in project")
     hash_parser.add_argument(

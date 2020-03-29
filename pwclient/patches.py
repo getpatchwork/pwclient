@@ -84,6 +84,29 @@ def patch_id_from_hash(rpc, project, hash):
     return patch_id
 
 
+def patch_id_from_msgid(rpc, project, msgid):
+    try:
+        patch = rpc.patch_get_by_project_msgid(project, msgid)
+    except xmlrpclib.Fault:
+        # the server may not have the newer patch_get_by_project_msgid
+        # function.
+        sys.stderr.write("Lookup by Message-ID not supported\n")
+        sys.exit(1)
+
+    if patch == {}:
+        sys.stderr.write("No patch has the Message-ID provided\n")
+        sys.exit(1)
+
+    patch_id = patch['id']
+    # be super paranoid
+    try:
+        patch_id = int(patch_id)
+    except ValueError:
+        sys.stderr.write("Invalid patch ID obtained from server\n")
+        sys.exit(1)
+    return patch_id
+
+
 def _list_patches(patches, format_str=None):
     """Dump a list of patches to stdout."""
     if format_str:
