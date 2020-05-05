@@ -69,7 +69,7 @@ Example
 
 ::
 
-    [base]
+    [options]
     default = patchwork
 
     [patchwork]
