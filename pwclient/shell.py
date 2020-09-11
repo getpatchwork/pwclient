@@ -211,6 +211,11 @@ def main(argv=sys.argv[1:]):
                 rpc, patch_id, state=args.state, archived=args.archived,
                 commit=args.commit_ref)
 
+    elif action == 'check_get':
+        patch_id = args.patch_id
+        format_str = args.format
+        checks.action_get(rpc, patch_id, format_str)
+
     elif action == 'check_list':
         checks.action_list(rpc)
 

@@ -111,6 +111,19 @@ installed locales.
         help="list all projects")
     projects_parser.set_defaults(subcmd='projects')
 
+    check_get_parser = subparsers.add_parser(
+        'check-get', add_help=False,
+        help="get checks for a patch"
+    )
+    check_get_parser.add_argument(
+        'patch_id', metavar='PATCH_ID', action='store', type=int,
+        help="patch ID")
+    check_get_parser.add_argument(
+        '-f', '--format', metavar='FORMAT',
+        help=("print output in the given format. You can use tags matching "
+              "fields, e.g. %%{context}, %%{state}, or %%{msgid}."))
+    check_get_parser.set_defaults(subcmd='check_get')
+
     check_list_parser = subparsers.add_parser(
         'check-list', add_help=False,
         help="list all checks"

@@ -6,6 +6,26 @@ from pwclient import xmlrpc
 from . import fakes
 
 
+def test_action_check_get(capsys):
+    rpc = mock.Mock()
+    rpc.patch_check_get.return_value = fakes.fake_patch_check()
+
+    checks.action_get(rpc, 1)
+
+    captured = capsys.readouterr()
+
+    assert captured.out == """\
+Check information for patch id 1
+--------------------------------
+- context       : hello-world
+- id            : 1
+- patch_id      : 1
+- state         : success
+- target_url    :
+- user_id       : 1
+"""
+
+
 def test_action_check_list(capsys):
     rpc = mock.Mock()
     rpc.check_list.return_value = fakes.fake_checks()

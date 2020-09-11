@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Add a new ``pwclient check-get`` command to query the checks run against
+    a specific patch.
