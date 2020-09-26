@@ -11,7 +11,7 @@ try:
     import xmlrpclib  # noqa
 except ImportError:
     # Python 3 has merged/renamed things.
-    import xmlrpc.client as xmlrpclib  # noqa
+    import xmlrpc.client as xmlrpclib  # type: ignore
 
 
 if sys.version_info[0] < 3:
