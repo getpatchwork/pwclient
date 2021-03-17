@@ -37,7 +37,7 @@ def migrate_old_config_file(config_file, config):
     old_config_file = config_file + '.orig'
     shutil.copy2(config_file, old_config_file)
 
-    with open(config_file, 'wb') as fd:
+    with open(config_file, 'w') as fd:
         new_config.write(fd)
 
     sys.stderr.write(' Done.\n')
@@ -46,3 +46,10 @@ def migrate_old_config_file(config_file, config):
     sys.stderr.write(
         'and was converted to the new format. You may want to\n')
     sys.stderr.write('inspect it before continuing.\n')
+
+
+if __name__ == '__main__':
+    config = configparser.ConfigParser()
+    config.read(sys.argv[1])
+
+    migrate_old_config_file(sys.argv[1], config)
