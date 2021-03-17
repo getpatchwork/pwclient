@@ -3,7 +3,7 @@
 pwclient
 .SH SYNOPSIS
 .B pwclient
-[-h] {apply,git-am,get,info,projects,check-list,check-info,check-create,states,view,update,list,search} ...
+[-h] {apply,git-am,get,info,projects,check-get,check-list,check-info,check-create,states,view,update,list,search} ...
 .SH OPTIONS
 
 
@@ -24,6 +24,9 @@ show information for a given patch ID
 .TP
 \fBpwclient\fR \fI\,projects\/\fR
 list all projects
+.TP
+\fBpwclient\fR \fI\,check-get\/\fR
+get checks for a patch
 .TP
 \fBpwclient\fR \fI\,check-list\/\fR
 list all checks
@@ -125,6 +128,17 @@ lookup patch in project
 usage: pwclient projects [-h]
 
 
+
+.SH OPTIONS 'pwclient check-get'
+usage: pwclient check-get [-f FORMAT] PATCH_ID
+
+.TP
+\fBPATCH_ID\fR
+patch ID
+
+.TP
+\fB\-f\fR FORMAT, \fB\-\-format\fR FORMAT
+print output in the given format. You can use tags matching fields, e.g. %{context}, %{state}, or %{msgid}.
 
 .SH OPTIONS 'pwclient check-list'
 usage: pwclient check-list
@@ -303,6 +317,14 @@ filter by Message\-Id
 .TP
 \fB\-f\fR FORMAT, \fB\-\-format\fR FORMAT
 print output in the given format. You can use tags matching fields, e.g. %{id}, %{state}, or %{msgid}.
+
+.SH COMMENTS
+Use 'pwclient <command> \-\-help' for more info.
+
+To avoid unicode encode/decode errors, you should export the LANG or LC_ALL
+environment variables according to the configured locales on your system. If
+these variables are already set, make sure that they point to valid and
+installed locales.
 
 .SH AUTHORS
 .B pwclient
