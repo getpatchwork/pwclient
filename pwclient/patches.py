@@ -161,6 +161,11 @@ def action_info(rpc, patch_id):
     print(s)
     print('-' * len(s))
     for key, value in sorted(patch.items()):
+        # Some values are transferred as Binary data, these are encoded in
+        # utf-8. As of Python 3.9 xmlrpclib.Binary.__str__ however assumes
+        # latin1, so decode explicitly
+        if type(value) == xmlrpclib.Binary:
+            value = str(value.data, 'utf-8')
         print("- %- 14s: %s" % (key, value))
 
 
