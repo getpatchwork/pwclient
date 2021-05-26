@@ -184,7 +184,7 @@ def action_get(rpc, patch_id):
         fname = "%s.%d.patch" % (base_fname, i)
         i += 1
 
-    with io.open(fname, 'w', encoding='utf-8') as f:
+    with io.open(fname, 'x', encoding='utf-8') as f:
         f.write(mbox)
         print('Saved patch to %s' % fname)
 

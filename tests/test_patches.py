@@ -267,7 +267,7 @@ def test_action_get(mock_exists, mock_basename, mock_open, capsys):
         mock.call('1-3--Drop-support-for-Python-3-4--add-Python-3-7.0.patch'),
     ])
     mock_open.assert_called_once_with(
-        '1-3--Drop-support-for-Python-3-4--add-Python-3-7.0.patch', 'w',
+        '1-3--Drop-support-for-Python-3-4--add-Python-3-7.0.patch', 'x',
         encoding='utf-8')
 
     assert captured.out == """\
