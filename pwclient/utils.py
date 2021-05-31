@@ -4,13 +4,9 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import configparser
 import shutil
 import sys
-
-try:
-    import configparser
-except ImportError:  # python 2.7
-    import ConfigParser as configparser  # type: ignore
 
 
 def migrate_old_config_file(config_file, config):

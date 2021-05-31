@@ -6,19 +6,7 @@
 
 import os
 import sys
-
-try:
-    import xmlrpclib  # noqa
-except ImportError:
-    # Python 3 has merged/renamed things.
-    import xmlrpc.client as xmlrpclib  # type: ignore
-
-
-if sys.version_info[0] < 3:
-    # the python 2.7 reference implementation tries to re-encode to
-    # ascii bytes here but leaves unicode if it fails. Do not try to
-    # re-encode to ascii byte string to have a more predictive behavior.
-    xmlrpclib._stringify = lambda s: s
+import xmlrpc.client as xmlrpclib
 
 
 class Transport(xmlrpclib.SafeTransport):
