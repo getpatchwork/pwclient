@@ -12,6 +12,10 @@ pwclient
    :target: https://pwclient.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
+.. image:: https://github.com/getpatchwork/pwclient/actions/workflows/ci.yaml/badge.svg
+   :target: https://github.com/getpatchwork/pwclient/actions/workflows/ci.yaml
+   :alt: Build Status
+
 *pwclient* is a VCS-agnostic tool for interacting with `Patchwork`__, the
 web-based patch tracking system.
 
