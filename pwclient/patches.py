@@ -217,8 +217,6 @@ def action_view(rpc, patch_ids):
             pager.wait()
     else:
         for mbox in mboxes:
-            if sys.version_info < (3, 0):
-                mbox = mbox.encode('utf-8')
             print(mbox)
 
 

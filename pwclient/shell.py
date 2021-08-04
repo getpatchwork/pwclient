@@ -1,13 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 #
 # Patchwork command line client
 # Copyright (C) 2008 Nate Case <ncase@xes-inc.com>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
-
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import os
 import sys
@@ -19,7 +15,6 @@ from . import projects
 from . import states
 from . import utils
 from . import xmlrpc
-
 
 CONFIG_FILE = os.path.expanduser('~/.pwclientrc')
 

@@ -5,7 +5,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import os
-import sys
 import xmlrpc.client as xmlrpclib
 
 
@@ -39,13 +38,8 @@ class Transport(xmlrpclib.SafeTransport):
         else:
             return xmlrpclib.Transport.make_connection(self, host)
 
-    if sys.version_info[0] == 2:
-        def send_request(self, connection, handler, request_body):
-            handler = '%s://%s%s' % (self.scheme, self.host, handler)
-            xmlrpclib.Transport.send_request(self, connection, handler,
-                                             request_body)
-    else:  # Python 3
-        def send_request(self, host, handler, request_body, debug):
-            handler = '%s://%s%s' % (self.scheme, host, handler)
-            return xmlrpclib.Transport.send_request(self, host, handler,
-                                                    request_body, debug)
+    def send_request(self, host, handler, request_body, debug):
+        handler = '%s://%s%s' % (self.scheme, host, handler)
+        return xmlrpclib.Transport.send_request(
+            self, host, handler, request_body, debug,
+        )

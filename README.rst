@@ -30,7 +30,7 @@ do so, run:
 
 .. code-block:: bash
 
-   $ pip install pwclient
+   $ python3 -m pip install pwclient
 
 You can also install *pwclient* manually. First, install the required
 dependencies. On Fedora, run:
@@ -51,7 +51,7 @@ Once dependencies are installed, clone this repo and run ``setup.py``:
 
    $ git clone https://github.com/getpatchwork/pwclient
    $ cd pwclient
-   $ pip install --user .  # or 'sudo python setup.py install'
+   $ python3 -m pip install --user .
 
 Getting Started
 ---------------
@@ -80,7 +80,7 @@ Create a *virtualenv*, then install the package in `editable`__ mode:
 
    $ virtualenv .venv
    $ source .venv/bin/activate
-   $ pip install --editable .
+   $ python3 -m pip install --editable .
 
 __ https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs
 

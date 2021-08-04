@@ -1,5 +1,3 @@
-import sys
-
 import mock
 import pytest
 
@@ -359,10 +357,7 @@ def test_get__no_ids(mock_action, mock_server, mock_config, capsys):
 
     captured = capsys.readouterr()
 
-    if sys.version_info >= (3, 5):
-        assert 'the following arguments are required: PATCH_ID' in captured.err
-    else:
-        assert 'pwclient get: error: too few arguments' in captured.err
+    assert 'the following arguments are required: PATCH_ID' in captured.err
     assert captured.out == ''
 
 
