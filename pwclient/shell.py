@@ -207,9 +207,9 @@ def main(argv=sys.argv[1:]):
                 commit=args.commit_ref)
 
     elif action == 'check_get':
-        patch_id = args.patch_id
         format_str = args.format
-        checks.action_get(rpc, patch_id, format_str)
+        for patch_id in patch_ids:
+            checks.action_get(rpc, patch_id, format_str)
 
     elif action == 'check_list':
         checks.action_list(rpc)

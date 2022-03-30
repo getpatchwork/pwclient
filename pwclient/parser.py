@@ -112,12 +112,9 @@ installed locales.
     projects_parser.set_defaults(subcmd='projects')
 
     check_get_parser = subparsers.add_parser(
-        'check-get', add_help=False,
+        'check-get', parents=[hash_parser], conflict_handler='resolve',
         help="get checks for a patch"
     )
-    check_get_parser.add_argument(
-        'patch_id', metavar='PATCH_ID', action='store', type=int,
-        help="patch ID")
     check_get_parser.add_argument(
         '-f', '--format', metavar='FORMAT',
         help=("print output in the given format. You can use tags matching "
