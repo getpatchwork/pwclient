@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    Python 3.6 support has been removed.
+  - |
+    Python 3.10 support has been added.
