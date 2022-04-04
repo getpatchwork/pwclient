@@ -550,69 +550,78 @@ def test_info(mock_action, mock_server, mock_config):
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(patches, 'Filter')
 @mock.patch.object(patches, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_list__no_options(mock_action, mock_filter, mock_server, mock_config):
+def test_list__no_options(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
 
     shell.main(['list'])
 
     mock_action.assert_called_once_with(
-        mock_server.return_value, mock_filter.return_value, None, None, None)
-    assert mock_filter.return_value.add.mock_calls == [
-        mock.call('project', mock.ANY),
-    ]
+        mock_server.return_value,
+        project=DEFAULT_PROJECT,
+        submitter=None,
+        delegate=None,
+        state=None,
+        archived=None,
+        msgid=None,
+        name=None,
+        max_count=None,
+        format_str=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(patches, 'Filter')
 @mock.patch.object(patches, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_list__state_filter(
-        mock_action, mock_filter, mock_server, mock_config):
+def test_list__state_filter(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-s', 'Accepted'])
 
     mock_action.assert_called_once_with(
-        mock_server.return_value, mock_filter.return_value, None, None, None)
-    assert mock_filter.return_value.add.mock_calls == [
-        mock.call('project', mock.ANY),
-        mock.call('state', 'Accepted'),
-    ]
+        mock_server.return_value,
+        project=DEFAULT_PROJECT,
+        submitter=None,
+        delegate=None,
+        state='Accepted',
+        archived=None,
+        msgid=None,
+        name=None,
+        max_count=None,
+        format_str=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(patches, 'Filter')
 @mock.patch.object(patches, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_list__archived_filter(
-        mock_action, mock_filter, mock_server, mock_config):
+def test_list__archived_filter(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-a', 'yes'])
 
     mock_action.assert_called_once_with(
-        mock_server.return_value, mock_filter.return_value, None, None, None)
-    assert mock_filter.return_value.add.mock_calls == [
-        mock.call('project', mock.ANY),
-        mock.call('archived', True),
-    ]
+        mock_server.return_value,
+        project=DEFAULT_PROJECT,
+        submitter=None,
+        delegate=None,
+        state=None,
+        archived=True,
+        msgid=None,
+        name=None,
+        max_count=None,
+        format_str=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(patches, 'Filter')
 @mock.patch.object(patches, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_list__project_filter(
-        mock_action, mock_filter, mock_server, mock_config):
+def test_list__project_filter(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig({
         'fakeproject': {
@@ -623,130 +632,154 @@ def test_list__project_filter(
     shell.main(['list', '-p', 'fakeproject'])
 
     mock_action.assert_called_once_with(
-        mock_server.return_value, mock_filter.return_value, None, None, None)
-    assert mock_filter.return_value.add.mock_calls == [
-        mock.call('project', 'fakeproject'),
-    ]
+        mock_server.return_value,
+        project='fakeproject',
+        submitter=None,
+        delegate=None,
+        state=None,
+        archived=None,
+        msgid=None,
+        name=None,
+        max_count=None,
+        format_str=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(patches, 'Filter')
 @mock.patch.object(patches, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_list__submitter_filter(
-        mock_action, mock_filter, mock_server, mock_config):
+def test_list__submitter_filter(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-w', 'fakesubmitter'])
 
     mock_action.assert_called_once_with(
-        mock_server.return_value, mock_filter.return_value, 'fakesubmitter',
-        None, None)
-    assert mock_filter.return_value.add.mock_calls == [
-        mock.call('project', mock.ANY),
-    ]
+        mock_server.return_value,
+        project=DEFAULT_PROJECT,
+        submitter='fakesubmitter',
+        delegate=None,
+        state=None,
+        archived=None,
+        msgid=None,
+        name=None,
+        max_count=None,
+        format_str=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(patches, 'Filter')
 @mock.patch.object(patches, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_list__delegate_filter(
-        mock_action, mock_filter, mock_server, mock_config):
+def test_list__delegate_filter(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-d', 'fakedelegate'])
 
     mock_action.assert_called_once_with(
-        mock_server.return_value, mock_filter.return_value, None,
-        'fakedelegate', None)
-    assert mock_filter.return_value.add.mock_calls == [
-        mock.call('project', mock.ANY),
-    ]
+        mock_server.return_value,
+        project=DEFAULT_PROJECT,
+        submitter=None,
+        delegate='fakedelegate',
+        state=None,
+        archived=None,
+        msgid=None,
+        name=None,
+        max_count=None,
+        format_str=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(patches, 'Filter')
 @mock.patch.object(patches, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_list__msgid_filter(
-        mock_action, mock_filter, mock_server, mock_config):
+def test_list__msgid_filter(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-m', 'fakemsgid'])
 
     mock_action.assert_called_once_with(
-        mock_server.return_value, mock_filter.return_value, None, None, None)
-    assert mock_filter.return_value.add.mock_calls == [
-        mock.call('project', mock.ANY),
-        mock.call('msgid', 'fakemsgid'),
-    ]
+        mock_server.return_value,
+        project=DEFAULT_PROJECT,
+        submitter=None,
+        delegate=None,
+        state=None,
+        archived=None,
+        msgid='fakemsgid',
+        name=None,
+        max_count=None,
+        format_str=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(patches, 'Filter')
 @mock.patch.object(patches, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_list__name_filter(
-        mock_action, mock_filter, mock_server, mock_config):
+def test_list__name_filter(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', 'fake patch name'])
 
     mock_action.assert_called_once_with(
-        mock_server.return_value, mock_filter.return_value, None, None, None)
-    assert mock_filter.return_value.add.mock_calls == [
-        mock.call('project', mock.ANY),
-        mock.call('name__icontains', 'fake patch name'),
-    ]
+        mock_server.return_value,
+        project=DEFAULT_PROJECT,
+        submitter=None,
+        delegate=None,
+        state=None,
+        archived=None,
+        msgid=None,
+        name='fake patch name',
+        max_count=None,
+        format_str=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(patches, 'Filter')
 @mock.patch.object(patches, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_list__limit_filter(
-        mock_action, mock_filter, mock_server, mock_config):
+def test_list__limit_filter(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-n', '5'])
 
     mock_action.assert_called_once_with(
-        mock_server.return_value, mock_filter.return_value, None, None, None)
-    assert mock_filter.return_value.add.mock_calls == [
-        mock.call('max_count', 5),
-        mock.call('project', mock.ANY),
-    ]
+        mock_server.return_value,
+        project=DEFAULT_PROJECT,
+        submitter=None,
+        delegate=None,
+        state=None,
+        archived=None,
+        msgid=None,
+        name=None,
+        max_count=5,
+        format_str=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(xmlrpc.xmlrpclib, 'Server')
-@mock.patch.object(patches, 'Filter')
 @mock.patch.object(patches, 'action_list')
 @mock.patch.object(xmlrpc, 'Transport', new=mock.Mock())
-def test_list__limit_reverse_filter(
-        mock_action, mock_filter, mock_server, mock_config):
+def test_list__limit_reverse_filter(mock_action, mock_server, mock_config):
 
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-N', '5'])
 
     mock_action.assert_called_once_with(
-        mock_server.return_value, mock_filter.return_value, None, None, None)
-    assert mock_filter.return_value.add.mock_calls == [
-        mock.call('max_count', -5),
-        mock.call('project', mock.ANY),
-    ]
+        mock_server.return_value,
+        project=DEFAULT_PROJECT,
+        submitter=None,
+        delegate=None,
+        state=None,
+        archived=None,
+        msgid=None,
+        name=None,
+        max_count=-5,
+        format_str=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')

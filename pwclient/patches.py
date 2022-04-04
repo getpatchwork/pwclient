@@ -16,7 +16,7 @@ from . import projects
 from . import states
 
 
-class Filter(object):
+class Filter:
 
     """Filter for selecting patches."""
 
@@ -105,14 +105,40 @@ def _list_patches(patches, format_str=None):
                   (patch['id'], patch['state'], patch['name']))
 
 
-def action_list(rpc, filters, submitter_str, delegate_str, format_str=None):
+def action_list(
+    rpc, project=None, submitter=None, delegate=None, state=None,
+    archived=None, msgid=None, name=None, max_count=None, format_str=None,
+):
+    filters = Filter()
+
+    if max_count:
+        filters.add('max_count', max_count)
+
+    if project:
+        filters.add('project', project)
+
+    if state:
+        filters.add('state', state)
+
+    if archived:
+        filters.add('archived', archived)
+
+    if msgid:
+        filters.add('msgid', msgid)
+
+    if name:
+        filters.add('name__icontains', name)
+
     filters.resolve_ids(rpc)
 
-    if submitter_str is not None:
-        ids = people.person_ids_by_name(rpc, submitter_str)
+    # TODO(stephenfin): Why do these ID resolutions happen outside of the
+    # 'resolve_ids' helper?
+
+    if submitter is not None:
+        ids = people.person_ids_by_name(rpc, submitter)
         if len(ids) == 0:
             sys.stderr.write("Note: Nobody found matching *%s*\n" %
-                             submitter_str)
+                             submitter)
         else:
             for id in ids:
                 person = rpc.person_get(id)
@@ -124,11 +150,11 @@ def action_list(rpc, filters, submitter_str, delegate_str, format_str=None):
                 _list_patches(patches, format_str)
         return
 
-    if delegate_str is not None:
-        ids = people.person_ids_by_name(rpc, delegate_str)
+    if delegate is not None:
+        ids = people.person_ids_by_name(rpc, delegate)
         if len(ids) == 0:
             sys.stderr.write("Note: Nobody found matching *%s*\n" %
-                             delegate_str)
+                             delegate)
         else:
             for id in ids:
                 person = rpc.person_get(id)

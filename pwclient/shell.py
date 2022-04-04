@@ -85,7 +85,8 @@ def main(argv=sys.argv[1:]):
     patch_ids = args.id if 'id' in args and args.id else []
     if 'use_hashes' in args and args.use_hashes:
         patch_ids = [
-            patches.patch_id_from_hash(rpc, project_str, x) for x in patch_ids]
+            patches.patch_id_from_hash(rpc, project_str, x) for x in patch_ids
+        ]
     else:
         try:
             patch_ids = [int(x) for x in patch_ids]
@@ -94,34 +95,28 @@ def main(argv=sys.argv[1:]):
             sys.exit(1)
 
     if action == 'list' or action == 'search':
-        filt = patches.Filter()
-
+        # TODO(stephenfin): Both of these could be handled by the parser
+        max_count = None
         if args.n:
-            filt.add('max_count', args.n)
-
+            max_count = args.n
         if args.N:
-            filt.add('max_count', 0 - args.N)
+            max_count = 0 - args.N
 
-        if project_str:
-            filt.add('project', project_str)
-
-        if args.state:
-            filt.add('state', args.state)
-
+        archived = None
         if args.archived:
-            filt.add('archived', args.archived == 'yes')
+            archived = args.archived == 'yes'
 
-        if args.msgid:
-            filt.add('msgid', args.msgid)
-
-        if args.patch_name:
-            filt.add('name__icontains', args.patch_name)
-
-        submitter_str = args.submitter
-        delegate_str = args.delegate
-        format_str = args.format
-
-        patches.action_list(rpc, filt, submitter_str, delegate_str, format_str)
+        patches.action_list(
+            rpc,
+            project=project_str,
+            submitter=args.submitter,
+            delegate=args.delegate,
+            state=args.state,
+            archived=archived,
+            msgid=args.msgid,
+            name=args.patch_name,
+            max_count=max_count,
+            format_str=args.format)
 
     elif action.startswith('project'):
         projects.action_list(rpc)

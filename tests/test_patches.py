@@ -4,10 +4,14 @@ import pytest
 
 from pwclient import patches
 from pwclient import people
+from pwclient import projects
 from pwclient import states
 from pwclient import xmlrpc
 
 from . import fakes
+
+FAKE_PROJECT = 'defaultproject'
+FAKE_PROJECT_ID = 42
 
 
 def test_patch_id_from_hash__no_matches(capsys):
@@ -95,40 +99,47 @@ def test_list_patches__format_option_with_msgid(capsys):
 
 
 @mock.patch.object(patches, '_list_patches')
-def test_action_list__no_submitter_no_delegate(mock_list_patches, capsys):
+@mock.patch.object(
+    projects, 'project_id_by_name', return_value=FAKE_PROJECT_ID,
+)
+def test_action_list__no_submitter_no_delegate(
+    mock_project_lookup, mock_list_patches, capsys,
+):
 
     rpc = mock.Mock()
-    filt = mock.Mock()
 
-    patches.action_list(rpc, filt, None, None, None)
+    patches.action_list(rpc, FAKE_PROJECT)
 
-    filt.resolve_ids.assert_called_once_with(rpc)
-    rpc.patch_list.assert_called_once_with(filt.d)
+    rpc.patch_list.assert_called_once_with(mock.ANY)
+    mock_project_lookup.assert_called_once_with(rpc, FAKE_PROJECT)
     mock_list_patches.assert_called_once_with(
         rpc.patch_list.return_value, None)
 
 
 @mock.patch.object(patches, '_list_patches')
 @mock.patch.object(people, 'person_ids_by_name')
+@mock.patch.object(
+    projects, 'project_id_by_name', return_value=FAKE_PROJECT_ID,
+)
 def test_action_list__submitter_filter(
-        mock_person_lookup, mock_list_patches, capsys):
+    mock_project_lookup, mock_person_lookup, mock_list_patches, capsys,
+):
 
     fake_person = fakes.fake_people()[0]
     rpc = mock.Mock()
-    filt = mock.Mock()
 
     mock_person_lookup.return_value = [fake_person['id']]
     rpc.person_get.return_value = fake_person
 
-    patches.action_list(rpc, filt, 'Jeremy Kerr', None, None)
+    patches.action_list(rpc, FAKE_PROJECT, submitter='Jeremy Kerr')
 
     captured = capsys.readouterr()
 
     assert 'Patches submitted by Jeremy Kerr <jk@ozlabs.org>:' in captured.out
 
     rpc.person_get.assert_called_once_with(fake_person['id'])
-    rpc.patch_list.assert_called_once_with(filt.d)
-    filt.add.assert_called_once_with('submitter_id', fake_person['id'])
+    rpc.patch_list.assert_called_once_with(mock.ANY)
+    mock_project_lookup.assert_called_once_with(rpc, FAKE_PROJECT)
     mock_person_lookup.assert_called_once_with(rpc, 'Jeremy Kerr')
     mock_list_patches.assert_called_once_with(
         rpc.patch_list.return_value, None)
@@ -136,46 +147,53 @@ def test_action_list__submitter_filter(
 
 @mock.patch.object(patches, '_list_patches')
 @mock.patch.object(people, 'person_ids_by_name')
+@mock.patch.object(
+    projects, 'project_id_by_name', return_value=FAKE_PROJECT_ID,
+)
 def test_action_list__submitter_filter_no_matches(
-        mock_person_lookup, mock_list_patches, capsys):
+    mock_project_lookup, mock_person_lookup, mock_list_patches, capsys,
+):
 
     rpc = mock.Mock()
-    filt = mock.Mock()
 
     mock_person_lookup.return_value = []
 
-    patches.action_list(rpc, filt, 'John Doe', None, None)
+    patches.action_list(rpc, FAKE_PROJECT, submitter='John Doe')
 
     captured = capsys.readouterr()
 
     assert captured.err == 'Note: Nobody found matching *John Doe*\n'
 
     rpc.person_get.assert_not_called()
+    mock_project_lookup.assert_called_once_with(rpc, FAKE_PROJECT)
     mock_person_lookup.assert_called_once_with(rpc, 'John Doe')
     mock_list_patches.assert_not_called()
 
 
 @mock.patch.object(patches, '_list_patches')
 @mock.patch.object(people, 'person_ids_by_name')
+@mock.patch.object(
+    projects, 'project_id_by_name', return_value=FAKE_PROJECT_ID,
+)
 def test_action_list__delegate_filter(
-        mock_person_lookup, mock_list_patches, capsys):
+    mock_project_lookup, mock_person_lookup, mock_list_patches, capsys,
+):
 
     fake_person = fakes.fake_people()[0]
     rpc = mock.Mock()
-    filt = mock.Mock()
 
     mock_person_lookup.return_value = [fake_person['id']]
     rpc.person_get.return_value = fake_person
 
-    patches.action_list(rpc, filt, None, 'Jeremy Kerr', None)
+    patches.action_list(rpc, FAKE_PROJECT, delegate='Jeremy Kerr')
 
     captured = capsys.readouterr()
 
     assert 'Patches delegated to Jeremy Kerr <jk@ozlabs.org>:' in captured.out
 
     rpc.person_get.assert_called_once_with(fake_person['id'])
-    rpc.patch_list.assert_called_once_with(filt.d)
-    filt.add.assert_called_once_with('delegate_id', fake_person['id'])
+    rpc.patch_list.assert_called_once_with(mock.ANY)
+    mock_project_lookup.assert_called_once_with(rpc, FAKE_PROJECT)
     mock_person_lookup.assert_called_once_with(rpc, 'Jeremy Kerr')
     mock_list_patches.assert_called_once_with(
         rpc.patch_list.return_value, None)
@@ -183,21 +201,25 @@ def test_action_list__delegate_filter(
 
 @mock.patch.object(patches, '_list_patches')
 @mock.patch.object(people, 'person_ids_by_name')
+@mock.patch.object(
+    projects, 'project_id_by_name', return_value=FAKE_PROJECT_ID,
+)
 def test_action_list__delegate_filter_no_matches(
-        mock_person_lookup, mock_list_patches, capsys):
+    mock_project_lookup, mock_person_lookup, mock_list_patches, capsys,
+):
 
     rpc = mock.Mock()
-    filt = mock.Mock()
 
     mock_person_lookup.return_value = []
 
-    patches.action_list(rpc, filt, None, 'John Doe', None)
+    patches.action_list(rpc, FAKE_PROJECT, delegate='John Doe')
 
     captured = capsys.readouterr()
 
     assert captured.err == 'Note: Nobody found matching *John Doe*\n'
 
     rpc.person_get.assert_not_called()
+    mock_project_lookup.assert_called_once_with(rpc, FAKE_PROJECT)
     mock_person_lookup.assert_called_once_with(rpc, 'John Doe')
     mock_list_patches.assert_not_called()
 
