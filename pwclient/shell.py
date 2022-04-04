@@ -46,8 +46,10 @@ def main(argv=sys.argv[1:]):
     else:
         try:
             project_str = config.get('options', 'default')
-        except (utils.configparser.NoSectionError,
-                utils.configparser.NoOptionError):
+        except (
+            utils.configparser.NoSectionError,
+            utils.configparser.NoOptionError,
+        ):
             sys.stderr.write(
                 'No default project configured in %s\n' % CONFIG_FILE)
             sys.exit(1)
@@ -63,8 +65,10 @@ def main(argv=sys.argv[1:]):
         sys.exit(1)
 
     if action in auth_actions:
-        if not (config.has_option(project_str, 'username') and
-                config.has_option(project_str, 'password')):
+        if not (
+            config.has_option(project_str, 'username') and
+            config.has_option(project_str, 'password')
+        ):
             sys.stderr.write("The %s action requires authentication, but no "
                              "username or password\nis configured\n" % action)
             sys.exit(1)
@@ -96,27 +100,16 @@ def main(argv=sys.argv[1:]):
             sys.exit(1)
 
     if action == 'list' or action == 'search':
-        # TODO(stephenfin): Both of these could be handled by the parser
-        max_count = None
-        if args.n:
-            max_count = args.n
-        if args.N:
-            max_count = 0 - args.N
-
-        archived = None
-        if args.archived:
-            archived = args.archived == 'yes'
-
         patches.action_list(
             api,
             project=project_str,
             submitter=args.submitter,
             delegate=args.delegate,
             state=args.state,
-            archived=archived,
+            archived=args.archived,
             msgid=args.msgid,
             name=args.patch_name,
-            max_count=max_count,
+            max_count=args.max_count,
             format_str=args.format)
 
     elif action.startswith('project'):
@@ -200,7 +193,7 @@ def main(argv=sys.argv[1:]):
         for patch_id in patch_ids:
             patches.action_update(
                 api, patch_id, state=args.state, archived=args.archived,
-                commit=args.commit_ref)
+                commit_ref=args.commit_ref)
 
     elif action == 'check_get':
         format_str = args.format

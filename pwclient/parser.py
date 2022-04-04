@@ -22,13 +22,33 @@ def _get_hash_parser():
     return hash_parser
 
 
+class NegateIntegerAction(argparse.Action):
+    """A custom action to negate an integer type."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, -int(values))
+
+
+class BooleanStringAction(argparse.Action):
+    """A custom action to parse arguments as yes/no values as booleans."""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        if values not in ('yes', 'no'):
+            msg = "invalid choice: %(value)r (choose from 'yes', 'no')"
+            args = {'value': values}
+            raise argparse.ArgumentError(self, msg % args)
+
+        setattr(namespace, self.dest, values == 'yes')
+
+
 def _get_filter_parser():
     filter_parser = argparse.ArgumentParser(add_help=False)
     filter_parser.add_argument(
         '-s', '--state', metavar='STATE',
         help="filter by patch state (e.g., 'New', 'Accepted', etc.)")
     filter_parser.add_argument(
-        '-a', '--archived', choices=['yes', 'no'],
+        '-a', '--archived',
+        action=BooleanStringAction,
         help="filter by patch archived state")
     filter_parser.add_argument(
         '-p', '--project', metavar='PROJECT',
@@ -40,10 +60,15 @@ def _get_filter_parser():
         '-d', '--delegate', metavar='WHO',
         help="filter by delegate (name, e-mail substring search)")
     filter_parser.add_argument(
-        '-n', metavar='MAX#', type=int,
+        '-n', metavar='MAX#',
+        type=int,
+        dest='max_count',
         help="limit results to first n")
     filter_parser.add_argument(
-        '-N', metavar='MAX#', type=int,
+        '-N', metavar='MAX#',
+        type=int,
+        dest='max_count',
+        action=NegateIntegerAction,
         help="limit results to last N")
     filter_parser.add_argument(
         '-m', '--msgid', metavar='MESSAGEID',

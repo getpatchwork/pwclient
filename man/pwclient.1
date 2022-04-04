@@ -236,7 +236,7 @@ set patch state (e.g., 'Accepted', 'Superseded' etc.)
 set patch archived state
 
 .SH COMMAND \fI\,'pwclient list'\/\fR
-usage: pwclient list [-h] [-s STATE] [-a {yes,no}] [-p PROJECT] [-w WHO]
+usage: pwclient list [-h] [-s STATE] [-a ARCHIVED] [-p PROJECT] [-w WHO]
                      [-d WHO] [-n MAX#] [-N MAX#] [-m MESSAGEID] [-f FORMAT]
                      [STR]
 
@@ -250,7 +250,7 @@ substring to search for patches by name
 filter by patch state (e.g., 'New', 'Accepted', etc.)
 
 .TP
-\fB\-a\fR \fI\,{yes,no}\/\fR, \fB\-\-archived\fR \fI\,{yes,no}\/\fR
+\fB\-a\fR \fI\,ARCHIVED\/\fR, \fB\-\-archived\fR \fI\,ARCHIVED\/\fR
 filter by patch archived state
 
 .TP
@@ -282,7 +282,7 @@ filter by Message\-Id
 print output in the given format. You can use tags matching fields, e.g. %{id}, %{state}, or %{msgid}.
 
 .SH COMMAND \fI\,'pwclient search'\/\fR
-usage: pwclient search [-h] [-s STATE] [-a {yes,no}] [-p PROJECT] [-w WHO]
+usage: pwclient search [-h] [-s STATE] [-a ARCHIVED] [-p PROJECT] [-w WHO]
                        [-d WHO] [-n MAX#] [-N MAX#] [-m MESSAGEID] [-f FORMAT]
                        [STR]
 
@@ -296,7 +296,7 @@ substring to search for patches by name
 filter by patch state (e.g., 'New', 'Accepted', etc.)
 
 .TP
-\fB\-a\fR \fI\,{yes,no}\/\fR, \fB\-\-archived\fR \fI\,{yes,no}\/\fR
+\fB\-a\fR \fI\,ARCHIVED\/\fR, \fB\-\-archived\fR \fI\,ARCHIVED\/\fR
 filter by patch archived state
 
 .TP

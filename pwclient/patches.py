@@ -205,8 +205,7 @@ def action_apply(api, patch_id, apply_cmd=None):
     return proc.returncode
 
 
-# TODO(stephenfin): Rename commit to commit_ref
-def action_update(api, patch_id, state=None, archived=None, commit=None):
+def action_update(api, patch_id, state=None, archived=None, commit_ref=None):
     # ensure the patch actually exists first
     try:
         api.patch_get(patch_id)
@@ -220,7 +219,7 @@ def action_update(api, patch_id, state=None, archived=None, commit=None):
             patch_id,
             state=state,
             archived=archived,
-            commit_ref=commit,
+            commit_ref=commit_ref,
         )
     except Exception as exc:
         print(str(exc), file=sys.stderr)

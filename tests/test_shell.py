@@ -832,7 +832,7 @@ def test_update__state_option(mock_action, mock_api, mock_config):
 
     mock_action.assert_called_once_with(
         mock_api.return_value, 1, state='Accepted', archived=None,
-        commit=None)
+        commit_ref=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -851,7 +851,7 @@ def test_update__archive_option(mock_action, mock_api, mock_config):
 
     mock_action.assert_called_once_with(
         mock_api.return_value, 1, state=None, archived='yes',
-        commit=None)
+        commit_ref=None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -870,7 +870,7 @@ def test_update__commitref_option(mock_action, mock_api, mock_config):
 
     mock_action.assert_called_once_with(
         mock_api.return_value, 1, state='Accepted', archived=None,
-        commit='698fa7f')
+        commit_ref='698fa7f')
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
