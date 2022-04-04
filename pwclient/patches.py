@@ -16,52 +16,6 @@ from . import projects
 from . import states
 
 
-class Filter:
-
-    """Filter for selecting patches."""
-
-    def __init__(self):
-        # These fields refer to specific objects, so they are special
-        # because we have to resolve them to IDs before passing the
-        # filter to the server
-        self.state = ""
-        self.project = ""
-
-        # The dictionary that gets passed to via XML-RPC
-        self.d = {}
-
-    def add(self, field, value):
-        if field == 'state':
-            self.state = value
-        elif field == 'project':
-            self.project = value
-        else:
-            # OK to add directly
-            self.d[field] = value
-
-    def resolve_ids(self, rpc):
-        """Resolve State, Project, and Person IDs based on filter strings."""
-        if self.state != "":
-            id = states.state_id_by_name(rpc, self.state)
-            if id == 0:
-                sys.stderr.write("Note: No State found matching %s*, "
-                                 "ignoring filter\n" % self.state)
-            else:
-                self.d['state_id'] = id
-
-        if self.project is not None:
-            id = projects.project_id_by_name(rpc, self.project)
-            if id == 0:
-                sys.stderr.write("Note: No Project found matching %s, "
-                                 "ignoring filter\n" % self.project)
-            else:
-                self.d['project_id'] = id
-
-    def __str__(self):
-        """Return human-readable description of the filter."""
-        return str(self.d)
-
-
 def patch_id_from_hash(rpc, project, hash):
     patch = rpc.patch_get_by_project_hash(project, hash)
 
@@ -109,30 +63,41 @@ def action_list(
     rpc, project=None, submitter=None, delegate=None, state=None,
     archived=None, msgid=None, name=None, max_count=None, format_str=None,
 ):
-    filters = Filter()
+    filters = {}
 
     if max_count:
-        filters.add('max_count', max_count)
+        filters['max_count'] = max_count
 
     if project:
-        filters.add('project', project)
+        filters['project'] = project
 
     if state:
-        filters.add('state', state)
+        filters['state'] = state
 
     if archived:
-        filters.add('archived', archived)
+        filters['archived'] = archived
 
     if msgid:
-        filters.add('msgid', msgid)
+        filters['msgid'] = msgid
 
     if name:
-        filters.add('name__icontains', name)
+        filters['name__icontains'] = name
 
-    filters.resolve_ids(rpc)
+    if state is not None:
+        id = states.state_id_by_name(rpc, state)
+        if id == 0:
+            sys.stderr.write("Note: No State found matching %s*, "
+                             "ignoring filter\n" % state)
+        else:
+            filters['state_id'] = id
 
-    # TODO(stephenfin): Why do these ID resolutions happen outside of the
-    # 'resolve_ids' helper?
+    if project is not None:
+        id = projects.project_id_by_name(rpc, project)
+        if id == 0:
+            sys.stderr.write("Note: No Project found matching %s, "
+                             "ignoring filter\n" % project)
+        else:
+            filters['project_id'] = id
 
     if submitter is not None:
         ids = people.person_ids_by_name(rpc, submitter)
@@ -144,9 +109,8 @@ def action_list(
                 person = rpc.person_get(id)
                 print('Patches submitted by %s <%s>:' %
                       (person['name'], person['email']))
-                f = filters
-                f.add("submitter_id", id)
-                patches = rpc.patch_list(f.d)
+                filters['submitter_id'] = id
+                patches = rpc.patch_list(filters)
                 _list_patches(patches, format_str)
         return
 
@@ -160,13 +124,12 @@ def action_list(
                 person = rpc.person_get(id)
                 print('Patches delegated to %s <%s>:' %
                       (person['name'], person['email']))
-                f = filters
-                f.add("delegate_id", id)
-                patches = rpc.patch_list(f.d)
+                filters['delegate_id'] = id
+                patches = rpc.patch_list(filters)
                 _list_patches(patches, format_str)
         return
 
-    patches = rpc.patch_list(filters.d)
+    patches = rpc.patch_list(filters)
     _list_patches(patches, format_str)
 
 
