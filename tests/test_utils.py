@@ -10,16 +10,18 @@ from .test_shell import FakeConfig
 @mock.patch.object(utils, 'open', new_callable=mock.mock_open, read_data='1')
 def test_migrate_config(mock_open, mock_config, capsys):
 
-    old_config = FakeConfig({
-        'base': {
-            'project': 'foo',
-            'url': 'https://example.com/',
-        },
-        'auth': {
-            'username': 'user',
-            'password': 'pass',
-        },
-    })
+    old_config = FakeConfig(
+        {
+            'base': {
+                'project': 'foo',
+                'url': 'https://example.com/',
+            },
+            'auth': {
+                'username': 'user',
+                'password': 'pass',
+            },
+        }
+    )
     new_config = FakeConfig()
     mock_config.return_value = new_config
 

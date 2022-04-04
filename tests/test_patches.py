@@ -56,13 +56,16 @@ def test_list_patches(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 ID      State        Name
 --      -----        ----
 1157169 New          [1/3] Drop support for Python 3.4, add Python 3.7
 1157170 Accepted     [2/3] docker: Simplify MySQL reset
 1157168 Rejected     [3/3] docker: Use pyenv for Python versions
 """
+    )
 
 
 def test_list_patches__format_option(capsys):
@@ -73,11 +76,14 @@ def test_list_patches__format_option(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 New
 Accepted
 Rejected
 """
+    )
 
 
 def test_list_patches__format_option_with_msgid(capsys):
@@ -88,11 +94,14 @@ def test_list_patches__format_option_with_msgid(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 20190903170304.24325-1-stephen@that.guru
 20190903170304.24325-2-stephen@that.guru
 20190903170304.24325-3-stephen@that.guru
 """
+    )
 
 
 @mock.patch.object(patches, '_list_patches')
@@ -128,7 +137,10 @@ def test_action_list__submitter_filter(mock_list_patches, capsys):
 
     captured = capsys.readouterr()
 
-    assert 'Patches submitted by Joe Bloggs <joe.bloggs@example.com>:' in captured.out  # noqa: E501
+    assert (
+        'Patches submitted by Joe Bloggs <joe.bloggs@example.com>:'
+        in captured.out
+    )  # noqa: E501
 
     api.patch_list.assert_called_once_with(
         project='defaultproject',
@@ -182,7 +194,9 @@ def test_action_info(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 Information for patch id 1157169
 --------------------------------
 - archived      : False
@@ -202,6 +216,7 @@ Information for patch id 1157169
 - submitter     : Joe Bloggs <joe.bloggs@example.com>
 - submitter_id  : 1
 """
+    )
 
 
 def test_action_info__invalid_id(capsys):
@@ -234,18 +249,30 @@ def test_action_get(mock_exists, mock_basename, mock_open, capsys):
     captured = capsys.readouterr()
 
     mock_basename.assert_called_once_with(
-        '1-3--Drop-support-for-Python-3-4--add-Python-3-7')
-    mock_exists.assert_has_calls([
-        mock.call('1-3--Drop-support-for-Python-3-4--add-Python-3-7.patch'),
-        mock.call('1-3--Drop-support-for-Python-3-4--add-Python-3-7.0.patch'),
-    ])
+        '1-3--Drop-support-for-Python-3-4--add-Python-3-7'
+    )
+    mock_exists.assert_has_calls(
+        [
+            mock.call(
+                '1-3--Drop-support-for-Python-3-4--add-Python-3-7.patch'
+            ),
+            mock.call(
+                '1-3--Drop-support-for-Python-3-4--add-Python-3-7.0.patch'
+            ),
+        ]
+    )
     mock_open.assert_called_once_with(
-        '1-3--Drop-support-for-Python-3-4--add-Python-3-7.0.patch', 'x',
-        encoding='utf-8')
+        '1-3--Drop-support-for-Python-3-4--add-Python-3-7.0.patch',
+        'x',
+        encoding='utf-8',
+    )
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 Saved patch to 1-3--Drop-support-for-Python-3-4--add-Python-3-7.0.patch
 """
+    )
 
 
 def test_action_get__invalid_id(capsys):
@@ -303,9 +330,11 @@ def test_view__with_pager(mock_popen, mock_env, capsys):
     patches.action_view(api, [1])
 
     mock_popen.assert_called_once_with(['less'], stdin=mock.ANY)
-    mock_popen.return_value.communicate.assert_has_calls([
-        mock.call(input=b'foo'),
-    ])
+    mock_popen.return_value.communicate.assert_has_calls(
+        [
+            mock.call(input=b'foo'),
+        ]
+    )
 
     captured = capsys.readouterr()
     assert captured.out == ''
@@ -321,9 +350,11 @@ def test_view__with_pager_multiple_ids(mock_popen, mock_env, capsys):
     patches.action_view(api, [1, 2, 3])
 
     mock_popen.assert_called_once_with(['less'], stdin=mock.ANY)
-    mock_popen.return_value.communicate.assert_has_calls([
-        mock.call(input=b'foo\nbar\nbaz'),
-    ])
+    mock_popen.return_value.communicate.assert_has_calls(
+        [
+            mock.call(input=b'foo\nbar\nbaz'),
+        ]
+    )
 
     captured = capsys.readouterr()
     assert captured.out == ''
@@ -345,9 +376,9 @@ def _test_action_apply(apply_cmd, mock_popen):
         apply_cmd = ['patch', '-p1']
 
     mock_popen.assert_called_once_with(
-        apply_cmd, stdin=patches.subprocess.PIPE)
-    mock_popen.return_value.communicate.assert_called_once_with(
-        b'foo')
+        apply_cmd, stdin=patches.subprocess.PIPE
+    )
+    mock_popen.return_value.communicate.assert_called_once_with(b'foo')
     assert result == mock_popen.return_value.returncode
 
 
@@ -356,10 +387,13 @@ def test_action_apply(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 Applying patch #1157169 to current directory
 Description: [1/3] Drop support for Python 3.4, add Python 3.7
 """
+    )
     assert captured.err == ''
 
 
@@ -368,10 +402,13 @@ def test_action_apply__with_apply_cmd(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 Applying patch #1157169 using "git-am -3"
 Description: [1/3] Drop support for Python 3.4, add Python 3.7
 """
+    )
     assert captured.err == ''
 
 
@@ -386,10 +423,13 @@ def test_action_apply__failed(mock_popen, capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 Applying patch #1 to current directory
 Description: [1/3] Drop support for Python 3.4, add Python 3.7
 """
+    )
     assert captured.err == 'foo\n'
 
     mock_popen.assert_not_called()
@@ -429,7 +469,10 @@ def test_action_update(capsys):
     patches.action_update(api, 1157169, 'Accepted', 'yes', '698fa7f')
 
     api.patch_set.assert_called_once_with(
-        1157169, state='Accepted', archived='yes', commit_ref='698fa7f',
+        1157169,
+        state='Accepted',
+        archived='yes',
+        commit_ref='698fa7f',
     )
 
 
@@ -441,15 +484,19 @@ def test_action_update__error(capsys):
     patches.action_update(api, 1157169)
 
     api.patch_set.assert_called_once_with(
-        1157169, archived=None, commit_ref=None, state=None)
+        1157169, archived=None, commit_ref=None, state=None
+    )
 
     captured = capsys.readouterr()
 
     assert captured.out == ''
-    assert captured.err == """\
+    assert (
+        captured.err
+        == """\
 foo
 Patch not updated
 """
+    )
 
 
 def test_action_update__no_updates(capsys):
@@ -460,7 +507,8 @@ def test_action_update__no_updates(capsys):
     patches.action_update(api, 1157169)
 
     api.patch_set.assert_called_once_with(
-        1157169, archived=None, commit_ref=None, state=None)
+        1157169, archived=None, commit_ref=None, state=None
+    )
 
     captured = capsys.readouterr()
 

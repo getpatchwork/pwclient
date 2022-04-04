@@ -9,7 +9,6 @@ import xmlrpc.client as xmlrpclib
 
 
 class Transport(xmlrpclib.SafeTransport):
-
     def __init__(self, url):
         xmlrpclib.SafeTransport.__init__(self)
         self.credentials = None
@@ -41,5 +40,9 @@ class Transport(xmlrpclib.SafeTransport):
     def send_request(self, host, handler, request_body, debug):
         handler = '%s://%s%s' % (self.scheme, host, handler)
         return xmlrpclib.Transport.send_request(
-            self, host, handler, request_body, debug,
+            self,
+            host,
+            handler,
+            request_body,
+            debug,
         )

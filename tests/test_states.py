@@ -13,8 +13,11 @@ def test_action_list(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 ID    Name
 --    ----
 1     New
 """
+    )

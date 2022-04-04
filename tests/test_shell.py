@@ -16,7 +16,6 @@ _UNSET = object()
 
 
 class FakeConfig(object):
-
     def __init__(self, updates=None):
         self._data = {
             'options': {
@@ -140,16 +139,18 @@ def test_missing_project(mock_config, capsys):
 @mock.patch.object(utils, 'migrate_old_config_file')
 def test_migrate_config(mock_migrate, mock_config):
 
-    fake_config = FakeConfig({
-        'base': {
-            'project': 'foo',
-            'url': 'https://example.com/',
-        },
-        'auth': {
-            'username': 'user',
-            'password': 'pass',
-        },
-    })
+    fake_config = FakeConfig(
+        {
+            'base': {
+                'project': 'foo',
+                'url': 'https://example.com/',
+            },
+            'auth': {
+                'username': 'user',
+                'password': 'pass',
+            },
+        }
+    )
     del fake_config._data['options']
     mock_config.return_value = fake_config
 
@@ -195,11 +196,13 @@ def test_apply(mock_action, mock_api, mock_config):
 
     shell.main(['apply', '1', '2', '3'])
 
-    mock_action.assert_has_calls([
-        mock.call(mock_api.return_value, 1),
-        mock.call(mock_api.return_value, 2),
-        mock.call(mock_api.return_value, 3),
-    ])
+    mock_action.assert_has_calls(
+        [
+            mock.call(mock_api.return_value, 1),
+            mock.call(mock_api.return_value, 2),
+            mock.call(mock_api.return_value, 3),
+        ]
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -215,11 +218,13 @@ def test_apply__failed(mock_action, mock_api, mock_config, capsys):
 
     captured = capsys.readouterr()
 
-    mock_action.assert_has_calls([
-        mock.call(mock_api.return_value, 1),
-        mock.call(mock_api.return_value, 2),
-        mock.call(mock_api.return_value, 3),
-    ])
+    mock_action.assert_has_calls(
+        [
+            mock.call(mock_api.return_value, 1),
+            mock.call(mock_api.return_value, 2),
+            mock.call(mock_api.return_value, 3),
+        ]
+    )
     assert captured.err == 'Apply failed with exit status 1\n', captured
 
 
@@ -228,33 +233,67 @@ def test_apply__failed(mock_action, mock_api, mock_config, capsys):
 @mock.patch.object(checks, 'action_create')
 def test_check_create(mock_action, mock_api, mock_config):
 
-    mock_config.return_value = FakeConfig({
-        DEFAULT_PROJECT: {
-            'username': 'user',
-            'password': 'pass',
-        },
-    })
+    mock_config.return_value = FakeConfig(
+        {
+            DEFAULT_PROJECT: {
+                'username': 'user',
+                'password': 'pass',
+            },
+        }
+    )
 
-    shell.main(['check-create', '-c', 'testing', '-s', 'pending',
-                '-u', 'https://example.com/', '-d', 'hello, world', '1'])
+    shell.main(
+        [
+            'check-create',
+            '-c',
+            'testing',
+            '-s',
+            'pending',
+            '-u',
+            'https://example.com/',
+            '-d',
+            'hello, world',
+            '1',
+        ]
+    )
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, 'testing', 'pending',
-        'https://example.com/', 'hello, world')
+        mock_api.return_value,
+        1,
+        'testing',
+        'pending',
+        'https://example.com/',
+        'hello, world',
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(checks, 'action_create')
 def test_check_create__no_auth(
-    mock_action, mock_api, mock_config, capsys,
+    mock_action,
+    mock_api,
+    mock_config,
+    capsys,
 ):
 
     mock_config.return_value = FakeConfig()
 
     with pytest.raises(SystemExit):
-        shell.main(['check-create', '-c', 'testing', '-s', 'pending',
-                    '-u', 'https://example.com/', '-d', 'hello, world', '1'])
+        shell.main(
+            [
+                'check-create',
+                '-c',
+                'testing',
+                '-s',
+                'pending',
+                '-u',
+                'https://example.com/',
+                '-d',
+                'hello, world',
+                '1',
+            ]
+        )
 
     captured = capsys.readouterr()
 
@@ -321,11 +360,13 @@ def test_get__multiple_ids(mock_action, mock_api, mock_config):
 
     shell.main(['get', '1', '2', '3'])
 
-    mock_action.assert_has_calls([
-        mock.call(mock_api.return_value, 1),
-        mock.call(mock_api.return_value, 2),
-        mock.call(mock_api.return_value, 3),
-    ])
+    mock_action.assert_has_calls(
+        [
+            mock.call(mock_api.return_value, 1),
+            mock.call(mock_api.return_value, 2),
+            mock.call(mock_api.return_value, 3),
+        ]
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -342,7 +383,8 @@ def test_get__hash_ids(mock_action, mock_hash, mock_api, mock_config):
 
     mock_action.assert_called_once_with(mock_api.return_value, 1)
     mock_hash.assert_called_once_with(
-        mock_api.return_value, 'defaultproject', '698fa7f')
+        mock_api.return_value, 'defaultproject', '698fa7f'
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -375,18 +417,21 @@ def test_git_am__no_args(mock_action, mock_api, mock_config):
     shell.main(['git-am', '1'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, ['git', 'am'])
+        mock_api.return_value, 1, ['git', 'am']
+    )
     mock_action.reset_mock()
 
     # then with multiple patch IDs
 
     shell.main(['git-am', '1', '2', '3'])
 
-    mock_action.assert_has_calls([
-        mock.call(mock_api.return_value, 1, ['git', 'am']),
-        mock.call(mock_api.return_value, 2, ['git', 'am']),
-        mock.call(mock_api.return_value, 3, ['git', 'am']),
-    ])
+    mock_action.assert_has_calls(
+        [
+            mock.call(mock_api.return_value, 1, ['git', 'am']),
+            mock.call(mock_api.return_value, 2, ['git', 'am']),
+            mock.call(mock_api.return_value, 3, ['git', 'am']),
+        ]
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -400,7 +445,8 @@ def test_git_am__threeway_option(mock_action, mock_api, mock_config):
     shell.main(['git-am', '1', '-3'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, ['git', 'am', '-3'])
+        mock_api.return_value, 1, ['git', 'am', '-3']
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -414,7 +460,8 @@ def test_git_am__signoff_option(mock_action, mock_api, mock_config):
     shell.main(['git-am', '1', '-s'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, ['git', 'am', '-s'])
+        mock_api.return_value, 1, ['git', 'am', '-s']
+    )
     mock_action.reset_mock()
 
 
@@ -423,17 +470,20 @@ def test_git_am__signoff_option(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__threeway_global_conf(mock_action, mock_api, mock_config):
 
-    mock_config.return_value = FakeConfig({
-        'options': {
-            '3way': True,
+    mock_config.return_value = FakeConfig(
+        {
+            'options': {
+                '3way': True,
+            }
         }
-    })
+    )
     mock_action.return_value = 0
 
     shell.main(['git-am', '1'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, ['git', 'am', '-3'])
+        mock_api.return_value, 1, ['git', 'am', '-3']
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -441,17 +491,20 @@ def test_git_am__threeway_global_conf(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__signoff_global_conf(mock_action, mock_api, mock_config):
 
-    mock_config.return_value = FakeConfig({
-        'options': {
-            'signoff': True,
+    mock_config.return_value = FakeConfig(
+        {
+            'options': {
+                'signoff': True,
+            }
         }
-    })
+    )
     mock_action.return_value = 0
 
     shell.main(['git-am', '1'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, ['git', 'am', '-s'])
+        mock_api.return_value, 1, ['git', 'am', '-s']
+    )
     mock_action.reset_mock()
 
 
@@ -460,17 +513,20 @@ def test_git_am__signoff_global_conf(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__threeway_project_conf(mock_action, mock_api, mock_config):
 
-    mock_config.return_value = FakeConfig({
-        DEFAULT_PROJECT: {
-            '3way': True,
+    mock_config.return_value = FakeConfig(
+        {
+            DEFAULT_PROJECT: {
+                '3way': True,
+            }
         }
-    })
+    )
     mock_action.return_value = 0
 
     shell.main(['git-am', '1'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, ['git', 'am', '-3'])
+        mock_api.return_value, 1, ['git', 'am', '-3']
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -478,17 +534,20 @@ def test_git_am__threeway_project_conf(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__signoff_project_conf(mock_action, mock_api, mock_config):
 
-    mock_config.return_value = FakeConfig({
-        DEFAULT_PROJECT: {
-            'signoff': True,
+    mock_config.return_value = FakeConfig(
+        {
+            DEFAULT_PROJECT: {
+                'signoff': True,
+            }
         }
-    })
+    )
     mock_action.return_value = 0
 
     shell.main(['git-am', '1'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, ['git', 'am', '-s'])
+        mock_api.return_value, 1, ['git', 'am', '-s']
+    )
     mock_action.reset_mock()
 
 
@@ -504,7 +563,8 @@ def test_git_am__failure(mock_action, mock_api, mock_config, capsys):
         shell.main(['git-am', '1'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, ['git', 'am'])
+        mock_api.return_value, 1, ['git', 'am']
+    )
     mock_action.reset_mock()
 
     captured = capsys.readouterr()
@@ -532,11 +592,13 @@ def test_info(mock_action, mock_api, mock_config):
 
     shell.main(['info', '1', '2', '3'])
 
-    mock_action.assert_has_calls([
-        mock.call(mock_api.return_value, 1),
-        mock.call(mock_api.return_value, 2),
-        mock.call(mock_api.return_value, 3),
-    ])
+    mock_action.assert_has_calls(
+        [
+            mock.call(mock_api.return_value, 1),
+            mock.call(mock_api.return_value, 2),
+            mock.call(mock_api.return_value, 3),
+        ]
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -558,7 +620,8 @@ def test_list__no_options(mock_action, mock_api, mock_config):
         msgid=None,
         name=None,
         max_count=None,
-        format_str=None)
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -580,7 +643,8 @@ def test_list__state_filter(mock_action, mock_api, mock_config):
         msgid=None,
         name=None,
         max_count=None,
-        format_str=None)
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -602,7 +666,8 @@ def test_list__archived_filter(mock_action, mock_api, mock_config):
         msgid=None,
         name=None,
         max_count=None,
-        format_str=None)
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -610,11 +675,13 @@ def test_list__archived_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_list')
 def test_list__project_filter(mock_action, mock_api, mock_config):
 
-    mock_config.return_value = FakeConfig({
-        'fakeproject': {
-            'url': 'https://example.com/fakeproject',
+    mock_config.return_value = FakeConfig(
+        {
+            'fakeproject': {
+                'url': 'https://example.com/fakeproject',
+            }
         }
-    })
+    )
 
     shell.main(['list', '-p', 'fakeproject'])
 
@@ -628,7 +695,8 @@ def test_list__project_filter(mock_action, mock_api, mock_config):
         msgid=None,
         name=None,
         max_count=None,
-        format_str=None)
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -650,7 +718,8 @@ def test_list__submitter_filter(mock_action, mock_api, mock_config):
         msgid=None,
         name=None,
         max_count=None,
-        format_str=None)
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -672,7 +741,8 @@ def test_list__delegate_filter(mock_action, mock_api, mock_config):
         msgid=None,
         name=None,
         max_count=None,
-        format_str=None)
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -694,7 +764,8 @@ def test_list__msgid_filter(mock_action, mock_api, mock_config):
         msgid='fakemsgid',
         name=None,
         max_count=None,
-        format_str=None)
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -716,7 +787,8 @@ def test_list__name_filter(mock_action, mock_api, mock_config):
         msgid=None,
         name='fake patch name',
         max_count=None,
-        format_str=None)
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -738,7 +810,8 @@ def test_list__limit_filter(mock_action, mock_api, mock_config):
         msgid=None,
         name=None,
         max_count=5,
-        format_str=None)
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -760,7 +833,8 @@ def test_list__limit_reverse_filter(mock_action, mock_api, mock_config):
         msgid=None,
         name=None,
         max_count=-5,
-        format_str=None)
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -791,15 +865,20 @@ def test_states(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__no_options(
-    mock_action, mock_api, mock_config, capsys,
+    mock_action,
+    mock_api,
+    mock_config,
+    capsys,
 ):
 
-    mock_config.return_value = FakeConfig({
-        DEFAULT_PROJECT: {
-            'username': 'user',
-            'password': 'pass',
-        },
-    })
+    mock_config.return_value = FakeConfig(
+        {
+            DEFAULT_PROJECT: {
+                'username': 'user',
+                'password': 'pass',
+            },
+        }
+    )
 
     with pytest.raises(SystemExit):
         shell.main(['update', '1'])
@@ -814,7 +893,10 @@ def test_update__no_options(
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__no_auth(
-    mock_action, mock_api, mock_config, capsys,
+    mock_action,
+    mock_api,
+    mock_config,
+    capsys,
 ):
 
     mock_config.return_value = FakeConfig()
@@ -833,18 +915,24 @@ def test_update__no_auth(
 @mock.patch.object(patches, 'action_update')
 def test_update__state_option(mock_action, mock_api, mock_config):
 
-    mock_config.return_value = FakeConfig({
-        DEFAULT_PROJECT: {
-            'username': 'user',
-            'password': 'pass',
-        },
-    })
+    mock_config.return_value = FakeConfig(
+        {
+            DEFAULT_PROJECT: {
+                'username': 'user',
+                'password': 'pass',
+            },
+        }
+    )
 
     shell.main(['update', '1', '-s', 'Accepted'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, state='Accepted', archived=None,
-        commit_ref=None)
+        mock_api.return_value,
+        1,
+        state='Accepted',
+        archived=None,
+        commit_ref=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -852,18 +940,20 @@ def test_update__state_option(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_update')
 def test_update__archive_option(mock_action, mock_api, mock_config):
 
-    mock_config.return_value = FakeConfig({
-        DEFAULT_PROJECT: {
-            'username': 'user',
-            'password': 'pass',
-        },
-    })
+    mock_config.return_value = FakeConfig(
+        {
+            DEFAULT_PROJECT: {
+                'username': 'user',
+                'password': 'pass',
+            },
+        }
+    )
 
     shell.main(['update', '1', '-a', 'yes'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, state=None, archived='yes',
-        commit_ref=None)
+        mock_api.return_value, 1, state=None, archived='yes', commit_ref=None
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -871,33 +961,44 @@ def test_update__archive_option(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_update')
 def test_update__commitref_option(mock_action, mock_api, mock_config):
 
-    mock_config.return_value = FakeConfig({
-        DEFAULT_PROJECT: {
-            'username': 'user',
-            'password': 'pass',
-        },
-    })
+    mock_config.return_value = FakeConfig(
+        {
+            DEFAULT_PROJECT: {
+                'username': 'user',
+                'password': 'pass',
+            },
+        }
+    )
 
     shell.main(['update', '1', '-s', 'Accepted', '-c', '698fa7f'])
 
     mock_action.assert_called_once_with(
-        mock_api.return_value, 1, state='Accepted', archived=None,
-        commit_ref='698fa7f')
+        mock_api.return_value,
+        1,
+        state='Accepted',
+        archived=None,
+        commit_ref='698fa7f',
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__commitref_with_multiple_patches(
-    mock_action, mock_api, mock_config, capsys,
+    mock_action,
+    mock_api,
+    mock_config,
+    capsys,
 ):
 
-    mock_config.return_value = FakeConfig({
-        DEFAULT_PROJECT: {
-            'username': 'user',
-            'password': 'pass',
-        },
-    })
+    mock_config.return_value = FakeConfig(
+        {
+            DEFAULT_PROJECT: {
+                'username': 'user',
+                'password': 'pass',
+            },
+        }
+    )
 
     with pytest.raises(SystemExit):
         shell.main(['update', '-s', 'Accepted', '-c', '698fa7f', '1', '2'])

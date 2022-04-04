@@ -14,7 +14,9 @@ def test_action_check_get(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 Check information for patch id 1
 --------------------------------
 - context       : hello-world
@@ -24,6 +26,7 @@ Check information for patch id 1
 - target_url    :
 - user_id       : 1
 """
+    )
 
 
 def test_action_check_list(capsys):
@@ -34,11 +37,14 @@ def test_action_check_list(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 ID    Context          State    Patch
 --    -------          -----    -----
 1     hello-world      success  1
 """
+    )
 
 
 def test_action_check_info(capsys):
@@ -51,7 +57,9 @@ def test_action_check_info(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.out == """\
+    assert (
+        captured.out
+        == """\
 Information for check id 1
 --------------------------
 - context       : hello-world
@@ -59,13 +67,19 @@ Information for check id 1
 - patch         : 1
 - state         : success
 """
+    )
 
 
 def test_action_check_create():
     rpc = mock.Mock()
 
-    args = (1, 'hello-world', 'success', 'https://example.com',
-            'This is a sample check')
+    args = (
+        1,
+        'hello-world',
+        'success',
+        'https://example.com',
+        'This is a sample check',
+    )
 
     checks.action_create(rpc, *args)
 
@@ -76,8 +90,13 @@ def test_action_check_create__error(capsys):
     rpc = mock.Mock()
     rpc.check_create.side_effect = exceptions.APIError('whoops')
 
-    args = (1, 'hello-world', 'success', 'https://example.com',
-            'This is a sample check')
+    args = (
+        1,
+        'hello-world',
+        'success',
+        'https://example.com',
+        'This is a sample check',
+    )
 
     checks.action_create(rpc, *args)
 

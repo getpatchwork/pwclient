@@ -84,8 +84,8 @@ def main(argv=sys.argv[1:]):
     if action in auth_actions:
         if backend == 'rest':
             if not (
-                config.has_option(project_str, 'username') and
-                config.has_option(project_str, 'password')
+                config.has_option(project_str, 'username')
+                and config.has_option(project_str, 'password')
             ) or config.has_option(project_str, 'token'):
                 sys.stderr.write(
                     "The %s action requires authentication, but no "
@@ -95,8 +95,8 @@ def main(argv=sys.argv[1:]):
                 sys.exit(1)
         else:
             if not (
-                config.has_option(project_str, 'username') and
-                config.has_option(project_str, 'password')
+                config.has_option(project_str, 'username')
+                and config.has_option(project_str, 'password')
             ):
                 sys.stderr.write(
                     "The %s action requires authentication, but no "
@@ -220,12 +220,14 @@ def main(argv=sys.argv[1:]):
         if args.commit_ref and len(patch_ids) > 1:
             # update multiple IDs with a single commit-hash does not make sense
             sys.stderr.write(
-                'Declining update with COMMIT-REF on multiple IDs')
+                'Declining update with COMMIT-REF on multiple IDs'
+            )
             sys.exit(1)
 
         if not any([args.state, args.archived]):
             sys.stderr.write(
-                'Must specify one or more update options (-a or -s)\n')
+                'Must specify one or more update options (-a or -s)\n'
+            )
             sys.exit(1)
 
         for patch_id in patch_ids:
@@ -267,7 +269,10 @@ if __name__ == "__main__":
         main()
     except (UnicodeEncodeError, UnicodeDecodeError):
         import traceback
+
         traceback.print_exc()
-        sys.stderr.write('Try exporting the LANG or LC_ALL env vars. See '
-                         'pwclient --help for more details.\n')
+        sys.stderr.write(
+            'Try exporting the LANG or LC_ALL env vars. See '
+            'pwclient --help for more details.\n'
+        )
         sys.exit(1)

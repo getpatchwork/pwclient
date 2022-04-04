@@ -15,10 +15,10 @@ def action_list(api, patch_id=None, user=None):
     print("%-5s %-16s %-8s %s" % ("ID", "Context", "State", "Patch"))
     print("%-5s %-16s %-8s %s" % ("--", "-------", "-----", "-----"))
     for check in checks:
-        print("%-5s %-16s %-8s %s" % (check['id'],
-                                      check['context'],
-                                      check['state'],
-                                      check['patch']))
+        print(
+            "%-5s %-16s %-8s %s"
+            % (check['id'], check['context'], check['state'], check['patch'])
+        )
 
 
 def action_info(api, patch_id, check_id):

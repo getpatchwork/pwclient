@@ -56,7 +56,7 @@ def fake_patches():
             'delegate_id': 1,
             'commit_ref': '',
             'hash': '',
-        }
+        },
     ]
 
 
@@ -105,16 +105,18 @@ def fake_checks():
 
 def fake_patch_check():
     return {
-        'checks': [{
-            'context': 'hello-world',
-            'id': 1,
-            'patch_id': 1,
-            'state': 'success',
-            'target_url': '',
-            'user_id': 1
-        }],
+        'checks': [
+            {
+                'context': 'hello-world',
+                'id': 1,
+                'patch_id': 1,
+                'state': 'success',
+                'target_url': '',
+                'user_id': 1,
+            }
+        ],
         'state': 'success',
-        'total': 1
+        'total': 1,
     }
 
 

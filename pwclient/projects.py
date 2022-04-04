@@ -10,6 +10,7 @@ def action_list(api):
     print("%-5s %-24s %s" % ("ID", "Name", "Description"))
     print("%-5s %-24s %s" % ("--", "----", "-----------"))
     for project in projects:
-        print("%-5d %-24s %s" % (project['id'],
-                                 project['linkname'],
-                                 project['name']))
+        print(
+            "%-5d %-24s %s"
+            % (project['id'], project['linkname'], project['name'])
+        )

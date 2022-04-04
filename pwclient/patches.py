@@ -51,13 +51,22 @@ def _list_patches(patches, format_str=None):
         print("%-7s %-12s %s" % ("ID", "State", "Name"))
         print("%-7s %-12s %s" % ("--", "-----", "----"))
         for patch in patches:
-            print("%-7d %-12s %s" %
-                  (patch['id'], patch['state'], patch['name']))
+            print(
+                "%-7d %-12s %s" % (patch['id'], patch['state'], patch['name'])
+            )
 
 
 def action_list(
-    api, project=None, submitter=None, delegate=None, state=None,
-    archived=None, msgid=None, name=None, max_count=None, format_str=None,
+    api,
+    project=None,
+    submitter=None,
+    delegate=None,
+    state=None,
+    archived=None,
+    msgid=None,
+    name=None,
+    max_count=None,
+    format_str=None,
 ):
     # We exclude submitter and delegate since these are handled specially
     filters = {
@@ -189,8 +198,9 @@ def action_apply(api, patch_id, apply_cmd=None):
         print('Applying patch #%d to current directory' % patch_id)
         apply_cmd = ['patch', '-p1']
     else:
-        print('Applying patch #%d using "%s"' %
-              (patch_id, ' '.join(apply_cmd)))
+        print(
+            'Applying patch #%d using "%s"' % (patch_id, ' '.join(apply_cmd))
+        )
 
     print('Description: %s' % patch['name'])
 
