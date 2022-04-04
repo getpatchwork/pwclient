@@ -122,13 +122,13 @@ installed locales.
     check_get_parser.set_defaults(subcmd='check_get')
 
     check_list_parser = subparsers.add_parser(
-        'check-list', add_help=False,
+        'check-list',
         help="list all checks"
     )
     check_list_parser.set_defaults(subcmd='check_list')
 
     check_info_parser = subparsers.add_parser(
-        'check-info', add_help=False,
+        'check-info',
         help="show information for a given check")
     check_info_parser.add_argument(
         'check_id', metavar='ID', action='store', type=int,

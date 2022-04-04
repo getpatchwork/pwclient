@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The ``check-list`` and ``check-create`` commands now accept a ``-h`` (help)
+    paramter.
