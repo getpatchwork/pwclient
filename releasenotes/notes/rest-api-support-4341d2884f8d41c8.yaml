@@ -1,0 +1,22 @@
+---
+features:
+  - |
+    ``pwclient`` now provides experimental support for the REST API first
+    introduced in Patchwork 2.0. This can be enabled by adding the
+    ``backend = rest`` setting to your ``pwclientrc`` file. For example:
+
+    .. code-block:: ini
+
+       [options]
+       default = patchwork
+
+       [patchwork]
+       backend = rest
+       url = https://patchwork.ozlabs.org/api/
+       token = 088cade25e52482e6486794ef4a4561d3e5fe727
+
+    There are likely bugs and features gaps in this implementation. Report
+    any bugs to either `the mailing list`__ or `GitHub issue tracker`__.
+
+    .. __: mailto:patchwork@ozlabs.org
+    .. __: https://github.com/getpatchwork/pwclient/issues

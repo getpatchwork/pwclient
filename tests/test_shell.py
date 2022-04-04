@@ -11,8 +11,8 @@ from pwclient import shell
 from pwclient import states
 from pwclient import utils
 
-
 DEFAULT_PROJECT = 'defaultproject'
+_UNSET = object()
 
 
 class FakeConfig(object):
@@ -56,14 +56,14 @@ class FakeConfig(object):
 
         self._data[section][option] = value
 
-    def get(self, section, option):
+    def get(self, section, option, *, fallback=_UNSET):
         if section not in self._data:
             raise utils.configparser.NoSectionError(section)
 
-        if option not in self._data[section]:
-            raise utils.configparser.NoOptionError(section, option)
+        if option not in self._data[section] and fallback is _UNSET:
+            raise utils.configparser.NoOptionError(option, section)
 
-        return self._data[section][option]
+        return self._data[section].get(option) or fallback
 
     def getboolean(self, section, option):
         return self.get(section, option)

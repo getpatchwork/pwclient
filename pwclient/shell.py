@@ -19,6 +19,10 @@ from . import utils
 
 CONFIG_FILE = os.path.expanduser('~/.pwclientrc')
 
+BACKEND_XMLRPC = 'xmlrpc'
+BACKEND_REST = 'rest'
+BACKENDS = (BACKEND_XMLRPC, BACKEND_REST)
+
 auth_actions = ['check_create', 'update']
 
 
@@ -51,38 +55,68 @@ def main(argv=sys.argv[1:]):
             utils.configparser.NoOptionError,
         ):
             sys.stderr.write(
-                'No default project configured in %s\n' % CONFIG_FILE)
+                'No default project configured in %s\n' % CONFIG_FILE
+            )
             sys.exit(1)
 
     if not config.has_section(project_str):
         sys.stderr.write(
-            'No section for project %s in %s\n' % (project_str, CONFIG_FILE))
+            'No section for project %s in %s\n' % (project_str, CONFIG_FILE)
+        )
         sys.exit(1)
 
     if not config.has_option(project_str, 'url'):
         sys.stderr.write(
-            'No URL for project %s in %s\n' % (project_str, CONFIG_FILE))
+            'No URL for project %s in %s\n' % (project_str, CONFIG_FILE)
+        )
         sys.exit(1)
 
+    backend = config.get(project_str, 'backend', fallback=None)
+    if backend is not None and backend not in BACKENDS:
+        sys.stderr.write(
+            "The 'backend' option is invalid. Expected one of: rest, xmlrpc; "
+            "got: {backend}"
+        )
+        sys.exit(1)
+
+    backend = backend or BACKEND_XMLRPC
+
     if action in auth_actions:
-        if not (
-            config.has_option(project_str, 'username') and
-            config.has_option(project_str, 'password')
-        ):
-            sys.stderr.write("The %s action requires authentication, but no "
-                             "username or password\nis configured\n" % action)
-            sys.exit(1)
+        if backend == 'rest':
+            if not (
+                config.has_option(project_str, 'username') and
+                config.has_option(project_str, 'password')
+            ) or config.has_option(project_str, 'token'):
+                sys.stderr.write(
+                    "The %s action requires authentication, but no "
+                    "username/password or\n"
+                    "token is configured\n" % action
+                )
+                sys.exit(1)
+        else:
+            if not (
+                config.has_option(project_str, 'username') and
+                config.has_option(project_str, 'password')
+            ):
+                sys.stderr.write(
+                    "The %s action requires authentication, but no "
+                    "username or password\n"
+                    "is configured\n" % action
+                )
+                sys.exit(1)
 
     url = config.get(project_str, 'url')
 
     kwargs = {}
     if action in auth_actions:
-        kwargs['username'] = config.get(project_str, 'username')
-        kwargs['password'] = config.get(project_str, 'password')
+        if config.has_option(project_str, 'token'):
+            kwargs['token'] = config.get(project_str, 'token')
+        else:
+            kwargs['username'] = config.get(project_str, 'username')
+            kwargs['password'] = config.get(project_str, 'password')
 
     try:
-        # TODO(stephenfin): Make this switchable without envvars
-        if os.getenv('PWCLIENT_USE_REST', '0').lower() in ('1', 'yes', 'true'):
+        if backend == 'rest':
             api = pw_api.REST(url, **kwargs)
         else:
             api = pw_api.XMLRPC(url, **kwargs)
@@ -113,7 +147,8 @@ def main(argv=sys.argv[1:]):
             msgid=args.msgid,
             name=args.patch_name,
             max_count=args.max_count,
-            format_str=args.format)
+            format_str=args.format,
+        )
 
     elif action.startswith('project'):
         projects.action_list(api)
@@ -195,8 +230,12 @@ def main(argv=sys.argv[1:]):
 
         for patch_id in patch_ids:
             patches.action_update(
-                api, patch_id, state=args.state, archived=args.archived,
-                commit_ref=args.commit_ref)
+                api,
+                patch_id,
+                state=args.state,
+                archived=args.archived,
+                commit_ref=args.commit_ref,
+            )
 
     elif action == 'check_get':
         format_str = args.format
@@ -214,8 +253,13 @@ def main(argv=sys.argv[1:]):
     elif action == 'check_create':
         for patch_id in patch_ids:
             checks.action_create(
-                api, patch_id, args.context, args.state, args.target_url,
-                args.description)
+                api,
+                patch_id,
+                args.context,
+                args.state,
+                args.target_url,
+                args.description,
+            )
 
 
 if __name__ == "__main__":

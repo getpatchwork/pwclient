@@ -42,18 +42,30 @@ can be defined, but no two projects can share the same name. Project sections
 require the following configuration options:
 
 ``url``
-  The URL of the XMLRPC endpoint for the Patchwork instance that the project is
-  available on. Typically ``$PATCHWORK_URL/xmlrpc``. For example:
+  The URL of the API endpoint for the Patchwork instance that the project is
+  available on. This depends on the API *backend* in use. For the ``rest``
+  backend, this will typically be ``$PATCHWORK/api``. For example:
+
+    https://patchwork.ozlabs.org/api
+
+  For the ``xmlrpc`` backend, this is will typically be
+  ``$PATCHWORK_URL/xmlrpc``. For example:
 
     https://patchwork.ozlabs.org/xmlrpc
 
 In addition, the following options are optional:
+
+``backend``
+  The API backend to use. One of: ``rest``, ``xmlrpc``
 
 ``username``
   Your Patchwork username.
 
 ``password``
   Your Patchwork password.
+
+``token``
+  Your Patchwork API token. (only supported with ``rest`` backend)
 
 .. note::
 
@@ -73,9 +85,9 @@ Example
     default = patchwork
 
     [patchwork]
-    url = http://patchwork.ozlabs.org/xmlrpc/
-    username = johndoe
-    password = password
+    backend = rest
+    url = http://patchwork.ozlabs.org/api/
+    token = 088cade25e52482e6486794ef4a4561d3e5fe727
 
 Legacy Format
 -------------
