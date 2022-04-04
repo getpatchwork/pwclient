@@ -5,17 +5,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 
-def state_id_by_name(api, name):
-    """Given a partial state name, look up the state ID."""
-    if len(name) == 0:
-        return 0
-    states = api.state_list(name, 0)
-    for state in states:
-        if state['name'].lower().startswith(name.lower()):
-            return state['id']
-    return 0
-
-
 def action_list(api):
     states = api.state_list("", 0)
     print("%-5s %s" % ("ID", "Name"))

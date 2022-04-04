@@ -3,9 +3,6 @@ from unittest import mock
 import pytest
 
 from pwclient import patches
-from pwclient import people
-from pwclient import projects
-from pwclient import states
 from pwclient import xmlrpc
 
 from . import fakes
@@ -15,11 +12,11 @@ FAKE_PROJECT_ID = 42
 
 
 def test_patch_id_from_hash__no_matches(capsys):
-    rpc = mock.Mock()
-    rpc.patch_get_by_project_hash.return_value = {}
+    api = mock.Mock()
+    api.patch_get_by_project_hash.return_value = {}
 
     with pytest.raises(SystemExit):
-        patches.patch_id_from_hash(rpc, 'foo', '698fa7f')
+        patches.patch_id_from_hash(api, 'foo', '698fa7f')
 
     captured = capsys.readouterr()
 
@@ -28,11 +25,11 @@ def test_patch_id_from_hash__no_matches(capsys):
 
 
 def test_patch_id_from_hash__invalid_id(capsys):
-    rpc = mock.Mock()
-    rpc.patch_get_by_project_hash.return_value = {'id': 'xyz'}
+    api = mock.Mock()
+    api.patch_get_by_project_hash.return_value = {'id': 'xyz'}
 
     with pytest.raises(SystemExit):
-        patches.patch_id_from_hash(rpc, 'foo', '698fa7f')
+        patches.patch_id_from_hash(api, 'foo', '698fa7f')
 
     captured = capsys.readouterr()
 
@@ -41,14 +38,14 @@ def test_patch_id_from_hash__invalid_id(capsys):
 
 
 def test_patch_id_from_hash():
-    rpc = mock.Mock()
-    rpc.patch_get_by_project_hash.return_value = {'id': '1'}
+    api = mock.Mock()
+    api.patch_get_by_project_hash.return_value = {'id': '1'}
 
-    result = patches.patch_id_from_hash(rpc, 'foo', '698fa7f')
+    result = patches.patch_id_from_hash(api, 'foo', '698fa7f')
 
     assert result == 1
-    rpc.patch_get_by_project_hash.assert_called_once_with('foo', '698fa7f')
-    rpc.patch_get_by_hash.assert_not_called()
+    api.patch_get_by_project_hash.assert_called_once_with('foo', '698fa7f')
+    api.patch_get_by_hash.assert_not_called()
 
 
 def test_list_patches(capsys):
@@ -99,156 +96,120 @@ def test_list_patches__format_option_with_msgid(capsys):
 
 
 @mock.patch.object(patches, '_list_patches')
-@mock.patch.object(
-    projects, 'project_id_by_name', return_value=FAKE_PROJECT_ID,
-)
-def test_action_list__no_submitter_no_delegate(
-    mock_project_lookup, mock_list_patches, capsys,
-):
+def test_action_list__no_submitter_no_delegate(mock_list_patches, capsys):
 
-    rpc = mock.Mock()
+    api = mock.Mock()
 
-    patches.action_list(rpc, FAKE_PROJECT)
+    patches.action_list(api, FAKE_PROJECT)
 
-    rpc.patch_list.assert_called_once_with(mock.ANY)
-    mock_project_lookup.assert_called_once_with(rpc, FAKE_PROJECT)
+    api.patch_list.assert_called_once_with(
+        project='defaultproject',
+        submitter=None,
+        delegate=None,
+        state=None,
+        archived=None,
+        msgid=None,
+        name=None,
+        max_count=None,
+    )
     mock_list_patches.assert_called_once_with(
-        rpc.patch_list.return_value, None)
+        api.patch_list.return_value,
+        None,
+    )
 
 
 @mock.patch.object(patches, '_list_patches')
-@mock.patch.object(people, 'person_ids_by_name')
-@mock.patch.object(
-    projects, 'project_id_by_name', return_value=FAKE_PROJECT_ID,
-)
-def test_action_list__submitter_filter(
-    mock_project_lookup, mock_person_lookup, mock_list_patches, capsys,
-):
+def test_action_list__submitter_filter(mock_list_patches, capsys):
 
-    fake_person = fakes.fake_people()[0]
-    rpc = mock.Mock()
+    api = mock.Mock()
+    api.patch_list.return_value = fakes.fake_patches()
 
-    mock_person_lookup.return_value = [fake_person['id']]
-    rpc.person_get.return_value = fake_person
-
-    patches.action_list(rpc, FAKE_PROJECT, submitter='Jeremy Kerr')
+    patches.action_list(api, FAKE_PROJECT, submitter='Joe Bloggs')
 
     captured = capsys.readouterr()
 
-    assert 'Patches submitted by Jeremy Kerr <jk@ozlabs.org>:' in captured.out
+    assert 'Patches submitted by Joe Bloggs <joe.bloggs@example.com>:' in captured.out  # noqa: E501
 
-    rpc.person_get.assert_called_once_with(fake_person['id'])
-    rpc.patch_list.assert_called_once_with(mock.ANY)
-    mock_project_lookup.assert_called_once_with(rpc, FAKE_PROJECT)
-    mock_person_lookup.assert_called_once_with(rpc, 'Jeremy Kerr')
+    api.patch_list.assert_called_once_with(
+        project='defaultproject',
+        submitter='Joe Bloggs',
+        delegate=None,
+        state=None,
+        archived=None,
+        msgid=None,
+        name=None,
+        max_count=None,
+    )
     mock_list_patches.assert_called_once_with(
-        rpc.patch_list.return_value, None)
+        api.patch_list.return_value,
+        None,
+    )
 
 
 @mock.patch.object(patches, '_list_patches')
-@mock.patch.object(people, 'person_ids_by_name')
-@mock.patch.object(
-    projects, 'project_id_by_name', return_value=FAKE_PROJECT_ID,
-)
-def test_action_list__submitter_filter_no_matches(
-    mock_project_lookup, mock_person_lookup, mock_list_patches, capsys,
-):
+def test_action_list__delegate_filter(mock_list_patches, capsys):
 
-    rpc = mock.Mock()
+    api = mock.Mock()
+    api.patch_list.return_value = fakes.fake_patches()
 
-    mock_person_lookup.return_value = []
-
-    patches.action_list(rpc, FAKE_PROJECT, submitter='John Doe')
+    patches.action_list(api, FAKE_PROJECT, delegate='admin')
 
     captured = capsys.readouterr()
 
-    assert captured.err == 'Note: Nobody found matching *John Doe*\n'
+    assert 'Patches delegated to admin:' in captured.out
 
-    rpc.person_get.assert_not_called()
-    mock_project_lookup.assert_called_once_with(rpc, FAKE_PROJECT)
-    mock_person_lookup.assert_called_once_with(rpc, 'John Doe')
-    mock_list_patches.assert_not_called()
-
-
-@mock.patch.object(patches, '_list_patches')
-@mock.patch.object(people, 'person_ids_by_name')
-@mock.patch.object(
-    projects, 'project_id_by_name', return_value=FAKE_PROJECT_ID,
-)
-def test_action_list__delegate_filter(
-    mock_project_lookup, mock_person_lookup, mock_list_patches, capsys,
-):
-
-    fake_person = fakes.fake_people()[0]
-    rpc = mock.Mock()
-
-    mock_person_lookup.return_value = [fake_person['id']]
-    rpc.person_get.return_value = fake_person
-
-    patches.action_list(rpc, FAKE_PROJECT, delegate='Jeremy Kerr')
-
-    captured = capsys.readouterr()
-
-    assert 'Patches delegated to Jeremy Kerr <jk@ozlabs.org>:' in captured.out
-
-    rpc.person_get.assert_called_once_with(fake_person['id'])
-    rpc.patch_list.assert_called_once_with(mock.ANY)
-    mock_project_lookup.assert_called_once_with(rpc, FAKE_PROJECT)
-    mock_person_lookup.assert_called_once_with(rpc, 'Jeremy Kerr')
+    api.patch_list.assert_called_once_with(
+        project='defaultproject',
+        submitter=None,
+        delegate='admin',
+        state=None,
+        archived=None,
+        msgid=None,
+        name=None,
+        max_count=None,
+    )
     mock_list_patches.assert_called_once_with(
-        rpc.patch_list.return_value, None)
-
-
-@mock.patch.object(patches, '_list_patches')
-@mock.patch.object(people, 'person_ids_by_name')
-@mock.patch.object(
-    projects, 'project_id_by_name', return_value=FAKE_PROJECT_ID,
-)
-def test_action_list__delegate_filter_no_matches(
-    mock_project_lookup, mock_person_lookup, mock_list_patches, capsys,
-):
-
-    rpc = mock.Mock()
-
-    mock_person_lookup.return_value = []
-
-    patches.action_list(rpc, FAKE_PROJECT, delegate='John Doe')
-
-    captured = capsys.readouterr()
-
-    assert captured.err == 'Note: Nobody found matching *John Doe*\n'
-
-    rpc.person_get.assert_not_called()
-    mock_project_lookup.assert_called_once_with(rpc, FAKE_PROJECT)
-    mock_person_lookup.assert_called_once_with(rpc, 'John Doe')
-    mock_list_patches.assert_not_called()
+        api.patch_list.return_value,
+        None,
+    )
 
 
 def test_action_info(capsys):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = fakes.fake_patches()[0]
+    api = mock.Mock()
+    api.patch_get.return_value = fakes.fake_patches()[0]
 
-    patches.action_info(rpc, 1157169)
+    patches.action_info(api, 1157169)
 
     captured = capsys.readouterr()
 
     assert captured.out == """\
 Information for patch id 1157169
 --------------------------------
+- archived      : False
+- commit_ref    :
+- date          : 2000-12-31 00:11:22
+- delegate      : admin
+- delegate_id   : 1
 - filename      : 1-3--Drop-support-for-Python-3-4--add-Python-3-7
+- hash          :
 - id            : 1157169
 - msgid         : <20190903170304.24325-1-stephen@that.guru>
 - name          : [1/3] Drop support for Python 3.4, add Python 3.7
+- project       : my-project
+- project_id    : 1
 - state         : New
+- state_id      : 1
+- submitter     : Joe Bloggs <joe.bloggs@example.com>
+- submitter_id  : 1
 """
 
 
 def test_action_info__invalid_id(capsys):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = {}
+    api = mock.Mock()
+    api.patch_get.return_value = {}
 
     with pytest.raises(SystemExit):
-        patches.action_info(rpc, 1)
+        patches.action_info(api, 1)
 
     captured = capsys.readouterr()
 
@@ -261,13 +222,13 @@ def test_action_info__invalid_id(capsys):
 @mock.patch.object(patches.os.path, 'exists')
 def test_action_get(mock_exists, mock_basename, mock_open, capsys):
     fake_patch = fakes.fake_patches()[0]
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = fake_patch
-    rpc.patch_get_mbox.return_value = 'foo'
+    api = mock.Mock()
+    api.patch_get.return_value = fake_patch
+    api.patch_get_mbox.return_value = 'foo'
     mock_exists.side_effect = [True, False]
     mock_basename.return_value = fake_patch['filename']
 
-    patches.action_get(rpc, 1157169)
+    patches.action_get(api, 1157169)
 
     captured = capsys.readouterr()
 
@@ -287,12 +248,12 @@ Saved patch to 1-3--Drop-support-for-Python-3-4--add-Python-3-7.0.patch
 
 
 def test_action_get__invalid_id(capsys):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = {}
-    rpc.patch_get_mbox.return_value = ''
+    api = mock.Mock()
+    api.patch_get.return_value = {}
+    api.patch_get_mbox.return_value = ''
 
     with pytest.raises(SystemExit):
-        patches.action_get(rpc, 1)
+        patches.action_get(api, 1)
 
     captured = capsys.readouterr()
 
@@ -303,14 +264,14 @@ def test_action_get__invalid_id(capsys):
 @mock.patch.object(patches.os.environ, 'get')
 @mock.patch.object(patches.subprocess, 'Popen')
 def test_action_view__no_pager(mock_popen, mock_env, capsys):
-    rpc = mock.Mock()
-    rpc.patch_get_mbox.return_value = 'foo'
+    api = mock.Mock()
+    api.patch_get_mbox.return_value = 'foo'
     mock_env.return_value = None
 
-    patches.action_view(rpc, [1])
+    patches.action_view(api, [1])
 
     mock_popen.assert_not_called()
-    rpc.patch_get_mbox.assert_called_once_with(1)
+    api.patch_get_mbox.assert_called_once_with(1)
 
     captured = capsys.readouterr()
 
@@ -320,11 +281,11 @@ def test_action_view__no_pager(mock_popen, mock_env, capsys):
 @mock.patch.object(patches.os.environ, 'get')
 @mock.patch.object(patches.subprocess, 'Popen')
 def test_action_view__no_pager_multiple_patches(mock_popen, mock_env, capsys):
-    rpc = mock.Mock()
-    rpc.patch_get_mbox.side_effect = ['foo', 'bar', 'baz']
+    api = mock.Mock()
+    api.patch_get_mbox.side_effect = ['foo', 'bar', 'baz']
     mock_env.return_value = None
 
-    patches.action_view(rpc, [1, 2, 3])
+    patches.action_view(api, [1, 2, 3])
 
     captured = capsys.readouterr()
 
@@ -335,11 +296,11 @@ def test_action_view__no_pager_multiple_patches(mock_popen, mock_env, capsys):
 @mock.patch.object(patches.os.environ, 'get')
 @mock.patch.object(patches.subprocess, 'Popen')
 def test_view__with_pager(mock_popen, mock_env, capsys):
-    rpc = mock.Mock()
-    rpc.patch_get_mbox.return_value = 'foo'
+    api = mock.Mock()
+    api.patch_get_mbox.return_value = 'foo'
     mock_env.return_value = 'less'
 
-    patches.action_view(rpc, [1])
+    patches.action_view(api, [1])
 
     mock_popen.assert_called_once_with(['less'], stdin=mock.ANY)
     mock_popen.return_value.communicate.assert_has_calls([
@@ -353,11 +314,11 @@ def test_view__with_pager(mock_popen, mock_env, capsys):
 @mock.patch.object(patches.os.environ, 'get')
 @mock.patch.object(patches.subprocess, 'Popen')
 def test_view__with_pager_multiple_ids(mock_popen, mock_env, capsys):
-    rpc = mock.Mock()
-    rpc.patch_get_mbox.side_effect = ['foo', 'bar', 'baz']
+    api = mock.Mock()
+    api.patch_get_mbox.side_effect = ['foo', 'bar', 'baz']
     mock_env.return_value = 'less'
 
-    patches.action_view(rpc, [1, 2, 3])
+    patches.action_view(api, [1, 2, 3])
 
     mock_popen.assert_called_once_with(['less'], stdin=mock.ANY)
     mock_popen.return_value.communicate.assert_has_calls([
@@ -370,11 +331,11 @@ def test_view__with_pager_multiple_ids(mock_popen, mock_env, capsys):
 
 @mock.patch.object(patches.subprocess, 'Popen')
 def _test_action_apply(apply_cmd, mock_popen):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = fakes.fake_patches()[0]
-    rpc.patch_get_mbox.return_value = 'foo'
+    api = mock.Mock()
+    api.patch_get.return_value = fakes.fake_patches()[0]
+    api.patch_get_mbox.return_value = 'foo'
 
-    args = [rpc, 1157169]
+    args = [api, 1157169]
     if apply_cmd:
         args.append(apply_cmd)
 
@@ -416,12 +377,12 @@ Description: [1/3] Drop support for Python 3.4, add Python 3.7
 
 @mock.patch.object(patches.subprocess, 'Popen')
 def test_action_apply__failed(mock_popen, capsys):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = fakes.fake_patches()[0]
-    rpc.patch_get_mbox.return_value = ''
+    api = mock.Mock()
+    api.patch_get.return_value = fakes.fake_patches()[0]
+    api.patch_get_mbox.return_value = ''
 
     with pytest.raises(SystemExit):
-        patches.action_apply(rpc, 1)
+        patches.action_apply(api, 1)
 
     captured = capsys.readouterr()
 
@@ -435,11 +396,11 @@ Description: [1/3] Drop support for Python 3.4, add Python 3.7
 
 
 def test_action_apply__invalid_id(capsys):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = {}
+    api = mock.Mock()
+    api.patch_get.return_value = {}
 
     with pytest.raises(SystemExit):
-        patches.action_apply(rpc, 1)
+        patches.action_apply(api, 1)
 
     captured = capsys.readouterr()
 
@@ -448,11 +409,11 @@ def test_action_apply__invalid_id(capsys):
 
 
 def test_action_update__invalid_id(capsys):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = {}
+    api = mock.Mock()
+    api.patch_get.return_value = {}
 
     with pytest.raises(SystemExit):
-        patches.action_update(rpc, 1)
+        patches.action_update(api, 1)
 
     captured = capsys.readouterr()
 
@@ -460,46 +421,27 @@ def test_action_update__invalid_id(capsys):
     assert captured.err == 'Error getting information on patch ID 1\n'
 
 
-@mock.patch.object(states, 'state_id_by_name')
-def test_action_update(mock_get_state, capsys):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = fakes.fake_patches()[0]
-    rpc.patch_set.return_value = True
-    mock_get_state.return_value = 1
+def test_action_update(capsys):
+    api = mock.Mock()
+    api.patch_get.return_value = fakes.fake_patches()[0]
+    api.patch_set.return_value = True
 
-    patches.action_update(rpc, 1157169, 'Accepted', 'yes', '698fa7f')
+    patches.action_update(api, 1157169, 'Accepted', 'yes', '698fa7f')
 
-    rpc.patch_set.assert_called_once_with(
-        1157169, {'state': 1, 'commit_ref': '698fa7f', 'archived': True})
-    mock_get_state.assert_called_once_with(rpc, 'Accepted')
-
-
-@mock.patch.object(states, 'state_id_by_name')
-def test_action_update__invalid_state(mock_get_state, capsys):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = fakes.fake_patches()[0]
-    rpc.patch_set.return_value = True
-    mock_get_state.return_value = 0
-
-    with pytest.raises(SystemExit):
-        patches.action_update(rpc, 1157169, state='Accccccepted')
-
-    mock_get_state.assert_called_once_with(rpc, 'Accccccepted')
-
-    captured = capsys.readouterr()
-
-    assert captured.out == ''
-    assert captured.err == 'Error: No State found matching Accccccepted*\n'
+    api.patch_set.assert_called_once_with(
+        1157169, state='Accepted', archived='yes', commit_ref='698fa7f',
+    )
 
 
 def test_action_update__error(capsys):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = fakes.fake_patches()[0]
-    rpc.patch_set.side_effect = xmlrpc.xmlrpclib.Fault(1, 'x')
+    api = mock.Mock()
+    api.patch_get.return_value = fakes.fake_patches()[0]
+    api.patch_set.side_effect = xmlrpc.xmlrpclib.Fault(1, 'x')
 
-    patches.action_update(rpc, 1157169)
+    patches.action_update(api, 1157169)
 
-    rpc.patch_set.assert_called_once_with(1157169, {})
+    api.patch_set.assert_called_once_with(
+        1157169, archived=None, commit_ref=None, state=None)
 
     captured = capsys.readouterr()
 
@@ -511,13 +453,14 @@ Patch not updated
 
 
 def test_action_update__no_updates(capsys):
-    rpc = mock.Mock()
-    rpc.patch_get.return_value = fakes.fake_patches()[0]
-    rpc.patch_set.return_value = None
+    api = mock.Mock()
+    api.patch_get.return_value = fakes.fake_patches()[0]
+    api.patch_set.return_value = None
 
-    patches.action_update(rpc, 1157169)
+    patches.action_update(api, 1157169)
 
-    rpc.patch_set.assert_called_once_with(1157169, {})
+    api.patch_set.assert_called_once_with(
+        1157169, archived=None, commit_ref=None, state=None)
 
     captured = capsys.readouterr()
 

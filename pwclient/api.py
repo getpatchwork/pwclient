@@ -5,6 +5,7 @@ XML-RPC API.
 """
 
 import abc
+import sys
 
 from . import exceptions
 from . import xmlrpc
@@ -82,7 +83,13 @@ class API(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def patch_set(self, patch_id, params):
+    def patch_set(
+        self,
+        patch_id,
+        state=None,
+        archived=None,
+        commit_ref=None,
+    ):
         pass
 
     # states
@@ -162,8 +169,128 @@ class XMLRPC(API):
 
     # patch
 
-    def patch_list(self, filt=None):
-        return self._client.patch_list(filt)
+    def _state_id_by_name(self, name):
+        """Given a partial state name, look up the state ID."""
+        if len(name) == 0:
+            return 0
+        states = self.state_list(name, 0)
+        for state in states:
+            if state['name'].lower().startswith(name.lower()):
+                return state['id']
+        return 0
+
+    def _patch_id_from_hash(self, project, hash):
+        patch = self.patch_get_by_project_hash(project, hash)
+
+        if patch == {}:
+            sys.stderr.write("No patch has the hash provided\n")
+            sys.exit(1)
+
+        patch_id = patch['id']
+        # be super paranoid
+        try:
+            patch_id = int(patch_id)
+        except ValueError:
+            sys.stderr.write("Invalid patch ID obtained from server\n")
+            sys.exit(1)
+        return patch_id
+
+    def _project_id_by_name(self, linkname):
+        """Given a project short name, look up the Project ID."""
+        if len(linkname) == 0:
+            return 0
+        projects = self.project_list(linkname, 0)
+        for project in projects:
+            if project['linkname'] == linkname:
+                return project['id']
+        return 0
+
+    def _person_ids_by_name(self, name):
+        """Given a partial name or email address, return a list of the
+        person IDs that match."""
+        if len(name) == 0:
+            return []
+        people = self.person_list(name, 0)
+        return [x['id'] for x in people]
+
+    def patch_list(
+        self,
+        project,
+        submitter,
+        delegate,
+        state,
+        archived,
+        msgid,
+        name,
+        max_count=None,
+    ):
+        filters = {}
+
+        if max_count:
+            filters['max_count'] = max_count
+
+        if archived:
+            filters['archived'] = archived
+
+        if msgid:
+            filters['msgid'] = msgid
+
+        if name:
+            filters['name__icontains'] = name
+
+        if state is not None:
+            state_id = self._state_id_by_name(state)
+            if state_id == 0:
+                sys.stderr.write(
+                    "Note: No State found matching %s*, "
+                    "ignoring filter\n" % state
+                )
+            else:
+                filters['state_id'] = state_id
+
+        if project is not None:
+            project_id = self._project_id_by_name(project)
+            if project_id == 0:
+                sys.stderr.write(
+                    "Note: No Project found matching %s, "
+                    "ignoring filter\n" % project
+                )
+            else:
+                filters['project_id'] = project_id
+
+        # TODO(stephenfin): This is unfortunate. We don't allow you to filter
+        # by both submitter and delegate. This is due to the fact that both are
+        # partial string matches and we emit a log message for each match. We
+        # really need to get rid of that log and print a combined (and
+        # de-duplicated) list to fix this.
+
+        if submitter is not None:
+            patches = []
+            person_ids = self._person_ids_by_name(submitter)
+            if len(person_ids) == 0:
+                sys.stderr.write(
+                    "Note: Nobody found matching *%s*\n" % submitter
+                )
+            else:
+                for person_id in person_ids:
+                    filters['submitter_id'] = person_id
+                    patches += self._client.patch_list(filters)
+            return patches
+
+        if delegate is not None:
+            patches = []
+            delegate_ids = self._person_ids_by_name(self, delegate)
+            if len(delegate_ids) == 0:
+                sys.stderr.write(
+                    "Note: Nobody found matching *%s*\n" % delegate
+                )
+            else:
+                for delegate_id in delegate_ids:
+                    filters['delegate_id'] = delegate_id
+                    patches += self._client.patch_list(filters)
+            return patches
+
+        return self._client.patch_list(filters)
 
     def patch_get(self, patch_id):
         return self._client.patch_get(patch_id)
@@ -180,7 +307,31 @@ class XMLRPC(API):
     def patch_get_diff(self, patch_id):
         return self._client.patch_get_diff(patch_id)
 
-    def patch_set(self, patch_id, params):
+    def patch_set(
+        self,
+        patch_id,
+        state=None,
+        archived=None,
+        commit_ref=None,
+    ):
+        params = {}
+
+        if state:
+            state_id = self._state_id_by_name(state)
+            if state_id == 0:
+                raise exceptions.APIError(
+                    'No State found matching %s*' % state
+                )
+                sys.exit(1)
+
+            params['state'] = state_id
+
+        if commit_ref:
+            params['commit_ref'] = commit_ref
+
+        if archived:
+            params['archived'] = archived == 'yes'
+
         return self._client.patch_set(patch_id, params)
 
     # states

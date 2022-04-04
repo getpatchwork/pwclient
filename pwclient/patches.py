@@ -5,15 +5,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import io
+import itertools
 import os
 import re
 import subprocess
 import sys
 
 from .xmlrpc import xmlrpclib
-from . import people
-from . import projects
-from . import states
 
 
 def patch_id_from_hash(api, project, hash):
@@ -63,73 +61,50 @@ def action_list(
     api, project=None, submitter=None, delegate=None, state=None,
     archived=None, msgid=None, name=None, max_count=None, format_str=None,
 ):
-    filters = {}
+    # We exclude submitter and delegate since these are handled specially
+    filters = {
+        'project': project,
+        'state': state,
+        'archived': archived,
+        'msgid': msgid,
+        'name': name,
+        'max_count': max_count,
+        'submitter': None,
+        'delegate': None,
+    }
 
-    if max_count:
-        filters['max_count'] = max_count
-
-    if project:
-        filters['project'] = project
-
-    if state:
-        filters['state'] = state
-
-    if archived:
-        filters['archived'] = archived
-
-    if msgid:
-        filters['msgid'] = msgid
-
-    if name:
-        filters['name__icontains'] = name
-
-    if state is not None:
-        id = states.state_id_by_name(api, state)
-        if id == 0:
-            sys.stderr.write("Note: No State found matching %s*, "
-                             "ignoring filter\n" % state)
-        else:
-            filters['state_id'] = id
-
-    if project is not None:
-        id = projects.project_id_by_name(api, project)
-        if id == 0:
-            sys.stderr.write("Note: No Project found matching %s, "
-                             "ignoring filter\n" % project)
-        else:
-            filters['project_id'] = id
+    # TODO(stephenfin): Remove these logs since they break our ability to
+    # filter on both submitter and delegate
 
     if submitter is not None:
-        ids = people.person_ids_by_name(api, submitter)
-        if len(ids) == 0:
-            sys.stderr.write("Note: Nobody found matching *%s*\n" %
-                             submitter)
-        else:
-            for id in ids:
-                person = api.person_get(id)
-                print('Patches submitted by %s <%s>:' %
-                      (person['name'], person['email']))
-                filters['submitter_id'] = id
-                patches = api.patch_list(filters)
-                _list_patches(patches, format_str)
+        filters['submitter'] = submitter
+
+        patches = api.patch_list(**filters)
+        patches.sort(key=lambda x: x['submitter'])
+
+        for person, person_patches in itertools.groupby(
+            patches, key=lambda x: x['submitter']
+        ):
+            print(f'Patches submitted by {person}:')
+            _list_patches(list(person_patches), format_str)
+
         return
 
     if delegate is not None:
-        ids = people.person_ids_by_name(api, delegate)
-        if len(ids) == 0:
-            sys.stderr.write("Note: Nobody found matching *%s*\n" %
-                             delegate)
-        else:
-            for id in ids:
-                person = api.person_get(id)
-                print('Patches delegated to %s <%s>:' %
-                      (person['name'], person['email']))
-                filters['delegate_id'] = id
-                patches = api.patch_list(filters)
-                _list_patches(patches, format_str)
+        filters['delegate'] = delegate
+
+        patches = api.patch_list(**filters)
+        patches.sort(key=lambda x: x['delegate'])
+
+        for delegate, delegate_patches in itertools.groupby(
+            patches, key=lambda x: x['delegate']
+        ):
+            print(f'Patches delegated to {delegate}:')
+            _list_patches(list(delegate_patches), format_str)
+
         return
 
-    patches = api.patch_list(filters)
+    patches = api.patch_list(**filters)
     _list_patches(patches, format_str)
 
 
@@ -150,7 +125,10 @@ def action_info(api, patch_id):
         # latin1, so decode explicitly
         if type(value) == xmlrpclib.Binary:
             value = str(value.data, 'utf-8')
-        print("- %- 14s: %s" % (key, value))
+        if value != '':
+            print("- %- 14s: %s" % (key, value))
+        else:
+            print("- %- 14s:" % key)
 
 
 def action_get(api, patch_id):
@@ -230,6 +208,7 @@ def action_apply(api, patch_id, apply_cmd=None):
         sys.exit(1)
 
 
+# TODO(stephenfin): Rename commit to commit_ref
 def action_update(api, patch_id, state=None, archived=None, commit=None):
     patch = api.patch_get(patch_id)
     if patch == {}:
@@ -237,25 +216,14 @@ def action_update(api, patch_id, state=None, archived=None, commit=None):
                          patch_id)
         sys.exit(1)
 
-    params = {}
-
-    if state:
-        state_id = states.state_id_by_name(api, state)
-        # TODO(stephenfin): This should happen at the API layer
-        if state_id == 0:
-            sys.stderr.write("Error: No State found matching %s*\n" % state)
-            sys.exit(1)
-        params['state'] = state_id
-
-    if commit:
-        params['commit_ref'] = commit
-
-    if archived:
-        params['archived'] = archived == 'yes'
-
     success = False
     try:
-        success = api.patch_set(patch_id, params)
+        success = api.patch_set(
+            patch_id,
+            state=state,
+            archived=archived,
+            commit_ref=commit,
+        )
     except xmlrpclib.Fault as f:
         sys.stderr.write("Error updating patch: %s\n" % f.faultString)
 
