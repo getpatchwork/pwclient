@@ -47,18 +47,6 @@ def test_patch_id_from_hash():
     rpc.patch_get_by_hash.assert_not_called()
 
 
-def test_patch_id_from_hash__legacy_function():
-    rpc = mock.Mock()
-    rpc.patch_get_by_project_hash.side_effect = xmlrpc.xmlrpclib.Fault(1, 'x')
-    rpc.patch_get_by_hash.return_value = {'id': '1'}
-
-    result = patches.patch_id_from_hash(rpc, 'foo', '698fa7f')
-
-    assert result == 1
-    rpc.patch_get_by_project_hash.assert_called_once_with('foo', '698fa7f')
-    rpc.patch_get_by_hash.assert_called_once_with('698fa7f')
-
-
 def test_list_patches(capsys):
 
     fake_patches = fakes.fake_patches()

@@ -63,12 +63,7 @@ class Filter(object):
 
 
 def patch_id_from_hash(rpc, project, hash):
-    try:
-        patch = rpc.patch_get_by_project_hash(project, hash)
-    except xmlrpclib.Fault:
-        # the server may not have the newer patch_get_by_project_hash function,
-        # so fall back to hash-only.
-        patch = rpc.patch_get_by_hash(hash)
+    patch = rpc.patch_get_by_project_hash(project, hash)
 
     if patch == {}:
         sys.stderr.write("No patch has the hash provided\n")
