@@ -16,8 +16,8 @@ from . import projects
 from . import states
 
 
-def patch_id_from_hash(rpc, project, hash):
-    patch = rpc.patch_get_by_project_hash(project, hash)
+def patch_id_from_hash(api, project, hash):
+    patch = api.patch_get_by_project_hash(project, hash)
 
     if patch == {}:
         sys.stderr.write("No patch has the hash provided\n")
@@ -60,7 +60,7 @@ def _list_patches(patches, format_str=None):
 
 
 def action_list(
-    rpc, project=None, submitter=None, delegate=None, state=None,
+    api, project=None, submitter=None, delegate=None, state=None,
     archived=None, msgid=None, name=None, max_count=None, format_str=None,
 ):
     filters = {}
@@ -84,7 +84,7 @@ def action_list(
         filters['name__icontains'] = name
 
     if state is not None:
-        id = states.state_id_by_name(rpc, state)
+        id = states.state_id_by_name(api, state)
         if id == 0:
             sys.stderr.write("Note: No State found matching %s*, "
                              "ignoring filter\n" % state)
@@ -92,7 +92,7 @@ def action_list(
             filters['state_id'] = id
 
     if project is not None:
-        id = projects.project_id_by_name(rpc, project)
+        id = projects.project_id_by_name(api, project)
         if id == 0:
             sys.stderr.write("Note: No Project found matching %s, "
                              "ignoring filter\n" % project)
@@ -100,41 +100,41 @@ def action_list(
             filters['project_id'] = id
 
     if submitter is not None:
-        ids = people.person_ids_by_name(rpc, submitter)
+        ids = people.person_ids_by_name(api, submitter)
         if len(ids) == 0:
             sys.stderr.write("Note: Nobody found matching *%s*\n" %
                              submitter)
         else:
             for id in ids:
-                person = rpc.person_get(id)
+                person = api.person_get(id)
                 print('Patches submitted by %s <%s>:' %
                       (person['name'], person['email']))
                 filters['submitter_id'] = id
-                patches = rpc.patch_list(filters)
+                patches = api.patch_list(filters)
                 _list_patches(patches, format_str)
         return
 
     if delegate is not None:
-        ids = people.person_ids_by_name(rpc, delegate)
+        ids = people.person_ids_by_name(api, delegate)
         if len(ids) == 0:
             sys.stderr.write("Note: Nobody found matching *%s*\n" %
                              delegate)
         else:
             for id in ids:
-                person = rpc.person_get(id)
+                person = api.person_get(id)
                 print('Patches delegated to %s <%s>:' %
                       (person['name'], person['email']))
                 filters['delegate_id'] = id
-                patches = rpc.patch_list(filters)
+                patches = api.patch_list(filters)
                 _list_patches(patches, format_str)
         return
 
-    patches = rpc.patch_list(filters)
+    patches = api.patch_list(filters)
     _list_patches(patches, format_str)
 
 
-def action_info(rpc, patch_id):
-    patch = rpc.patch_get(patch_id)
+def action_info(api, patch_id):
+    patch = api.patch_get(patch_id)
 
     if patch == {}:
         sys.stderr.write("Error getting information on patch ID %d\n" %
@@ -153,9 +153,9 @@ def action_info(rpc, patch_id):
         print("- %- 14s: %s" % (key, value))
 
 
-def action_get(rpc, patch_id):
-    patch = rpc.patch_get(patch_id)
-    mbox = rpc.patch_get_mbox(patch_id)
+def action_get(api, patch_id):
+    patch = api.patch_get(patch_id)
+    mbox = api.patch_get_mbox(patch_id)
 
     if patch == {} or len(mbox) == 0:
         sys.stderr.write("Unable to get patch %d\n" % patch_id)
@@ -173,11 +173,11 @@ def action_get(rpc, patch_id):
         print('Saved patch to %s' % fname)
 
 
-def action_view(rpc, patch_ids):
+def action_view(api, patch_ids):
     mboxes = []
 
     for patch_id in patch_ids:
-        mbox = rpc.patch_get_mbox(patch_id)
+        mbox = api.patch_get_mbox(patch_id)
         if mbox:
             mboxes.append(mbox)
 
@@ -204,8 +204,8 @@ def action_view(rpc, patch_ids):
             print(mbox)
 
 
-def action_apply(rpc, patch_id, apply_cmd=None):
-    patch = rpc.patch_get(patch_id)
+def action_apply(api, patch_id, apply_cmd=None):
+    patch = api.patch_get(patch_id)
     if patch == {}:
         sys.stderr.write("Error getting information on patch ID %d\n" %
                          patch_id)
@@ -219,7 +219,8 @@ def action_apply(rpc, patch_id, apply_cmd=None):
               (patch_id, ' '.join(apply_cmd)))
 
     print('Description: %s' % patch['name'])
-    mbox = rpc.patch_get_mbox(patch_id)
+
+    mbox = api.patch_get_mbox(patch_id)
     if len(mbox) > 0:
         proc = subprocess.Popen(apply_cmd, stdin=subprocess.PIPE)
         proc.communicate(mbox.encode('utf-8'))
@@ -229,8 +230,8 @@ def action_apply(rpc, patch_id, apply_cmd=None):
         sys.exit(1)
 
 
-def action_update(rpc, patch_id, state=None, archived=None, commit=None):
-    patch = rpc.patch_get(patch_id)
+def action_update(api, patch_id, state=None, archived=None, commit=None):
+    patch = api.patch_get(patch_id)
     if patch == {}:
         sys.stderr.write("Error getting information on patch ID %d\n" %
                          patch_id)
@@ -239,7 +240,8 @@ def action_update(rpc, patch_id, state=None, archived=None, commit=None):
     params = {}
 
     if state:
-        state_id = states.state_id_by_name(rpc, state)
+        state_id = states.state_id_by_name(api, state)
+        # TODO(stephenfin): This should happen at the API layer
         if state_id == 0:
             sys.stderr.write("Error: No State found matching %s*\n" % state)
             sys.exit(1)
@@ -253,7 +255,7 @@ def action_update(rpc, patch_id, state=None, archived=None, commit=None):
 
     success = False
     try:
-        success = rpc.patch_set(patch_id, params)
+        success = api.patch_set(patch_id, params)
     except xmlrpclib.Fault as f:
         sys.stderr.write("Error updating patch: %s\n" % f.faultString)
 

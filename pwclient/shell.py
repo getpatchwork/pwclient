@@ -8,13 +8,14 @@
 import os
 import sys
 
+from . import api as pw_api
 from . import checks
+from . import exceptions
 from . import parser
 from . import patches
 from . import projects
 from . import states
 from . import utils
-from . import xmlrpc
 
 CONFIG_FILE = os.path.expanduser('~/.pwclientrc')
 
@@ -70,22 +71,22 @@ def main(argv=sys.argv[1:]):
 
     url = config.get(project_str, 'url')
 
-    transport = xmlrpc.Transport(url)
+    kwargs = {}
     if action in auth_actions:
-        transport.set_credentials(
-            config.get(project_str, 'username'),
-            config.get(project_str, 'password'))
+        kwargs['username'] = config.get(project_str, 'username')
+        kwargs['password'] = config.get(project_str, 'password')
 
     try:
-        rpc = xmlrpc.xmlrpclib.Server(url, transport=transport)
-    except (IOError, OSError):
-        sys.stderr.write("Unable to connect to %s\n" % url)
+        # TODO(stephenfin): Make this switchable
+        api = pw_api.XMLRPC(url, **kwargs)
+    except exceptions.APIError as exc:
+        sys.stderr.write(str(exc))
         sys.exit(1)
 
     patch_ids = args.id if 'id' in args and args.id else []
     if 'use_hashes' in args and args.use_hashes:
         patch_ids = [
-            patches.patch_id_from_hash(rpc, project_str, x) for x in patch_ids
+            patches.patch_id_from_hash(api, project_str, x) for x in patch_ids
         ]
     else:
         try:
@@ -107,7 +108,7 @@ def main(argv=sys.argv[1:]):
             archived = args.archived == 'yes'
 
         patches.action_list(
-            rpc,
+            api,
             project=project_str,
             submitter=args.submitter,
             delegate=args.delegate,
@@ -119,25 +120,25 @@ def main(argv=sys.argv[1:]):
             format_str=args.format)
 
     elif action.startswith('project'):
-        projects.action_list(rpc)
+        projects.action_list(api)
 
     elif action.startswith('state'):
-        states.action_list(rpc)
+        states.action_list(api)
 
     elif action == 'view':
-        patches.action_view(rpc, patch_ids)
+        patches.action_view(api, patch_ids)
 
     elif action == 'info':
         for patch_id in patch_ids:
-            patches.action_info(rpc, patch_id)
+            patches.action_info(api, patch_id)
 
     elif action == 'get':
         for patch_id in patch_ids:
-            patches.action_get(rpc, patch_id)
+            patches.action_get(api, patch_id)
 
     elif action == 'apply':
         for patch_id in patch_ids:
-            ret = patches.action_apply(rpc, patch_id)
+            ret = patches.action_apply(api, patch_id)
             if ret:
                 sys.stderr.write("Apply failed with exit status %d\n" % ret)
                 sys.exit(1)
@@ -179,7 +180,7 @@ def main(argv=sys.argv[1:]):
             cmd.append('-m')
 
         for patch_id in patch_ids:
-            ret = patches.action_apply(rpc, patch_id, cmd)
+            ret = patches.action_apply(api, patch_id, cmd)
             if ret:
                 sys.stderr.write("'git am' failed with exit status %d\n" % ret)
                 sys.exit(1)
@@ -198,25 +199,25 @@ def main(argv=sys.argv[1:]):
 
         for patch_id in patch_ids:
             patches.action_update(
-                rpc, patch_id, state=args.state, archived=args.archived,
+                api, patch_id, state=args.state, archived=args.archived,
                 commit=args.commit_ref)
 
     elif action == 'check_get':
         format_str = args.format
         for patch_id in patch_ids:
-            checks.action_get(rpc, patch_id, format_str)
+            checks.action_get(api, patch_id, format_str)
 
     elif action == 'check_list':
-        checks.action_list(rpc)
+        checks.action_list(api)
 
     elif action == 'check_info':
         check_id = args.check_id
-        checks.action_info(rpc, check_id)
+        checks.action_info(api, check_id)
 
     elif action == 'check_create':
         for patch_id in patch_ids:
             checks.action_create(
-                rpc, patch_id, args.context, args.state, args.target_url,
+                api, patch_id, args.context, args.state, args.target_url,
                 args.description)
 
 

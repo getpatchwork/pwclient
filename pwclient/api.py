@@ -5,7 +5,6 @@ XML-RPC API.
 """
 
 import abc
-import sys
 
 from . import exceptions
 from . import xmlrpc
@@ -141,9 +140,7 @@ class XMLRPC(API):
         try:
             rpc = xmlrpc.xmlrpclib.Server(self._server, transport=transport)
         except (IOError, OSError):
-            # TODO: Raise exception instead of exiting
-            sys.stderr.write("Unable to connect to %s\n" % self._server)
-            sys.exit(1)
+            raise exceptions.APIError(f'Unable to connect to {self._server}')
 
         self._client = rpc
 

@@ -1,7 +1,7 @@
 from unittest import mock
 
 from pwclient import checks
-from pwclient import xmlrpc
+from pwclient import exceptions
 
 from . import fakes
 
@@ -74,7 +74,7 @@ def test_action_check_create():
 
 def test_action_check_create__error(capsys):
     rpc = mock.Mock()
-    rpc.check_create.side_effect = xmlrpc.xmlrpclib.Fault(1, 'x')
+    rpc.check_create.side_effect = exceptions.APIError('whoops')
 
     args = (1, 'hello-world', 'success', 'https://example.com',
             'This is a sample check')
@@ -83,4 +83,4 @@ def test_action_check_create__error(capsys):
 
     captured = capsys.readouterr()
 
-    assert captured.err == 'Error creating check: x\n'
+    assert captured.err == 'whoops'

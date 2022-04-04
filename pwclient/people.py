@@ -5,10 +5,10 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 
-def person_ids_by_name(rpc, name):
+def person_ids_by_name(api, name):
     """Given a partial name or email address, return a list of the
     person IDs that match."""
     if len(name) == 0:
         return []
-    people = rpc.person_list(name, 0)
+    people = api.person_list(name, 0)
     return [x['id'] for x in people]

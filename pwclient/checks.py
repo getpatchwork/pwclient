@@ -7,11 +7,11 @@
 import re
 import sys
 
-from pwclient.xmlrpc import xmlrpclib
+from . import exceptions
 
 
-def action_list(rpc):
-    checks = rpc.check_list()
+def action_list(api):
+    checks = api.check_list()
     print("%-5s %-16s %-8s %s" % ("ID", "Context", "State", "Patch"))
     print("%-5s %-16s %-8s %s" % ("--", "-------", "-----", "-----"))
     for check in checks:
@@ -21,8 +21,8 @@ def action_list(rpc):
                                       check['patch']))
 
 
-def action_info(rpc, check_id):
-    check = rpc.check_get(check_id)
+def action_info(api, check_id):
+    check = api.check_get(check_id)
     s = "Information for check id %d" % (check_id)
     print(s)
     print('-' * len(s))
@@ -30,8 +30,8 @@ def action_info(rpc, check_id):
         print("- %- 14s: %s" % (key, value))
 
 
-def action_get(rpc, patch_id, format_str=None):
-    checks_list = rpc.patch_check_get(patch_id)
+def action_get(api, patch_id, format_str=None):
+    checks_list = api.patch_check_get(patch_id)
     checks = checks_list.get('checks', None)
     if checks is None:
         return
@@ -60,8 +60,8 @@ def action_get(rpc, patch_id, format_str=None):
         print("\n\n".join(out))
 
 
-def action_create(rpc, patch_id, context, state, url, description):
+def action_create(api, patch_id, context, state, url, description):
     try:
-        rpc.check_create(patch_id, context, state, url, description)
-    except xmlrpclib.Fault as f:
-        sys.stderr.write("Error creating check: %s\n" % f.faultString)
+        api.check_create(patch_id, context, state, url, description)
+    except exceptions.APIError as exc:
+        sys.stderr.write(str(exc))
