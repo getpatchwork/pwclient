@@ -2,8 +2,8 @@ from unittest import mock
 
 import pytest
 
+from pwclient import exceptions
 from pwclient import patches
-from pwclient import xmlrpc
 
 from . import fakes
 
@@ -206,7 +206,7 @@ Information for patch id 1157169
 
 def test_action_info__invalid_id(capsys):
     api = mock.Mock()
-    api.patch_get.return_value = {}
+    api.patch_get.side_effect = exceptions.APIError('foo')
 
     with pytest.raises(SystemExit):
         patches.action_info(api, 1)
@@ -214,7 +214,7 @@ def test_action_info__invalid_id(capsys):
     captured = capsys.readouterr()
 
     assert captured.out == ''
-    assert captured.err == 'Error getting information on patch ID 1\n'
+    assert captured.err == 'foo\n'
 
 
 @mock.patch.object(patches.io, 'open')
@@ -249,8 +249,7 @@ Saved patch to 1-3--Drop-support-for-Python-3-4--add-Python-3-7.0.patch
 
 def test_action_get__invalid_id(capsys):
     api = mock.Mock()
-    api.patch_get.return_value = {}
-    api.patch_get_mbox.return_value = ''
+    api.patch_get_mbox.side_effect = exceptions.APIError('foo')
 
     with pytest.raises(SystemExit):
         patches.action_get(api, 1)
@@ -258,7 +257,7 @@ def test_action_get__invalid_id(capsys):
     captured = capsys.readouterr()
 
     assert captured.out == ''
-    assert captured.err == 'Unable to get patch 1\n'
+    assert captured.err == 'foo\n'
 
 
 @mock.patch.object(patches.os.environ, 'get')
@@ -379,7 +378,7 @@ Description: [1/3] Drop support for Python 3.4, add Python 3.7
 def test_action_apply__failed(mock_popen, capsys):
     api = mock.Mock()
     api.patch_get.return_value = fakes.fake_patches()[0]
-    api.patch_get_mbox.return_value = ''
+    api.patch_get_mbox.side_effect = exceptions.APIError('foo')
 
     with pytest.raises(SystemExit):
         patches.action_apply(api, 1)
@@ -390,14 +389,14 @@ def test_action_apply__failed(mock_popen, capsys):
 Applying patch #1 to current directory
 Description: [1/3] Drop support for Python 3.4, add Python 3.7
 """
-    assert captured.err == 'Error: No patch content found\n'
+    assert captured.err == 'foo\n'
 
     mock_popen.assert_not_called()
 
 
 def test_action_apply__invalid_id(capsys):
     api = mock.Mock()
-    api.patch_get.return_value = {}
+    api.patch_get.side_effect = exceptions.APIError('foo')
 
     with pytest.raises(SystemExit):
         patches.action_apply(api, 1)
@@ -405,12 +404,12 @@ def test_action_apply__invalid_id(capsys):
     captured = capsys.readouterr()
 
     assert captured.out == ''
-    assert captured.err == 'Error getting information on patch ID 1\n'
+    assert captured.err == 'foo\n'
 
 
 def test_action_update__invalid_id(capsys):
     api = mock.Mock()
-    api.patch_get.return_value = {}
+    api.patch_get.side_effect = exceptions.APIError('foo')
 
     with pytest.raises(SystemExit):
         patches.action_update(api, 1)
@@ -418,7 +417,7 @@ def test_action_update__invalid_id(capsys):
     captured = capsys.readouterr()
 
     assert captured.out == ''
-    assert captured.err == 'Error getting information on patch ID 1\n'
+    assert captured.err == 'foo\n'
 
 
 def test_action_update(capsys):
@@ -436,7 +435,7 @@ def test_action_update(capsys):
 def test_action_update__error(capsys):
     api = mock.Mock()
     api.patch_get.return_value = fakes.fake_patches()[0]
-    api.patch_set.side_effect = xmlrpc.xmlrpclib.Fault(1, 'x')
+    api.patch_set.side_effect = exceptions.APIError('foo')
 
     patches.action_update(api, 1157169)
 
@@ -447,7 +446,7 @@ def test_action_update__error(capsys):
 
     assert captured.out == ''
     assert captured.err == """\
-Error updating patch: x
+foo
 Patch not updated
 """
 

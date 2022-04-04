@@ -11,8 +11,6 @@ import re
 import subprocess
 import sys
 
-from .xmlrpc import xmlrpclib
-
 
 def patch_id_from_hash(api, project, hash):
     patch = api.patch_get_by_project_hash(project, hash)
@@ -109,22 +107,16 @@ def action_list(
 
 
 def action_info(api, patch_id):
-    patch = api.patch_get(patch_id)
-
-    if patch == {}:
-        sys.stderr.write("Error getting information on patch ID %d\n" %
-                         patch_id)
+    try:
+        patch = api.patch_get(patch_id)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
         sys.exit(1)
 
     s = "Information for patch id %d" % (patch_id)
     print(s)
     print('-' * len(s))
     for key, value in sorted(patch.items()):
-        # Some values are transferred as Binary data, these are encoded in
-        # utf-8. As of Python 3.9 xmlrpclib.Binary.__str__ however assumes
-        # latin1, so decode explicitly
-        if type(value) == xmlrpclib.Binary:
-            value = str(value.data, 'utf-8')
         if value != '':
             print("- %- 14s: %s" % (key, value))
         else:
@@ -132,11 +124,11 @@ def action_info(api, patch_id):
 
 
 def action_get(api, patch_id):
-    patch = api.patch_get(patch_id)
-    mbox = api.patch_get_mbox(patch_id)
-
-    if patch == {} or len(mbox) == 0:
-        sys.stderr.write("Unable to get patch %d\n" % patch_id)
+    try:
+        patch = api.patch_get(patch_id)
+        mbox = api.patch_get_mbox(patch_id)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
         sys.exit(1)
 
     base_fname = fname = os.path.basename(patch['filename'])
@@ -155,9 +147,14 @@ def action_view(api, patch_ids):
     mboxes = []
 
     for patch_id in patch_ids:
-        mbox = api.patch_get_mbox(patch_id)
-        if mbox:
-            mboxes.append(mbox)
+        try:
+            mbox = api.patch_get_mbox(patch_id)
+        except Exception:
+            # TODO(stephenfin): We skip this for historical reasons, but should
+            # we log/raise an error?
+            pass
+
+        mboxes.append(mbox)
 
     if not mboxes:
         return
@@ -183,10 +180,10 @@ def action_view(api, patch_ids):
 
 
 def action_apply(api, patch_id, apply_cmd=None):
-    patch = api.patch_get(patch_id)
-    if patch == {}:
-        sys.stderr.write("Error getting information on patch ID %d\n" %
-                         patch_id)
+    try:
+        patch = api.patch_get(patch_id)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
         sys.exit(1)
 
     if apply_cmd is None:
@@ -198,22 +195,24 @@ def action_apply(api, patch_id, apply_cmd=None):
 
     print('Description: %s' % patch['name'])
 
-    mbox = api.patch_get_mbox(patch_id)
-    if len(mbox) > 0:
-        proc = subprocess.Popen(apply_cmd, stdin=subprocess.PIPE)
-        proc.communicate(mbox.encode('utf-8'))
-        return proc.returncode
-    else:
-        sys.stderr.write("Error: No patch content found\n")
+    try:
+        mbox = api.patch_get_mbox(patch_id)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
         sys.exit(1)
+
+    proc = subprocess.Popen(apply_cmd, stdin=subprocess.PIPE)
+    proc.communicate(mbox.encode('utf-8'))
+    return proc.returncode
 
 
 # TODO(stephenfin): Rename commit to commit_ref
 def action_update(api, patch_id, state=None, archived=None, commit=None):
-    patch = api.patch_get(patch_id)
-    if patch == {}:
-        sys.stderr.write("Error getting information on patch ID %d\n" %
-                         patch_id)
+    # ensure the patch actually exists first
+    try:
+        api.patch_get(patch_id)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
         sys.exit(1)
 
     success = False
@@ -224,8 +223,8 @@ def action_update(api, patch_id, state=None, archived=None, commit=None):
             archived=archived,
             commit_ref=commit,
         )
-    except xmlrpclib.Fault as f:
-        sys.stderr.write("Error updating patch: %s\n" % f.faultString)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
 
     if not success:
-        sys.stderr.write("Patch not updated\n")
+        print('Patch not updated', file=sys.stderr)

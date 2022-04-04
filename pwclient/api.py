@@ -213,6 +213,16 @@ class XMLRPC(API):
         people = self.person_list(name, 0)
         return [x['id'] for x in people]
 
+    @staticmethod
+    def _decode_patch(patch):
+        # Some values are transferred as Binary data, these are encoded in
+        # utf-8. As of Python 3.9 xmlrpclib.Binary.__str__ however assumes
+        # latin1, so decode explicitly
+        return {
+            k: v.data.decode('utf-8') if isinstance(v, xmlrpclib.Binary) else v
+            for k, v in patch.items()
+        }
+
     def patch_list(
         self,
         project,
@@ -275,7 +285,7 @@ class XMLRPC(API):
                 for person_id in person_ids:
                     filters['submitter_id'] = person_id
                     patches += self._client.patch_list(filters)
-            return patches
+            return [self._decode_patch(patch) for patch in patches]
 
         if delegate is not None:
             patches = []
@@ -288,12 +298,19 @@ class XMLRPC(API):
                 for delegate_id in delegate_ids:
                     filters['delegate_id'] = delegate_id
                     patches += self._client.patch_list(filters)
-            return patches
+            return [self._decode_patch(patch) for patch in patches]
 
-        return self._client.patch_list(filters)
+        patches = self._client.patch_list(filters)
+        return [self._decode_patch(patch) for patch in patches]
 
     def patch_get(self, patch_id):
-        return self._client.patch_get(patch_id)
+        patch = self._client.patch_get(patch_id)
+        if patch == {}:
+            raise exceptions.APIError(
+                'Unable to fetch patch %d; does it exist?' % patch_id
+            )
+
+        return self._decode_patch(patch)
 
     def patch_get_by_hash(self, hash):
         return self._client.patch_get_by_hash(hash)
@@ -302,7 +319,12 @@ class XMLRPC(API):
         return self._client.patch_get_by_project_hash(project, hash)
 
     def patch_get_mbox(self, patch_id):
-        return self._client.patch_get_mbox(patch_id)
+        mbox = self._client.patch_get_mbox(patch_id)
+        if len(mbox) == 0:
+            raise exceptions.APIError(
+                'Unable to fetch mbox for patch %d; does it exist?' % patch_id
+            )
+        return mbox
 
     def patch_get_diff(self, patch_id):
         return self._client.patch_get_diff(patch_id)
@@ -332,7 +354,12 @@ class XMLRPC(API):
         if archived:
             params['archived'] = archived == 'yes'
 
-        return self._client.patch_set(patch_id, params)
+        try:
+            return self._client.patch_set(patch_id, params)
+        except xmlrpclib.Fault as f:
+            raise exceptions.APIError(
+                'Error updating patch: %s' % f.faultString
+            )
 
     # states
 
