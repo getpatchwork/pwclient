@@ -319,12 +319,15 @@ class XMLRPC(API):
         return self._client.patch_get_by_project_hash(project, hash)
 
     def patch_get_mbox(self, patch_id):
+        patch = self.patch_get(patch_id)
+
         mbox = self._client.patch_get_mbox(patch_id)
         if len(mbox) == 0:
             raise exceptions.APIError(
                 'Unable to fetch mbox for patch %d; does it exist?' % patch_id
             )
-        return mbox
+
+        return mbox, patch['filename']
 
     def patch_get_diff(self, patch_id):
         return self._client.patch_get_diff(patch_id)

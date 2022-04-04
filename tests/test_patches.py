@@ -221,12 +221,13 @@ def test_action_info__invalid_id(capsys):
 @mock.patch.object(patches.os.path, 'basename')
 @mock.patch.object(patches.os.path, 'exists')
 def test_action_get(mock_exists, mock_basename, mock_open, capsys):
-    fake_patch = fakes.fake_patches()[0]
     api = mock.Mock()
-    api.patch_get.return_value = fake_patch
-    api.patch_get_mbox.return_value = 'foo'
+    api.patch_get_mbox.return_value = (
+        'foo',
+        '1-3--Drop-support-for-Python-3-4--add-Python-3-7',
+    )
     mock_exists.side_effect = [True, False]
-    mock_basename.return_value = fake_patch['filename']
+    mock_basename.return_value = api.patch_get_mbox.return_value[1]
 
     patches.action_get(api, 1157169)
 

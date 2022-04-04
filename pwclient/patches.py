@@ -125,13 +125,12 @@ def action_info(api, patch_id):
 
 def action_get(api, patch_id):
     try:
-        patch = api.patch_get(patch_id)
-        mbox = api.patch_get_mbox(patch_id)
+        mbox, filename = api.patch_get_mbox(patch_id)
     except Exception as exc:
         print(str(exc), file=sys.stderr)
         sys.exit(1)
 
-    base_fname = fname = os.path.basename(patch['filename'])
+    base_fname = fname = os.path.basename(filename)
     fname += '.patch'
     i = 0
     while os.path.exists(fname):
