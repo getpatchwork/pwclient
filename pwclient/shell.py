@@ -81,8 +81,11 @@ def main(argv=sys.argv[1:]):
         kwargs['password'] = config.get(project_str, 'password')
 
     try:
-        # TODO(stephenfin): Make this switchable
-        api = pw_api.XMLRPC(url, **kwargs)
+        # TODO(stephenfin): Make this switchable without envvars
+        if os.getenv('PWCLIENT_USE_REST', '0').lower() in ('1', 'yes', 'true'):
+            api = pw_api.REST(url, **kwargs)
+        else:
+            api = pw_api.XMLRPC(url, **kwargs)
     except exceptions.APIError as exc:
         sys.stderr.write(str(exc))
         sys.exit(1)

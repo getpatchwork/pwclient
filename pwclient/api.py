@@ -5,10 +5,18 @@ XML-RPC API.
 """
 
 import abc
+import base64
+import json
+import http
+import re
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
 
 from . import exceptions
 from . import xmlrpc
+from . import __version__
 from .xmlrpc import xmlrpclib
 
 
@@ -409,3 +417,468 @@ class XMLRPC(API):
             raise exceptions.APIError(
                 'Error creating check: %s' % f.faultString
             )
+
+
+class REST(API):
+    def __init__(self, server, *, username=None, password=None, token=None):
+
+        # TODO(stephenfin): We want to deprecate this behavior at some point
+        parsed_server = urllib.parse.urlparse(server)
+        scheme = parsed_server.scheme or 'http'
+        hostname = parsed_server.netloc
+        path = parsed_server.path
+        if path.rstrip('/') == '/xmlrpc':
+            path = '/api'
+
+        self._server = f'{scheme}://{hostname}{path}'
+
+        self._username = username
+        self._password = password
+        self._token = token
+
+    def _generate_headers(self, additional_headers=None):
+        headers = {
+            'User-Agent': f'pwclient ({__version__})',
+        }
+
+        if self._token:
+            pass
+
+        if self._username:
+            credentials = base64.b64encode(
+                f'{self._username}:{self._password}'.encode('ascii')
+            ).decode('ascii')
+            headers['Authorization'] = f'Basic {credentials}'
+
+        if additional_headers:
+            headers = dict(headers, **additional_headers)
+
+        return headers
+
+    def _get(self, url):
+        request = urllib.request.Request(
+            url=url, method='GET', headers=self._generate_headers()
+        )
+        try:
+            with urllib.request.urlopen(request) as resp:
+                data = resp.read()
+                headers = resp.getheaders()
+        except urllib.error.HTTPError as exc:
+            # the XML-RPC API returns an empty body, annoyingly, so we must
+            # emulate this
+            if exc.status == http.HTTPStatus.NOT_FOUND:
+                return {}, {}
+
+            sys.stderr.write('Request failed\n\n')
+            sys.stderr.write('Response:\n')
+            sys.stderr.write(exc.read().decode('utf-8'))
+            sys.exit(1)
+
+        return data, headers
+
+    def _post(self, url, data):
+        request = urllib.request.Request(
+            url=url,
+            data=json.dumps(data).encode('utf-8'),
+            method='POST',
+            headers=self._generate_headers(
+                {
+                    'Content-Type': 'application/json',
+                },
+            ),
+        )
+        try:
+            with urllib.request.urlopen(request) as resp:
+                data = resp.read()
+                headers = resp.getheaders()
+        except urllib.error.HTTPError as exc:
+            sys.stderr.write('Request failed\n\n')
+            sys.stderr.write('Response:\n')
+            sys.stderr.write(exc.read().decode('utf-8'))
+            sys.exit(1)
+
+        return data, headers
+
+    def _put(self, url, data):
+        request = urllib.request.Request(
+            url=url,
+            data=json.dumps(data).encode('utf-8'),
+            method='PATCH',
+            headers=self._generate_headers(
+                {
+                    'Content-Type': 'application/json',
+                },
+            ),
+        )
+        try:
+            with urllib.request.urlopen(request) as resp:
+                data = resp.read()
+                headers = resp.getheaders()
+        except urllib.error.HTTPError as exc:
+            sys.stderr.write('Request failed\n\n')
+            sys.stderr.write('Response:\n')
+            sys.stderr.write(exc.read().decode('utf-8'))
+            sys.exit(1)
+
+        return data, headers
+
+    def _create(
+        self,
+        resource_type,
+        data,
+        *,
+        resource_id=None,
+        subresource_type=None,
+    ):
+        url = f'{self._server}/{resource_type}/'
+        if resource_id:
+            url = f'{url}{resource_id}/{subresource_type}/'
+        data, _ = self._post(url, data)
+        return json.loads(data)
+
+    def _update(
+        self,
+        resource_type,
+        resource_id,
+        data,
+        *,
+        subresource_type=None,
+        subresource_id=None,
+    ):
+        url = f'{self._server}/{resource_type}/{resource_id}/'
+        if subresource_id:
+            url = f'{url}{subresource_type}/{subresource_id}/'
+        data, _ = self._put(url, data)
+        return json.loads(data)
+
+    def _detail(
+        self,
+        resource_type,
+        resource_id,
+        params=None,
+        *,
+        subresource_type=None,
+        subresource_id=None,
+    ):
+        url = f'{self._server}/{resource_type}/{resource_id}/'
+        if subresource_type:
+            url = f'{url}{subresource_type}/{subresource_id}/'
+        if params:
+            url = f'{url}?{urllib.parse.urlencode(params)}'
+        data, _ = self._get(url)
+        return json.loads(data)
+
+    def _list(
+        self,
+        resource_type,
+        params=None,
+        *,
+        resource_id=None,
+        subresource_type=None,
+    ):
+        url = f'{self._server}/{resource_type}/'
+        if resource_id:
+            url = f'{url}{resource_id}/{subresource_type}/'
+        if params:
+            url = f'{url}?{urllib.parse.urlencode(params)}'
+        data, _ = self._get(url)
+        return json.loads(data)
+
+    # project
+
+    @staticmethod
+    def _project_to_dict(obj):
+        """Serialize a project response.
+
+        Return a trimmed down dictionary representation of the API response
+        that matches what we got from the XML-RPC API.
+        """
+        return {
+            'id': obj['id'],
+            'linkname': obj['linkname']
+            if 'linkname' in obj
+            else obj['link_name'],
+            'name': obj['name'],
+        }
+
+    def project_list(self, search_str=None, max_count=0):
+        # we could implement these but we don't need them
+        if search_str:
+            raise NotImplementedError(
+                'The search_str parameter is not supported',
+            )
+
+        if max_count:
+            raise NotImplementedError(
+                'The max_count parameter is not supported',
+            )
+
+        projects = self._list('projects')
+        return [self._project_to_dict(project) for project in projects]
+
+    def project_get(self, project_id):
+        project = self._detail('projects', project_id)
+        return self._project_to_dict(project)
+
+    # person
+
+    @staticmethod
+    def _person_to_dict(obj):
+        """Serialize a person response.
+
+        Return a trimmed down dictionary representation of the API response
+        that matches what we got from the XML-RPC API.
+        """
+        return {
+            'id': obj['id'],
+            'email': obj['email'],
+            'name': obj['name'] if obj['name'] else obj['email'],
+            'user': obj['user']['username'] if obj['username'] else '',
+        }
+
+    def person_list(self, search_str=None, max_count=0):
+        # we could implement these but we don't need them
+        if search_str:
+            raise NotImplementedError(
+                'The search_str parameter is not supported',
+            )
+
+        if max_count:
+            raise NotImplementedError(
+                'The max_count parameter is not supported',
+            )
+
+        people = self._list('people')
+        return [self._person_to_dict(person) for person in people]
+
+    def person_get(self, person_id):
+        person = self._detail('people', person_id)
+        return self._person_to_dict(person)
+
+    # patch
+
+    @staticmethod
+    def _patch_to_dict(obj):
+        """Serialize a patch response.
+
+        Return a trimmed down dictionary representation of the API response
+        that matches what we got from the XML-RPC API.
+        """
+
+        def _format_person(person):
+            if not person:
+                return ''
+
+            if person['name']:
+                return f"{person['name']} <{person['email']}>"
+            return person['email']
+
+        def _format_user(user):
+            if not user:
+                return ''
+
+            return user['username']
+
+        return {
+            'id': obj['id'],
+            'date': obj['date'],
+            'filename': obj.get('filename') or '',
+            'msgid': obj['msgid'],
+            'name': obj['name'],
+            'project': obj['project']['name'],
+            'project_id': obj['project']['id'],
+            'state': obj['state'],
+            'state_id': '',  # NOTE: this isn't exposed
+            'archived': obj['archived'],
+            'submitter': _format_person(obj['submitter']),
+            'submitter_id': obj['submitter']['id'],
+            'delegate': _format_user(obj['delegate']),
+            'delegate_id': obj['delegate']['id'] if obj['delegate'] else '',
+            'commit_ref': obj['commit_ref'] or '',
+            'hash': obj['hash'] or '',
+        }
+
+    def patch_list(
+        self,
+        project,
+        submitter,
+        delegate,
+        state,
+        archived,
+        msgid,
+        name,
+        max_count=None,
+    ):
+        # we could implement these but we don't need them
+        if max_count:
+            raise NotImplementedError(
+                'The max_count parameter is not supported',
+            )
+
+        filters = {}
+
+        if state is not None:
+            # we slugify this since that's what the API expects
+            filters['state'] = state.lower().replace(' ', '-')
+
+        if project is not None:
+            filters['project'] = project
+
+        patches = self._list('patches', params=filters)
+        return [self._patch_to_dict(patch) for patch in patches]
+
+    def patch_get(self, patch_id):
+        patch = self._detail('patches', patch_id)
+        return self._patch_to_dict(patch)
+
+    def patch_get_by_hash(self, hash):
+        patches = self._list('patches', {'hash': hash})
+        if len(patches) != 1:
+            return {}  # emulate xmlrpc behavior
+        return self._patch_to_dict(patches[0])
+
+    def patch_get_by_project_hash(self, project, hash):
+        patches = self._list('patches', {'project': project, 'hash': hash})
+        if len(patches) != 1:
+            return {}  # emulate xmlrpc behavior
+        return self._patch_to_dict(patches[0])
+
+    def patch_get_mbox(self, patch_id):
+        patch = self._detail('patches', patch_id)
+        data, headers = self._get(patch['mbox'])
+        header = ''
+        for name, value in headers:
+            if name.lower() == 'content-disposition':
+                header = value
+                break
+        header_re = re.search('filename=(.+)', header)
+        if not header_re:
+            raise Exception('filename header was missing from the response')
+
+        filename = header_re.group(1)[:-6]  # remove the extension
+
+        return data.decode('utf-8'), filename
+
+    def patch_get_diff(self, patch_id):
+        patch = self._detail('patches', patch_id)
+        return patch['diff']
+
+    def patch_set(
+        self,
+        patch_id,
+        state=None,
+        archived=None,
+        commit_ref=None,
+    ):
+        params = {}
+
+        if state is not None:
+            # we slugify this since that's what the API expects
+            params['state'] = state.lower().replace(' ', '-')
+
+        if commit_ref is not None:
+            params['commit_ref'] = commit_ref
+
+        if archived is not None:
+            params['archived'] = archived
+
+        patch = self._update('patches', patch_id, params)
+        return self._patch_to_dict(patch)
+
+    # states
+
+    # Patch states are not exposed via the REST API, on the basis that they
+    # will eventually be a static list as opposed to something configurable. As
+    # such, we simply emulate the behavior here.
+
+    def state_list(self, search_str=None, max_count=0):
+        raise NotImplementedError('The REST API does not expose state objects')
+
+    def state_get(self, state_id):
+        raise NotImplementedError('The REST API does not expose state objects')
+
+    # checks
+
+    @staticmethod
+    def _check_to_dict(obj, patch):
+        """Serialize a check response.
+
+        Return a trimmed down dictionary representation of the API response
+        that matches what we got from the XML-RPC API.
+        """
+        return {
+            'id': obj['id'],
+            'date': obj['date'],
+            'patch': patch['name'],
+            'patch_id': patch['id'],
+            'user': obj['user']['username'] if obj['user'] else '',
+            'user_id': obj['user']['id'],
+            'state': obj['state'],
+            'target_url': obj['target_url'],
+            'description': obj['description'],
+            'context': obj['context'],
+        }
+
+    def check_list(self, patch, user):
+        if not patch:
+            raise NotImplementedError(
+                'The REST API does not allow listing of all checks by '
+                'project; listing of checks requires a target patch'
+            )
+
+        filters = {}
+
+        if user is not None:
+            filters['user'] = user
+
+        checks = self._list(
+            'patches',
+            filters,
+            resource_id=patch,
+            subresource_type='checks',
+        )
+        patch = self._detail(
+            'patches',
+            patch,
+        )
+        return [self._check_to_dict(check, patch) for check in checks]
+
+    def check_get(self, patch_id, check_id):
+        # this is icky, but alas we don't provide this information in the
+        # response
+        patch = self._detail(
+            'patches',
+            patch_id,
+        )
+        check = self._detail(
+            'patches',
+            patch_id,
+            subresource_type='checks',
+            subresource_id=check_id,
+        )
+        return self._check_to_dict(check, patch)
+
+    def check_create(
+        self,
+        patch_id,
+        context,
+        state,
+        target_url="",
+        description="",
+    ):
+        check = self._create(
+            'patches',
+            resource_id=patch_id,
+            subresource_type='checks',
+            data={
+                'context': context,
+                'state': state,
+                'target_url': target_url,
+                'description': description,
+            },
+        )
+        patch = self._detail(
+            'patches',
+            patch_id,
+        )
+        return self._check_to_dict(check, patch)
