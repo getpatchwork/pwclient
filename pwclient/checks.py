@@ -10,8 +10,8 @@ import sys
 from . import exceptions
 
 
-def action_list(api):
-    checks = api.check_list()
+def action_list(api, patch_id=None, user=None):
+    checks = api.check_list(patch_id, user)
     print("%-5s %-16s %-8s %s" % ("ID", "Context", "State", "Patch"))
     print("%-5s %-16s %-8s %s" % ("--", "-------", "-----", "-----"))
     for check in checks:
@@ -21,8 +21,16 @@ def action_list(api):
                                       check['patch']))
 
 
-def action_info(api, check_id):
-    check = api.check_get(check_id)
+def action_info(api, patch_id, check_id):
+    if patch_id and not check_id:
+        sys.stderr.write(
+            'Omitting the patch ID is deprecated behavior. Future versions of '
+            'pwclient will require both a patch and check ID\n'
+        )
+        check_id = patch_id
+        patch_id = None
+
+    check = api.check_get(patch_id, check_id)
     s = "Information for check id %d" % (check_id)
     print(s)
     print('-' * len(s))

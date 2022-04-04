@@ -150,13 +150,26 @@ lookup patch in project
 print output in the given format. You can use tags matching fields, e.g. %{context}, %{state}, or %{msgid}.
 
 .SH COMMAND \fI\,'pwclient check-list'\/\fR
-usage: pwclient check-list [-h]
-
-.SH COMMAND \fI\,'pwclient check-info'\/\fR
-usage: pwclient check-info [-h] ID
+usage: pwclient check-list [-h] [-u USER] [PATCH_ID]
 
 .TP
-\fBID\fR
+\fBPATCH_ID\fR
+patch ID
+
+.SH OPTIONS \fI\,'pwclient check-list'\/\fR
+.TP
+\fB\-u\fR \fI\,USER\/\fR, \fB\-\-user\fR \fI\,USER\/\fR
+user (name or ID) to filter checks by
+
+.SH COMMAND \fI\,'pwclient check-info'\/\fR
+usage: pwclient check-info [-h] [PATCH_ID] CHECK_ID
+
+.TP
+\fBPATCH_ID\fR
+patch ID; if check ID is omitted then this is parsed as the check ID
+
+.TP
+\fBCHECK_ID\fR
 check ID
 
 .SH COMMAND \fI\,'pwclient check-create'\/\fR

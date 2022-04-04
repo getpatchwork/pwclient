@@ -269,9 +269,21 @@ def test_check_info(mock_action, mock_api, mock_config):
 
     mock_config.return_value = FakeConfig()
 
+    shell.main(['check-info', '1', '1'])
+
+    mock_action.assert_called_once_with(mock_api.return_value, 1, 1)
+
+
+@mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(api, 'XMLRPC')
+@mock.patch.object(checks, 'action_info')
+def test_check_info__no_patch_id(mock_action, mock_api, mock_config):
+
+    mock_config.return_value = FakeConfig()
+
     shell.main(['check-info', '1'])
 
-    mock_action.assert_called_once_with(mock_api.return_value, 1)
+    mock_action.assert_called_once_with(mock_api.return_value, None, 1)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
@@ -283,7 +295,7 @@ def test_check_list(mock_action, mock_api, mock_config):
 
     shell.main(['check-list'])
 
-    mock_action.assert_called_once_with(mock_api.return_value)
+    mock_action.assert_called_once_with(mock_api.return_value, None, None)
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')

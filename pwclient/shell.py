@@ -201,11 +201,12 @@ def main(argv=sys.argv[1:]):
             checks.action_get(api, patch_id, format_str)
 
     elif action == 'check_list':
-        checks.action_list(api)
+        checks.action_list(api, args.patch_id, args.user)
 
     elif action == 'check_info':
+        patch_id = args.patch_id
         check_id = args.check_id
-        checks.action_info(api, check_id)
+        checks.action_info(api, patch_id, check_id)
 
     elif action == 'check_create':
         for patch_id in patch_ids:

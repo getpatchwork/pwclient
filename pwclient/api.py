@@ -105,11 +105,11 @@ class API(metaclass=abc.ABCMeta):
     # checks
 
     @abc.abstractmethod
-    def check_list(self):
+    def check_list(self, patch_id, user):
         pass
 
     @abc.abstractmethod
-    def check_get(self, check_id):
+    def check_get(self, patch_id, check_id):
         pass
 
     @abc.abstractmethod
@@ -374,11 +374,19 @@ class XMLRPC(API):
 
     # checks
 
-    # TODO(stephenfin): Add support for filters
-    def check_list(self):
-        return self._client.check_list()
+    def check_list(self, patch_id, user):
+        filters = {}
 
-    def check_get(self, check_id):
+        if patch_id is not None:
+            filters['patch_id'] = patch_id
+
+        if user is not None:
+            filters['user'] = user
+
+        return self._client.check_list(filters)
+
+    def check_get(self, patch_id, check_id):
+        # patch_id is not necessary for the XML-RPC API
         return self._client.check_get(check_id)
 
     def check_create(

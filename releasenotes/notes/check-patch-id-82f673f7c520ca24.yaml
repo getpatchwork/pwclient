@@ -1,0 +1,13 @@
+---
+upgrade:
+  - |
+    The ``check-list`` command now accepts a ``PATCH_ID`` positional
+    argument and ``--user USER`` option to allow users to filter checks by
+    patch and creator respectively. The ``PATCH_ID`` argument is currently
+    optional for the XML-RPC API backend but is required for the REST API
+    backend.
+  - |
+    The ``check-info`` command now takes two positional arguments, ``PATCH_ID``
+    and ``CHECK_ID``. Previously, it only took ``CHECK_ID``. The ``PATCH_ID``
+    argument remains optional for the XML-RPC API backend but is required for
+    the REST API backend.

@@ -47,7 +47,7 @@ def test_action_check_info(capsys):
     rpc = mock.Mock()
     rpc.check_get.return_value = fake_check
 
-    checks.action_info(rpc, 1)
+    checks.action_info(rpc, 1, 1)
 
     captured = capsys.readouterr()
 

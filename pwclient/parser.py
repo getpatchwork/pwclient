@@ -150,14 +150,47 @@ installed locales.
         'check-list',
         help="list all checks"
     )
+    # TODO: Make this non-optional in a future version
+    check_list_parser.add_argument(
+        'patch_id',
+        metavar='PATCH_ID',
+        action='store',
+        nargs='?',
+        type=int,
+        help="patch ID",
+    )
+    check_list_parser.add_argument(
+        '-u',
+        '--user',
+        metavar='USER',
+        action='store',
+        help="user (name or ID) to filter checks by",
+    )
     check_list_parser.set_defaults(subcmd='check_list')
 
     check_info_parser = subparsers.add_parser(
         'check-info',
-        help="show information for a given check")
+        help="show information for a given check",
+    )
+    # TODO: Make this non-optional in a future version
     check_info_parser.add_argument(
-        'check_id', metavar='ID', action='store', type=int,
-        help="check ID")
+        'patch_id',
+        metavar='PATCH_ID',
+        action='store',
+        nargs='?',
+        type=int,
+        help=(
+            "patch ID; if check ID is omitted then this is parsed as the "
+            "check ID"
+        ),
+    )
+    check_info_parser.add_argument(
+        'check_id',
+        metavar='CHECK_ID',
+        action='store',
+        type=int,
+        help="check ID",
+    )
     check_info_parser.set_defaults(subcmd='check_info')
 
     check_create_parser = subparsers.add_parser(
