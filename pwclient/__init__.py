@@ -7,7 +7,7 @@
 try:
     import importlib.metadata as importlib_metadata
 except ImportError:
-    import importlib_metadata as importlib_metadata
+    import importlib_metadata as importlib_metadata  # type: ignore
 
 try:
     __version__ = importlib_metadata.version(__package__ or __name__)
