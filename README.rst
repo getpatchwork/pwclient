@@ -57,7 +57,8 @@ Getting Started
 ---------------
 
 To use *pwclient*, you will need a ``.pwclientrc`` file, located in your home
-directory (``$HOME`` or ``~``). Patchwork itself provides sample
+directory (``$HOME`` or ``~``). You can point to another path with the
+environment variable ``PWCLIENTRC``. Patchwork itself provides sample
 ``.pwclientrc`` files for projects at ``/project/{projectName}/pwclientrc/``.
 For example, `here`__ is the ``.pwclientrc`` file for Patchwork itself.
 
