@@ -2,7 +2,8 @@ Configuration
 =============
 
 *pwclient* reads configuration from the ``.pwclientrc`` file, located in your
-home directory (``$HOME`` or ``~``). Patchwork itself provides sample
+home directory (``$HOME`` or ``~``). You can point to another path with the
+environment variable ``PWCLIENTRC``. Patchwork itself provides sample
 ``.pwclientrc`` files for projects at:
 
   /project/{projectName}/pwclientrc/
