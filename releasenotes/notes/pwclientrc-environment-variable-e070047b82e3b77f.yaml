@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    It is now possible to set the path of the ``pwclientrc`` file using the
+    ``PWCLIENRC`` environment variable. This can be useful for automation.
