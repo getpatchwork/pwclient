@@ -17,9 +17,7 @@ from . import projects
 from . import states
 from . import utils
 
-CONFIG_FILE = os.environ.get(
-    'PWCLIENTRC',
-    os.path.expanduser('~/.pwclientrc'))
+CONFIG_FILE = os.environ.get('PWCLIENTRC', os.path.expanduser('~/.pwclientrc'))
 
 BACKEND_XMLRPC = 'xmlrpc'
 BACKEND_REST = 'rest'
