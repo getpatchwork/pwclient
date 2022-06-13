@@ -1,0 +1,7 @@
+---
+prelude: >
+    *pwclient* version 2.2 introduces preliminary support for the Patchwork
+    REST API, first introduced in Patchwork 2.0. We encourage users to test
+    this functionality by setting the new ``[$project] backend`` setting to
+    ``rest``. Please report any bugs encountered. More details are provided
+    below and in the documentation.
