@@ -22,14 +22,6 @@ def action_list(api, patch_id=None, user=None):
 
 
 def action_info(api, patch_id, check_id):
-    if patch_id and not check_id:
-        sys.stderr.write(
-            'Omitting the patch ID is deprecated behavior. Future versions of '
-            'pwclient will require both a patch and check ID\n'
-        )
-        check_id = patch_id
-        patch_id = None
-
     check = api.check_get(patch_id, check_id)
     s = "Information for check id %d" % (check_id)
     print(s)

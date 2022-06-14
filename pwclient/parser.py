@@ -217,7 +217,7 @@ installed locales.
         action='store',
         nargs='?',
         type=int,
-        help="patch ID",
+        help="patch ID (required if using the REST API backend)",
     )
     check_list_parser.add_argument(
         '-u',
@@ -239,10 +239,7 @@ installed locales.
         action='store',
         nargs='?',
         type=int,
-        help=(
-            "patch ID; if check ID is omitted then this is parsed as the "
-            "check ID"
-        ),
+        help="patch ID (required if using the REST API backend)",
     )
     check_info_parser.add_argument(
         'check_id',

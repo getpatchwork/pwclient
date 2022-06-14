@@ -1,4 +1,4 @@
-.TH pwclient "1" Manual
+.TH PWCLIENT "1" Manual
 .SH NAME
 pwclient
 .SH SYNOPSIS
@@ -154,7 +154,7 @@ usage: pwclient check-list [-h] [-u USER] [PATCH_ID]
 
 .TP
 \fBPATCH_ID\fR
-patch ID
+patch ID (required if using the REST API backend)
 
 .SH OPTIONS \fI\,'pwclient check-list'\/\fR
 .TP
@@ -166,7 +166,7 @@ usage: pwclient check-info [-h] [PATCH_ID] CHECK_ID
 
 .TP
 \fBPATCH_ID\fR
-patch ID; if check ID is omitted then this is parsed as the check ID
+patch ID (required if using the REST API backend)
 
 .TP
 \fBCHECK_ID\fR
@@ -349,8 +349,12 @@ these variables are already set, make sure that they point to valid and
 installed locales.
 
 .SH AUTHORS
-.B pwclient
-was written by Patchwork Developers <patchwork@lists.ozlabs.org>.
+.nf
+Patchwork Developers
+.fi.nf
+patchwork@lists.ozlabs.org
+.fi
+
 .SH DISTRIBUTION
 The latest version of pwclient may be downloaded from
 .UR https://github.com/getpatchwork/patchwork
