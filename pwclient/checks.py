@@ -39,8 +39,7 @@ def action_info(api, patch_id, check_id):
 
 
 def action_get(api, patch_id, format_str=None):
-    checks_list = api.patch_check_get(patch_id)
-    checks = checks_list.get('checks', None)
+    checks = api.check_list(patch_id, user=None)
     if checks is None:
         return
 

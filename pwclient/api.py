@@ -846,6 +846,12 @@ class REST(API):
         return [self._check_to_dict(check, patch) for check in checks]
 
     def check_get(self, patch_id, check_id):
+        if not patch_id:
+            raise NotImplementedError(
+                'The REST API does not allow listing of all checks by '
+                'project; listing of checks requires a target patch'
+            )
+
         # this is icky, but alas we don't provide this information in the
         # response
         patch = self._detail(
@@ -854,7 +860,7 @@ class REST(API):
         )
         check = self._detail(
             'patches',
-            patch_id,
+            resource_id=patch_id,
             subresource_type='checks',
             subresource_id=check_id,
         )

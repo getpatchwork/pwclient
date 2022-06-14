@@ -8,7 +8,7 @@ from . import fakes
 
 def test_action_check_get(capsys):
     rpc = mock.Mock()
-    rpc.patch_check_get.return_value = fakes.fake_patch_check()
+    rpc.check_list.return_value = fakes.fake_checks()
 
     checks.action_get(rpc, 1)
 
@@ -21,9 +21,11 @@ Check information for patch id 1
 --------------------------------
 - context       : hello-world
 - id            : 1
+- patch         : A sample patch
 - patch_id      : 1
 - state         : success
-- target_url    :
+- target_url    : https://example.com/
+- user          : Joe Bloggs
 - user_id       : 1
 """
     )
@@ -42,7 +44,7 @@ def test_action_check_list(capsys):
         == """\
 ID    Context          State    Patch
 --    -------          -----    -----
-1     hello-world      success  1
+1     hello-world      success  A sample patch
 """
     )
 
@@ -64,8 +66,12 @@ Information for check id 1
 --------------------------
 - context       : hello-world
 - id            : 1
-- patch         : 1
+- patch         : A sample patch
+- patch_id      : 1
 - state         : success
+- target_url    : https://example.com/
+- user          : Joe Bloggs
+- user_id       : 1
 """
     )
 

@@ -96,28 +96,15 @@ def fake_checks():
     return [
         {
             'id': 1,
-            'context': 'hello-world',
+            'patch': 'A sample patch',
+            'patch_id': 1,
+            'user': 'Joe Bloggs',
+            'user_id': 1,
             'state': 'success',
-            'patch': 1,
+            'target_url': 'https://example.com/',
+            'context': 'hello-world',
         },
     ]
-
-
-def fake_patch_check():
-    return {
-        'checks': [
-            {
-                'context': 'hello-world',
-                'id': 1,
-                'patch_id': 1,
-                'state': 'success',
-                'target_url': '',
-                'user_id': 1,
-            }
-        ],
-        'state': 'success',
-        'total': 1,
-    }
 
 
 def fake_states():
