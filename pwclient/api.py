@@ -819,8 +819,8 @@ class REST(API):
             'context': obj['context'],
         }
 
-    def check_list(self, patch, user):
-        if not patch:
+    def check_list(self, patch_id, user):
+        if not patch_id:
             raise NotImplementedError(
                 'The REST API does not allow listing of all checks by '
                 'project; listing of checks requires a target patch'
@@ -831,15 +831,17 @@ class REST(API):
         if user is not None:
             filters['user'] = user
 
+        # this is icky, but alas we don't provide this information in the
+        # response
+        patch = self._detail(
+            'patches',
+            patch_id,
+        )
         checks = self._list(
             'patches',
             filters,
-            resource_id=patch,
+            resource_id=patch_id,
             subresource_type='checks',
-        )
-        patch = self._detail(
-            'patches',
-            patch,
         )
         return [self._check_to_dict(check, patch) for check in checks]
 
