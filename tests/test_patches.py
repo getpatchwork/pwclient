@@ -292,7 +292,10 @@ def test_action_get__invalid_id(capsys):
 @mock.patch.object(patches.subprocess, 'Popen')
 def test_action_view__no_pager(mock_popen, mock_env, capsys):
     api = mock.Mock()
-    api.patch_get_mbox.return_value = 'foo'
+    api.patch_get_mbox.return_value = (
+        'foo',
+        '1-3--Drop-support-for-Python-3-4--add-Python-3-7',
+    )
     mock_env.return_value = None
 
     patches.action_view(api, [1])
@@ -309,7 +312,20 @@ def test_action_view__no_pager(mock_popen, mock_env, capsys):
 @mock.patch.object(patches.subprocess, 'Popen')
 def test_action_view__no_pager_multiple_patches(mock_popen, mock_env, capsys):
     api = mock.Mock()
-    api.patch_get_mbox.side_effect = ['foo', 'bar', 'baz']
+    api.patch_get_mbox.side_effect = [
+        (
+            'foo',
+            '1-3--Drop-support-for-Python-3-4--add-Python-3-7',
+        ),
+        (
+            'bar',
+            '2-3-docker-Simplify-MySQL-reset',
+        ),
+        (
+            'baz',
+            '3-3-docker-Use-pyenv-for-Python-versions',
+        ),
+    ]
     mock_env.return_value = None
 
     patches.action_view(api, [1, 2, 3])
@@ -324,7 +340,10 @@ def test_action_view__no_pager_multiple_patches(mock_popen, mock_env, capsys):
 @mock.patch.object(patches.subprocess, 'Popen')
 def test_view__with_pager(mock_popen, mock_env, capsys):
     api = mock.Mock()
-    api.patch_get_mbox.return_value = 'foo'
+    api.patch_get_mbox.return_value = (
+        'foo',
+        '1-3--Drop-support-for-Python-3-4--add-Python-3-7',
+    )
     mock_env.return_value = 'less'
 
     patches.action_view(api, [1])
@@ -344,7 +363,20 @@ def test_view__with_pager(mock_popen, mock_env, capsys):
 @mock.patch.object(patches.subprocess, 'Popen')
 def test_view__with_pager_multiple_ids(mock_popen, mock_env, capsys):
     api = mock.Mock()
-    api.patch_get_mbox.side_effect = ['foo', 'bar', 'baz']
+    api.patch_get_mbox.side_effect = [
+        (
+            'foo',
+            '1-3--Drop-support-for-Python-3-4--add-Python-3-7',
+        ),
+        (
+            'bar',
+            '2-3-docker-Simplify-MySQL-reset',
+        ),
+        (
+            'baz',
+            '3-3-docker-Use-pyenv-for-Python-versions',
+        ),
+    ]
     mock_env.return_value = 'less'
 
     patches.action_view(api, [1, 2, 3])
@@ -364,7 +396,10 @@ def test_view__with_pager_multiple_ids(mock_popen, mock_env, capsys):
 def _test_action_apply(apply_cmd, mock_popen):
     api = mock.Mock()
     api.patch_get.return_value = fakes.fake_patches()[0]
-    api.patch_get_mbox.return_value = 'foo'
+    api.patch_get_mbox.return_value = (
+        'foo',
+        '1-3--Drop-support-for-Python-3-4--add-Python-3-7',
+    )
 
     args = [api, 1157169]
     if apply_cmd:

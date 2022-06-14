@@ -156,11 +156,11 @@ def action_view(api, patch_ids):
 
     for patch_id in patch_ids:
         try:
-            mbox = api.patch_get_mbox(patch_id)
+            mbox, _ = api.patch_get_mbox(patch_id)
         except Exception:
             # TODO(stephenfin): We skip this for historical reasons, but should
             # we log/raise an error?
-            pass
+            continue
 
         mboxes.append(mbox)
 
@@ -205,7 +205,7 @@ def action_apply(api, patch_id, apply_cmd=None):
     print('Description: %s' % patch['name'])
 
     try:
-        mbox = api.patch_get_mbox(patch_id)
+        mbox, _ = api.patch_get_mbox(patch_id)
     except Exception as exc:
         print(str(exc), file=sys.stderr)
         sys.exit(1)
