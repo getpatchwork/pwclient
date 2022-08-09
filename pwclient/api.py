@@ -247,7 +247,7 @@ class XMLRPC(API):
         if max_count:
             filters['max_count'] = max_count
 
-        if archived:
+        if archived is not None:
             filters['archived'] = archived
 
         if msgid:
