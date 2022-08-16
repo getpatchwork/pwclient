@@ -1,0 +1,4 @@
+---
+prelude: >
+    *pwclient * version 2.3.0 fixes a number of bugs introduced in 2.2.0 as
+    part of the Patchwork REST API feature.
