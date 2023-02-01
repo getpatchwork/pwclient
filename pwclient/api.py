@@ -66,6 +66,7 @@ class API(metaclass=abc.ABCMeta):
         archived,
         msgid,
         name,
+        hash,
         max_count=None,
     ):
         pass
@@ -240,6 +241,7 @@ class XMLRPC(API):
         archived,
         msgid,
         name,
+        hash,
         max_count=None,
     ):
         filters = {}
@@ -255,6 +257,9 @@ class XMLRPC(API):
 
         if name:
             filters['name__icontains'] = name
+
+        if hash:
+            filters['hash'] = hash
 
         if state is not None:
             state_id = self._state_id_by_name(state)

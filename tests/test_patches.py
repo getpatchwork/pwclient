@@ -119,6 +119,7 @@ def test_action_list__no_submitter_no_delegate(mock_list_patches, capsys):
         archived=None,
         msgid=None,
         name=None,
+        hash=None,
         max_count=None,
     )
     mock_list_patches.assert_called_once_with(
@@ -150,6 +151,7 @@ def test_action_list__submitter_filter(mock_list_patches, capsys):
         archived=None,
         msgid=None,
         name=None,
+        hash=None,
         max_count=None,
     )
     mock_list_patches.assert_called_once_with(
@@ -178,6 +180,7 @@ def test_action_list__delegate_filter(mock_list_patches, capsys):
         archived=None,
         msgid=None,
         name=None,
+        hash=None,
         max_count=None,
     )
     mock_list_patches.assert_called_once_with(

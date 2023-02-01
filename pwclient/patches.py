@@ -65,6 +65,7 @@ def action_list(
     archived=None,
     msgid=None,
     name=None,
+    hash=None,
     max_count=None,
     format_str=None,
 ):
@@ -75,6 +76,7 @@ def action_list(
         'archived': archived,
         'msgid': msgid,
         'name': name,
+        'hash': hash,
         'max_count': max_count,
         'submitter': None,
         'delegate': None,

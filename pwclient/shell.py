@@ -146,6 +146,7 @@ def main(argv=sys.argv[1:]):
             archived=args.archived,
             msgid=args.msgid,
             name=args.patch_name,
+            hash=args.hash,
             max_count=args.max_count,
             format_str=args.format,
         )
