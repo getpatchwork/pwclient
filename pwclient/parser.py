@@ -97,6 +97,9 @@ def _get_filter_parser():
         '-m', '--msgid', metavar='MESSAGEID', help="filter by Message-Id"
     )
     filter_parser.add_argument(
+        '-H', '--hash', metavar='HASH', help="filter by hash"
+    )
+    filter_parser.add_argument(
         '-f',
         '--format',
         metavar='FORMAT',
