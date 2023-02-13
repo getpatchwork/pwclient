@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The ``pwclient list`` command now accepts a ``--hash`` option to list
+    patches by hash.

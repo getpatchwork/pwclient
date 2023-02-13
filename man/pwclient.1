@@ -1,4 +1,4 @@
-.TH PWCLIENT "1" "2022\-12\-06" "pwclient" "Generated Python Manual"
+.TH PWCLIENT "1" "2023\-02\-13" "pwclient" "Generated Python Manual"
 .SH NAME
 pwclient
 .SH SYNOPSIS
@@ -256,7 +256,8 @@ set patch archived state
 
 .SH COMMAND \fI\,'pwclient list'\/\fR
 usage: pwclient list [\-h] [\-s STATE] [\-a ARCHIVED] [\-p PROJECT] [\-w WHO]
-                     [\-d WHO] [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-f FORMAT]
+                     [\-d WHO] [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-H HASH]
+                     [\-f FORMAT]
                      [STR]
 
 .TP
@@ -297,12 +298,17 @@ limit results to last N
 filter by Message\-Id
 
 .TP
+\fB\-H\fR \fI\,HASH\/\fR, \fB\-\-hash\fR \fI\,HASH\/\fR
+filter by hash
+
+.TP
 \fB\-f\fR \fI\,FORMAT\/\fR, \fB\-\-format\fR \fI\,FORMAT\/\fR
 print output in the given format. You can use tags matching fields, e.g. %{id}, %{state}, or %{msgid}.
 
 .SH COMMAND \fI\,'pwclient search'\/\fR
 usage: pwclient search [\-h] [\-s STATE] [\-a ARCHIVED] [\-p PROJECT] [\-w WHO]
-                       [\-d WHO] [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-f FORMAT]
+                       [\-d WHO] [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-H HASH]
+                       [\-f FORMAT]
                        [STR]
 
 .TP
@@ -341,6 +347,10 @@ limit results to last N
 .TP
 \fB\-m\fR \fI\,MESSAGEID\/\fR, \fB\-\-msgid\fR \fI\,MESSAGEID\/\fR
 filter by Message\-Id
+
+.TP
+\fB\-H\fR \fI\,HASH\/\fR, \fB\-\-hash\fR \fI\,HASH\/\fR
+filter by hash
 
 .TP
 \fB\-f\fR \fI\,FORMAT\/\fR, \fB\-\-format\fR \fI\,FORMAT\/\fR
