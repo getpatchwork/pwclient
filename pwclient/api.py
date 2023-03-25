@@ -712,6 +712,7 @@ class REST(API):
         archived,
         msgid,
         name,
+        hash,
         max_count=None,
     ):
         # we could implement these but we don't need them
@@ -728,6 +729,9 @@ class REST(API):
 
         if project is not None:
             filters['project'] = project
+
+        if hash is not None:
+            filters['hash'] = hash
 
         patches = self._list('patches', params=filters)
         return [self._patch_to_dict(patch) for patch in patches]
