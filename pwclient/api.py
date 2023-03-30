@@ -431,7 +431,7 @@ class REST(API):
         parsed_server = urllib.parse.urlparse(server)
         scheme = parsed_server.scheme or 'http'
         hostname = parsed_server.netloc
-        path = parsed_server.path
+        path = parsed_server.path.rstrip('/')
         if path.rstrip('/') == '/xmlrpc':
             path = '/api'
 
