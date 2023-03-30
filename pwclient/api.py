@@ -302,7 +302,7 @@ class XMLRPC(API):
 
         if delegate is not None:
             patches = []
-            delegate_ids = self._person_ids_by_name(self, delegate)
+            delegate_ids = self._person_ids_by_name(delegate)
             if len(delegate_ids) == 0:
                 sys.stderr.write(
                     "Note: Nobody found matching *%s*\n" % delegate
@@ -371,7 +371,7 @@ class XMLRPC(API):
             params['archived'] = archived == 'yes'
 
         try:
-            return self._client.patch_set(patch_id, params)
+            self._client.patch_set(patch_id, params)
         except xmlrpclib.Fault as f:
             raise exceptions.APIError(
                 'Error updating patch: %s' % f.faultString
@@ -411,7 +411,7 @@ class XMLRPC(API):
         description="",
     ):
         try:
-            return self._client.check_create(
+            self._client.check_create(
                 patch_id,
                 context,
                 state,
@@ -791,8 +791,7 @@ class REST(API):
         if archived is not None:
             params['archived'] = archived
 
-        patch = self._update('patches', patch_id, params)
-        return self._patch_to_dict(patch)
+        self._update('patches', patch_id, params)
 
     # states
 
@@ -883,7 +882,7 @@ class REST(API):
         target_url="",
         description="",
     ):
-        check = self._create(
+        self._create(
             'patches',
             resource_id=patch_id,
             subresource_type='checks',
@@ -894,8 +893,3 @@ class REST(API):
                 'description': description,
             },
         )
-        patch = self._detail(
-            'patches',
-            patch_id,
-        )
-        return self._check_to_dict(check, patch)
