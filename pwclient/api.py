@@ -154,7 +154,11 @@ class XMLRPC(API):
             transport.set_credentials(username, password)
 
         try:
-            rpc = xmlrpc.xmlrpclib.Server(self._server, transport=transport)
+            rpc = xmlrpc.xmlrpclib.ServerProxy(
+                self._server,
+                transport=transport,
+                allow_none=True,
+            )
         except (IOError, OSError):
             raise exceptions.APIError(f'Unable to connect to {self._server}')
 
