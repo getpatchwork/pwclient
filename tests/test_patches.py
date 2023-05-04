@@ -519,7 +519,8 @@ def test_action_update__error(capsys):
     api.patch_get.return_value = fakes.fake_patches()[0]
     api.patch_set.side_effect = exceptions.APIError('foo')
 
-    patches.action_update(api, 1157169)
+    with pytest.raises(SystemExit):
+        patches.action_update(api, 1157169)
 
     api.patch_set.assert_called_once_with(
         1157169, archived=None, commit_ref=None, state=None
@@ -532,23 +533,5 @@ def test_action_update__error(capsys):
         captured.err
         == """\
 foo
-Patch not updated
 """
     )
-
-
-def test_action_update__no_updates(capsys):
-    api = mock.Mock()
-    api.patch_get.return_value = fakes.fake_patches()[0]
-    api.patch_set.return_value = None
-
-    patches.action_update(api, 1157169)
-
-    api.patch_set.assert_called_once_with(
-        1157169, archived=None, commit_ref=None, state=None
-    )
-
-    captured = capsys.readouterr()
-
-    assert captured.out == ''
-    assert captured.err == 'Patch not updated\n'

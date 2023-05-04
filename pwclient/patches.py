@@ -225,9 +225,8 @@ def action_update(api, patch_id, state=None, archived=None, commit_ref=None):
         print(str(exc), file=sys.stderr)
         sys.exit(1)
 
-    success = False
     try:
-        success = api.patch_set(
+        api.patch_set(
             patch_id,
             state=state,
             archived=archived,
@@ -235,6 +234,4 @@ def action_update(api, patch_id, state=None, archived=None, commit_ref=None):
         )
     except Exception as exc:
         print(str(exc), file=sys.stderr)
-
-    if not success:
-        print('Patch not updated', file=sys.stderr)
+        sys.exit(1)
