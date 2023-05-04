@@ -77,35 +77,35 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: python -m build --sdist --wheel --outdir dist/ .
       - name: Publish distribution to Test PyPI
-        if: ${{ ! startsWith(github.ref, 'refs/tags') }}
+        if: ${{ github.ref_type != 'tag' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
       - name: Publish distribution to PyPI
-        if: ${{ startsWith(github.ref, 'refs/tags') }}
+        if: ${{ github.ref_type == 'tag' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
       - name: Create release on GitHub
         id: create_release
-        if: startsWith(github.ref, 'refs/tags')
+        if: ${{ github.ref_type == 'tag' }}
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
           draft: false
           prerelease: false
       - name: Add sdist to release
         id: upload-release-asset
-        if: startsWith(github.ref, 'refs/tags')
+        if: ${{ github.ref_type == 'tag' }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dist/pwclient-${{ github.ref }}.tar.gz
-          asset_name: pwclient-${{ github.ref }}.tar.gz
+          asset_path: ./dist/pwclient-${{ github.ref_name }}.tar.gz
+          asset_name: pwclient-${{ github.ref_name }}.tar.gz
           asset_content_type: application/gzip
