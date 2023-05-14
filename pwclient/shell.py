@@ -74,10 +74,18 @@ def main(argv=sys.argv[1:]):
     backend = config.get(project_str, 'backend', fallback=None)
     if backend is not None and backend not in BACKENDS:
         sys.stderr.write(
-            "The 'backend' option is invalid. Expected one of: rest, xmlrpc; "
-            "got: {backend}"
+            f"The 'backend' option is invalid. Expected one of: rest, xmlrpc; "
+            f"got: {backend}\n"
         )
         sys.exit(1)
+
+    if backend is None:
+        sys.stderr.write(
+            f"The default backend will change from 'xmlrpc' to 'rest' in a "
+            f"future version. You should explicitly set "
+            f"'[{project_str} backend' in pwclientrc to explicitly opt-in "
+            f"to a specific backend\n"
+        )
 
     backend = backend or BACKEND_XMLRPC
 
@@ -133,7 +141,7 @@ def main(argv=sys.argv[1:]):
         try:
             patch_ids = [int(x) for x in patch_ids]
         except ValueError:
-            sys.stderr.write('Patch IDs must be integers')
+            sys.stderr.write('Patch IDs must be integers\n')
             sys.exit(1)
 
     if action == 'list' or action == 'search':
@@ -221,7 +229,7 @@ def main(argv=sys.argv[1:]):
         if args.commit_ref and len(patch_ids) > 1:
             # update multiple IDs with a single commit-hash does not make sense
             sys.stderr.write(
-                'Declining update with COMMIT-REF on multiple IDs'
+                'Declining update with COMMIT-REF on multiple IDs\n'
             )
             sys.exit(1)
 

@@ -437,6 +437,12 @@ class REST(API):
         hostname = parsed_server.netloc
         path = parsed_server.path.rstrip('/')
         if path.rstrip('/') == '/xmlrpc':
+            sys.stderr.write(
+                f"Automatically converted XML-RPC URL to REST API URL. This "
+                f"is deprecated behavior and will be removed in a future "
+                f"release. Update your pwclientrc to use the following URL: "
+                f"{scheme}://{hostname}/api"
+            )
             path = '/api'
 
         self._server = f'{scheme}://{hostname}{path}'

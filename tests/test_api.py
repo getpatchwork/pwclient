@@ -25,7 +25,13 @@ def test_rest_init__strip_trailing_slash():
     assert 'https://patchwork.kernel.org/api' == client._server
 
 
-def test_rest_init__transform_legacy_url():
+def test_rest_init__transform_legacy_url(capsys):
     """Ensure we handle legacy XML-RPC URLs."""
     client = api.REST('https://patchwork.kernel.org/xmlrpc/')
     assert 'https://patchwork.kernel.org/api' == client._server
+
+    captured = capsys.readouterr()
+
+    assert (
+        'Automatically converted XML-RPC URL to REST API URL.' in captured.err
+    )

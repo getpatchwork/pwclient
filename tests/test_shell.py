@@ -22,7 +22,8 @@ class FakeConfig(object):
                 'default': DEFAULT_PROJECT,
             },
             DEFAULT_PROJECT: {
-                'url': 'https://example.com/',
+                'url': 'https://example.com/xmlrpc',
+                'backend': 'xmlrpc',
             },
         }
 
@@ -225,7 +226,7 @@ def test_apply__failed(mock_action, mock_api, mock_config, capsys):
             mock.call(mock_api.return_value, 3),
         ]
     )
-    assert captured.err == 'Apply failed with exit status 1\n', captured
+    assert 'Apply failed with exit status 1' in captured.err
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
