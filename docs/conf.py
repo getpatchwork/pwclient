@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#
 # pwclient documentation build configuration file
 
 try:
