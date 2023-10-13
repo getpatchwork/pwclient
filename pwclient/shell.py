@@ -91,10 +91,10 @@ def main(argv=sys.argv[1:]):
 
     if action in auth_actions:
         if backend == 'rest':
-            if not (
+            if not ((
                 config.has_option(project_str, 'username')
                 and config.has_option(project_str, 'password')
-            ) or config.has_option(project_str, 'token'):
+            ) or config.has_option(project_str, 'token')):
                 sys.stderr.write(
                     "The %s action requires authentication, but no "
                     "username/password or\n"
