@@ -457,9 +457,8 @@ class REST(API):
         }
 
         if self._token:
-            pass
-
-        if self._username:
+            headers['Authorization'] = f"Token {self._token}"
+        elif self._username and self._password:
             credentials = base64.b64encode(
                 f'{self._username}:{self._password}'.encode('ascii')
             ).decode('ascii')
