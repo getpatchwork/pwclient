@@ -587,7 +587,17 @@ class REST(API):
         r = self._get(url, params)
         if r.status_code == http.HTTPStatus.NOT_FOUND:
             return []
-        return r.json()
+
+        items = r.json()
+
+        while 'next' in r.links:
+            r = self._get(r.links['next']['url'], params)
+            if r.status_code == http.HTTPStatus.NOT_FOUND:
+                break
+
+            items += r.json()
+
+        return items
 
     # project
 
