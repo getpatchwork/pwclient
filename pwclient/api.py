@@ -742,6 +742,12 @@ class REST(API):
         if hash is not None:
             filters['hash'] = hash
 
+        if msgid is not None:
+            filters['msgid'] = msgid
+
+        if archived is not None:
+            filters['archived'] = archived
+
         patches = self._list('patches', params=filters)
         return [self._patch_to_dict(patch) for patch in patches]
 
