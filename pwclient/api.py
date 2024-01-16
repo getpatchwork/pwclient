@@ -9,10 +9,9 @@ import base64
 import json
 import http
 import re
+import requests
 import sys
-import urllib.error
 import urllib.parse
-import urllib.request
 
 from . import exceptions
 from . import xmlrpc
@@ -469,72 +468,63 @@ class REST(API):
 
         return headers
 
-    def _get(self, url):
-        request = urllib.request.Request(
-            url=url, method='GET', headers=self._generate_headers()
+    def _get(self, url, params=None):
+        r = requests.get(
+            url, params=params, headers=self._generate_headers()
         )
+        if r.status_code == http.HTTPStatus.NOT_FOUND:
+            # the XML-RPC API returns an empty body. To let callers handle
+            # this, we return instead of causing an error here
+            return r
         try:
-            with urllib.request.urlopen(request) as resp:
-                data = resp.read()
-                headers = resp.getheaders()
-        except urllib.error.HTTPError as exc:
-            # the XML-RPC API returns an empty body, annoyingly, so we must
-            # emulate this
-            if exc.status == http.HTTPStatus.NOT_FOUND:
-                return {}, {}
-
+            r.raise_for_status()
+        except requests.exceptions.RequestException as exc:
             sys.stderr.write('Request failed\n\n')
             sys.stderr.write('Response:\n')
-            sys.stderr.write(exc.read().decode('utf-8'))
+            sys.stderr.write(r.text)
             sys.exit(1)
 
-        return data, headers
+        return r
 
     def _post(self, url, data):
-        request = urllib.request.Request(
-            url=url,
-            data=json.dumps(data).encode('utf-8'),
-            method='POST',
-            headers=self._generate_headers(
+        r = requests.post(
+            url,
+            data=data,
+            headers=self.generate_headers(
                 {
                     'Content-Type': 'application/json',
                 },
             ),
         )
         try:
-            with urllib.request.urlopen(request) as resp:
-                data = resp.read()
-                headers = resp.getheaders()
-        except urllib.error.HTTPError as exc:
+            r.raise_for_status()
+        except requests.exceptions.RequestException as exc:
             sys.stderr.write('Request failed\n\n')
             sys.stderr.write('Response:\n')
-            sys.stderr.write(exc.read().decode('utf-8'))
+            sys.stderr.write(r.text)
             sys.exit(1)
 
-        return data, headers
+        return r
 
     def _put(self, url, data):
-        request = urllib.request.Request(
-            url=url,
-            data=json.dumps(data).encode('utf-8'),
-            method='PATCH',
-            headers=self._generate_headers(
+        r = requests.patch(
+            url,
+            data=data,
+            headers=self.generate_headers(
                 {
                     'Content-Type': 'application/json',
                 },
             ),
         )
         try:
-            with urllib.request.urlopen(request) as resp:
-                data = resp.read()
-                headers = resp.getheaders()
-        except urllib.error.HTTPError as exc:
+            r.raise_for_status()
+        except requests.exceptions.RequestException as exc:
             sys.stderr.write('Request failed\n\n')
             sys.stderr.write('Response:\n')
-            sys.stderr.write(exc.read().decode('utf-8'))
+            sys.stderr.write(r.text)
             sys.exit(1)
 
-        return data, headers
+        return r
 
     def _create(
         self,
@@ -547,8 +537,8 @@ class REST(API):
         url = f'{self._server}/{resource_type}/'
         if resource_id:
             url = f'{url}{resource_id}/{subresource_type}/'
-        data, _ = self._post(url, data)
-        return json.loads(data)
+        r = self._post(url, data)
+        return r.json()
 
     def _update(
         self,
@@ -562,8 +552,8 @@ class REST(API):
         url = f'{self._server}/{resource_type}/{resource_id}/'
         if subresource_id:
             url = f'{url}{subresource_type}/{subresource_id}/'
-        data, _ = self._put(url, data)
-        return json.loads(data)
+        r = self._put(url, data)
+        return r.json()
 
     def _detail(
         self,
@@ -577,10 +567,10 @@ class REST(API):
         url = f'{self._server}/{resource_type}/{resource_id}/'
         if subresource_type:
             url = f'{url}{subresource_type}/{subresource_id}/'
-        if params:
-            url = f'{url}?{urllib.parse.urlencode(params)}'
-        data, _ = self._get(url)
-        return json.loads(data)
+        r = self._get(url, params)
+        if r.status_code == http.HTTPStatus.NOT_FOUND:
+            return {}
+        return r.json()
 
     def _list(
         self,
@@ -593,10 +583,20 @@ class REST(API):
         url = f'{self._server}/{resource_type}/'
         if resource_id:
             url = f'{url}{resource_id}/{subresource_type}/'
-        if params:
-            url = f'{url}?{urllib.parse.urlencode(params)}'
-        data, _ = self._get(url)
-        return json.loads(data)
+        r = self._get(url, params)
+        if r.status_code == http.HTTPStatus.NOT_FOUND:
+            return []
+
+        items = r.json()
+
+        while 'next' in r.links:
+            r = self._get(r.links['next']['url'], params)
+            if r.status_code == http.HTTPStatus.NOT_FOUND:
+                break
+
+            items += r.json()
+
+        return items
 
     # project
 
@@ -769,19 +769,20 @@ class REST(API):
 
     def patch_get_mbox(self, patch_id):
         patch = self._detail('patches', patch_id)
-        data, headers = self._get(patch['mbox'])
-        header = ''
-        for name, value in headers:
-            if name.lower() == 'content-disposition':
-                header = value
-                break
+        r = self._get(patch['mbox'])
+        if r.status_code == http.HTTPStatus.NOT_FOUND:
+            sys.stderr.write('Request failed\n\n')
+            sys.stderr.write('Response:\n')
+            sys.stderr.write(r.text)
+            sys.exit(1)
+
+        header = r.headers['content-disposition']
         header_re = re.search('filename=(.+)', header)
         if not header_re:
             raise Exception('filename header was missing from the response')
-
         filename = header_re.group(1)[:-6]  # remove the extension
 
-        return data.decode('utf-8'), filename
+        return r.text, filename
 
     def patch_get_diff(self, patch_id):
         patch = self._detail('patches', patch_id)
