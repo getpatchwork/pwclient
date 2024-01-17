@@ -123,7 +123,6 @@ def test_no_project_url(mock_config, capsys):
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
 def test_missing_project(mock_config, capsys):
-
     mock_config.return_value = FakeConfig()
 
     with pytest.raises(SystemExit):
@@ -139,7 +138,6 @@ def test_missing_project(mock_config, capsys):
 @mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(utils, 'migrate_old_config_file')
 def test_migrate_config(mock_migrate, mock_config):
-
     fake_config = FakeConfig(
         {
             'base': {
@@ -165,7 +163,6 @@ def test_migrate_config(mock_migrate, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_server_error(mock_action, mock_api, mock_config, capsys):
-
     mock_config.return_value = FakeConfig()
     mock_api.side_effect = exceptions.APIError('Unable to connect')
 
@@ -182,7 +179,6 @@ def test_server_error(mock_action, mock_api, mock_config, capsys):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_apply(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
     mock_action.return_value = None
 
@@ -210,7 +206,6 @@ def test_apply(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_apply__failed(mock_action, mock_api, mock_config, capsys):
-
     mock_config.return_value = FakeConfig()
     mock_action.side_effect = [0, 0, 1]
 
@@ -233,7 +228,6 @@ def test_apply__failed(mock_action, mock_api, mock_config, capsys):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(checks, 'action_create')
 def test_check_create(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig(
         {
             DEFAULT_PROJECT: {
@@ -277,7 +271,6 @@ def test_check_create__no_auth(
     mock_config,
     capsys,
 ):
-
     mock_config.return_value = FakeConfig()
 
     with pytest.raises(SystemExit):
@@ -306,7 +299,6 @@ def test_check_create__no_auth(
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(checks, 'action_info')
 def test_check_info(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['check-info', '1', '1'])
@@ -318,7 +310,6 @@ def test_check_info(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(checks, 'action_info')
 def test_check_info__no_patch_id(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['check-info', '1'])
@@ -330,7 +321,6 @@ def test_check_info__no_patch_id(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(checks, 'action_list')
 def test_check_list(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['check-list'])
@@ -342,7 +332,6 @@ def test_check_list(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_get')
 def test_get__numeric_id(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
     mock_action.return_value = None
 
@@ -355,7 +344,6 @@ def test_get__numeric_id(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_get')
 def test_get__multiple_ids(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
     mock_action.return_value = None
 
@@ -375,7 +363,6 @@ def test_get__multiple_ids(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'patch_id_from_hash')
 @mock.patch.object(patches, 'action_get')
 def test_get__hash_ids(mock_action, mock_hash, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
     mock_action.return_value = 0
     mock_hash.return_value = 1
@@ -392,7 +379,6 @@ def test_get__hash_ids(mock_action, mock_hash, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_get')
 def test_get__no_ids(mock_action, mock_api, mock_config, capsys):
-
     mock_config.return_value = FakeConfig()
     mock_action.return_value = None
 
@@ -409,7 +395,6 @@ def test_get__no_ids(mock_action, mock_api, mock_config, capsys):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__no_args(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
     mock_action.return_value = 0
 
@@ -439,7 +424,6 @@ def test_git_am__no_args(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__threeway_option(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
     mock_action.return_value = 0
 
@@ -454,7 +438,6 @@ def test_git_am__threeway_option(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__signoff_option(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
     mock_action.return_value = 0
 
@@ -470,7 +453,6 @@ def test_git_am__signoff_option(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__threeway_global_conf(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig(
         {
             'options': {
@@ -491,7 +473,6 @@ def test_git_am__threeway_global_conf(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__signoff_global_conf(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig(
         {
             'options': {
@@ -513,7 +494,6 @@ def test_git_am__signoff_global_conf(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__threeway_project_conf(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig(
         {
             DEFAULT_PROJECT: {
@@ -534,7 +514,6 @@ def test_git_am__threeway_project_conf(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__signoff_project_conf(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig(
         {
             DEFAULT_PROJECT: {
@@ -556,7 +535,6 @@ def test_git_am__signoff_project_conf(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__failure(mock_action, mock_api, mock_config, capsys):
-
     mock_config.return_value = FakeConfig()
     mock_action.return_value = 1
 
@@ -578,7 +556,6 @@ def test_git_am__failure(mock_action, mock_api, mock_config, capsys):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_info')
 def test_info(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
     mock_action.return_value = None
 
@@ -606,7 +583,6 @@ def test_info(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__no_options(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['list'])
@@ -630,7 +606,6 @@ def test_list__no_options(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__state_filter(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-s', 'Accepted'])
@@ -654,7 +629,6 @@ def test_list__state_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__archived_filter(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-a', 'yes'])
@@ -678,7 +652,6 @@ def test_list__archived_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__project_filter(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig(
         {
             'fakeproject': {
@@ -708,7 +681,6 @@ def test_list__project_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__submitter_filter(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-w', 'fakesubmitter'])
@@ -732,7 +704,6 @@ def test_list__submitter_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__delegate_filter(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-d', 'fakedelegate'])
@@ -756,7 +727,6 @@ def test_list__delegate_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__msgid_filter(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-m', 'fakemsgid'])
@@ -780,7 +750,6 @@ def test_list__msgid_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__name_filter(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', 'fake patch name'])
@@ -804,7 +773,6 @@ def test_list__name_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__limit_filter(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-n', '5'])
@@ -828,7 +796,6 @@ def test_list__limit_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__limit_reverse_filter(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-N', '5'])
@@ -852,7 +819,6 @@ def test_list__limit_reverse_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__hash_filter(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['list', '-H', '3143a71a9d33f4f12b4469818d205125cace6535'])
@@ -876,7 +842,6 @@ def test_list__hash_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(projects, 'action_list')
 def test_projects(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['projects'])
@@ -888,7 +853,6 @@ def test_projects(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(states, 'action_list')
 def test_states(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig()
 
     shell.main(['states'])
@@ -905,7 +869,6 @@ def test_update__no_options(
     mock_config,
     capsys,
 ):
-
     mock_config.return_value = FakeConfig(
         {
             DEFAULT_PROJECT: {
@@ -933,7 +896,6 @@ def test_update__no_auth(
     mock_config,
     capsys,
 ):
-
     mock_config.return_value = FakeConfig()
 
     with pytest.raises(SystemExit):
@@ -949,7 +911,6 @@ def test_update__no_auth(
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__state_option(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig(
         {
             DEFAULT_PROJECT: {
@@ -974,7 +935,6 @@ def test_update__state_option(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__archive_option(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig(
         {
             DEFAULT_PROJECT: {
@@ -995,7 +955,6 @@ def test_update__archive_option(mock_action, mock_api, mock_config):
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__commitref_option(mock_action, mock_api, mock_config):
-
     mock_config.return_value = FakeConfig(
         {
             DEFAULT_PROJECT: {
@@ -1025,7 +984,6 @@ def test_update__commitref_with_multiple_patches(
     mock_config,
     capsys,
 ):
-
     mock_config.return_value = FakeConfig(
         {
             DEFAULT_PROJECT: {
@@ -1048,7 +1006,6 @@ def test_update__commitref_with_multiple_patches(
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(api, 'XMLRPC')
 def test_view(mock_api, mock_config, mock_view, capsys):
-
     fake_config = FakeConfig()
 
     mock_config.return_value = fake_config

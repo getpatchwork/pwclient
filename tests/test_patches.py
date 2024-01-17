@@ -49,7 +49,6 @@ def test_patch_id_from_hash():
 
 
 def test_list_patches(capsys):
-
     fake_patches = fakes.fake_patches()
 
     patches._list_patches(fake_patches)
@@ -69,7 +68,6 @@ ID      State        Name
 
 
 def test_list_patches__format_option(capsys):
-
     fake_patches = fakes.fake_patches()
 
     patches._list_patches(fake_patches, '%{state}')
@@ -87,7 +85,6 @@ Rejected
 
 
 def test_list_patches__format_option_with_msgid(capsys):
-
     fake_patches = fakes.fake_patches()
 
     patches._list_patches(fake_patches, '%{_msgid_}')
@@ -106,7 +103,6 @@ def test_list_patches__format_option_with_msgid(capsys):
 
 @mock.patch.object(patches, '_list_patches')
 def test_action_list__no_submitter_no_delegate(mock_list_patches, capsys):
-
     api = mock.Mock()
 
     patches.action_list(api, FAKE_PROJECT)
@@ -130,7 +126,6 @@ def test_action_list__no_submitter_no_delegate(mock_list_patches, capsys):
 
 @mock.patch.object(patches, '_list_patches')
 def test_action_list__submitter_filter(mock_list_patches, capsys):
-
     api = mock.Mock()
     api.patch_list.return_value = fakes.fake_patches()
 
@@ -162,7 +157,6 @@ def test_action_list__submitter_filter(mock_list_patches, capsys):
 
 @mock.patch.object(patches, '_list_patches')
 def test_action_list__delegate_filter(mock_list_patches, capsys):
-
     api = mock.Mock()
     api.patch_list.return_value = fakes.fake_patches()
 

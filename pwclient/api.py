@@ -430,7 +430,6 @@ class XMLRPC(API):
 
 class REST(API):
     def __init__(self, server, *, username=None, password=None, token=None):
-
         # TODO(stephenfin): We want to deprecate this behavior at some point
         parsed_server = urllib.parse.urlparse(server)
         scheme = parsed_server.scheme or 'http'
