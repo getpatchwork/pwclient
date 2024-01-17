@@ -1,11 +1,11 @@
 # pwclient documentation build configuration file
 
 try:
-    import furo  # noqa
+    import sphinx_rtd_theme  # noqa
 
-    has_furo_theme = True
+    has_rtd_theme = True
 except ImportError:
-    has_furo_theme = False
+    has_rtd_theme = False
 
 # -- General configuration ------------------------------------------------
 
@@ -18,7 +18,7 @@ extensions = [
 ]
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = 'contents'
 
 # General information about the project.
 project = 'pwclient'
@@ -33,5 +33,5 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-if has_furo_theme:
-    html_theme = 'furo'
+if has_rtd_theme:
+    html_theme = 'sphinx_rtd_theme'

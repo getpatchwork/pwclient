@@ -1,4 +1,4 @@
 sphinx
 reno
-furo
+sphinx_rtd_theme
 sphinxcontrib.autoprogram
