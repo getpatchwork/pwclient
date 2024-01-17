@@ -1,4 +1,4 @@
-.TH PWCLIENT "1" "2023\-05\-04" "pwclient" "Generated Python Manual"
+.TH PWCLIENT "1" "2024\-01\-17" "pwclient" "Generated Python Manual"
 .SH NAME
 pwclient
 .SH SYNOPSIS
@@ -176,8 +176,8 @@ check ID
 
 .SH COMMAND \fI\,'pwclient check\-create'\/\fR
 usage: pwclient check\-create [\-\-help] [\-h] [\-p PROJECT] [\-c CONTEXT]
-                             [\-s {pending,success,warning,fail}]
-                             [\-u TARGET_URL] [\-d DESCRIPTION]
+                             [\-s {pending,success,warning,fail}] [\-u TARGET_URL]
+                             [\-d DESCRIPTION]
                              PATCH_ID [PATCH_ID ...]
 
 .TP
@@ -255,9 +255,8 @@ set patch state (e.g., 'Accepted', 'Superseded' etc.)
 set patch archived state
 
 .SH COMMAND \fI\,'pwclient list'\/\fR
-usage: pwclient list [\-h] [\-s STATE] [\-a ARCHIVED] [\-p PROJECT] [\-w WHO]
-                     [\-d WHO] [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-H HASH]
-                     [\-f FORMAT]
+usage: pwclient list [\-h] [\-s STATE] [\-a ARCHIVED] [\-p PROJECT] [\-w WHO] [\-d WHO]
+                     [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-H HASH] [\-f FORMAT]
                      [STR]
 
 .TP
@@ -306,9 +305,8 @@ filter by hash
 print output in the given format. You can use tags matching fields, e.g. %{id}, %{state}, or %{msgid}.
 
 .SH COMMAND \fI\,'pwclient search'\/\fR
-usage: pwclient search [\-h] [\-s STATE] [\-a ARCHIVED] [\-p PROJECT] [\-w WHO]
-                       [\-d WHO] [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-H HASH]
-                       [\-f FORMAT]
+usage: pwclient search [\-h] [\-s STATE] [\-a ARCHIVED] [\-p PROJECT] [\-w WHO] [\-d WHO]
+                       [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-H HASH] [\-f FORMAT]
                        [STR]
 
 .TP
@@ -364,7 +362,7 @@ environment variables according to the configured locales on your system. If
 these variables are already set, make sure that they point to valid and
 installed locales.
 
-.SH AUTHORS
+.SH AUTHOR
 .nf
 Patchwork Developers
 .fi
