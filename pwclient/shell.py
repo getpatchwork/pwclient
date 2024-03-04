@@ -83,7 +83,7 @@ def main(argv=sys.argv[1:]):
         sys.stderr.write(
             f"The default backend will change from 'xmlrpc' to 'rest' in a "
             f"future version. You should explicitly set "
-            f"'[{project_str} backend' in pwclientrc to explicitly opt-in "
+            f"'[{project_str}] backend' in pwclientrc to explicitly opt-in "
             f"to a specific backend\n"
         )
 
