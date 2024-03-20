@@ -44,6 +44,9 @@ view a patch
 \fBpwclient\fR \fI\,update\/\fR
 update patch
 .TP
+\fBpwclient\fR \fI\,linkseries\/\fR
+link two or more series to each other
+.TP
 \fBpwclient\fR \fI\,list\/\fR
 list patches using optional filters
 .TP
@@ -94,6 +97,13 @@ pass '\-\-3way' to 'git\-am'
 .TP
 \fB\-m\fR, \fB\-\-msgid\fR
 pass '\-\-message\-id' to 'git\-am'
+
+.SH COMMAND \fI\,'pwclient linkseries'\/\fR
+usage: pwclient link_series [\-\-help] [\-h] [PATCH_ID ...]
+
+.TP
+\fBPATCH_ID\fR
+patch ID
 
 .SH COMMAND \fI\,'pwclient get'\/\fR
 usage: pwclient get [\-\-help] [\-h] [\-p PROJECT] PATCH_ID [PATCH_ID ...]
