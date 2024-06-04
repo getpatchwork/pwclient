@@ -440,7 +440,7 @@ class REST(API):
                 f"Automatically converted XML-RPC URL to REST API URL. This "
                 f"is deprecated behavior and will be removed in a future "
                 f"release. Update your pwclientrc to use the following URL: "
-                f"{scheme}://{hostname}/api"
+                f"{scheme}://{hostname}/api\n"
             )
             path = '/api'
 
