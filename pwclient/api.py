@@ -381,6 +381,12 @@ class XMLRPC(API):
                 'Error updating patch: %s' % f.faultString
             )
 
+
+    # series
+
+    def series_linking(self, series_ids):
+        raise exceptions.APIError('XMLRPC API does not support series linking')
+
     # states
 
     def state_list(self, search_str=None, max_count=0):
@@ -668,6 +674,17 @@ class REST(API):
         person = self._detail('people', person_id)
         return self._person_to_dict(person)
 
+    # series
+
+    def series_linking(self, series_ids):
+        for index, series_id_1 in enumerate(series_ids):
+            for series_id_2 in series_ids[index + 1:]:
+                print(f'Linking series of id\'s {series_id_1} and {series_id_2}')
+                url = f'{self._server}/series/{series_id_1}/link/{series_id_2}'
+                self._put(url, {})
+        print('Finished linking series')
+
+ 
     # patch
 
     @staticmethod
