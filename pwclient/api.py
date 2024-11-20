@@ -581,6 +581,28 @@ class REST(API):
         data, _ = self._get(url)
         return json.loads(data)
 
+    @staticmethod
+    def _get_next_page(headers):
+        link_header = next((data for header, data in headers if header == 'Link'), None)
+        if link_header is None:
+            return None
+
+        rel = '; rel="next"'
+
+        url = next((l[:-len(rel)] for l in link_header.split(',') if l.endswith(rel)), None)
+        if url is None:
+            return None;
+
+        if not (url.startswith('<') and url.endswith('>')):
+            return None;
+
+        parsed_link = urllib.parse.urlparse(url[1:-1])
+        page = next((x for x in parsed_link.query.split('&') if x.startswith('page=')), None)
+        if page is None:
+            return None
+
+        return int(page[5:])
+
     def _list(
         self,
         resource_type,
@@ -594,8 +616,23 @@ class REST(API):
             url = f'{url}{resource_id}/{subresource_type}/'
         if params:
             url = f'{url}?{urllib.parse.urlencode(params)}'
-        data, _ = self._get(url)
-        return json.loads(data)
+        data, headers = self._get(url)
+
+        items = json.loads(data)
+
+        page_nr = self._get_next_page(headers)
+        if page_nr is None:
+            return items
+
+        if params is None:
+            params = {}
+        params['page'] = page_nr
+
+        items += self._list(resource_type, params,
+                            resource_id=resource_id,
+                            subresource_type=subresource_type)
+
+        return items
 
     # project
 
