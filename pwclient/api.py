@@ -747,6 +747,9 @@ class REST(API):
         if archived is not None:
             filters['archived'] = archived
 
+        if delegate is not None:
+            filters['delegate'] = delegate
+
         patches = self._list('patches', params=filters)
         return [self._patch_to_dict(patch) for patch in patches]
 
