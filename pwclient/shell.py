@@ -5,6 +5,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import configparser
 import os
 import sys
 
@@ -38,7 +39,7 @@ def main(argv=sys.argv[1:]):
     action = args.subcmd
 
     # grab settings from config files
-    config = utils.configparser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read([CONFIG_FILE])
 
     if not config.has_section('options') and os.path.exists(CONFIG_FILE):
@@ -51,8 +52,8 @@ def main(argv=sys.argv[1:]):
         try:
             project_str = config.get('options', 'default')
         except (
-            utils.configparser.NoSectionError,
-            utils.configparser.NoOptionError,
+            configparser.NoSectionError,
+            configparser.NoOptionError,
         ):
             sys.stderr.write(
                 'No default project configured in %s\n' % CONFIG_FILE
