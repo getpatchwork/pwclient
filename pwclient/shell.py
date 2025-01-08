@@ -38,12 +38,23 @@ def main(argv=sys.argv[1:]):
 
     action = args.subcmd
 
+    if not os.path.exists(CONFIG_FILE):
+        sys.stderr.write('Config file not found at %s.\n' % CONFIG_FILE)
+        sys.exit(1)
+
     # grab settings from config files
     config = configparser.ConfigParser()
     config.read([CONFIG_FILE])
 
-    if not config.has_section('options') and os.path.exists(CONFIG_FILE):
+    if config.has_section('base'):
         utils.migrate_old_config_file(CONFIG_FILE, config)
+        sys.exit(1)
+
+    if not config.has_section('options'):
+        sys.stderr.write(
+            'No options section in %s. Did you forget to uncomment it?\n'
+            % CONFIG_FILE
+        )
         sys.exit(1)
 
     if 'project' in args and args.project:
