@@ -90,6 +90,7 @@ def test_help(capsys):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 def test_no_project(mock_config, capsys):
     fake_config = FakeConfig()
     del fake_config._data['options']['default']
@@ -106,6 +107,7 @@ def test_no_project(mock_config, capsys):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 def test_no_project_url(mock_config, capsys):
     fake_config = FakeConfig()
     del fake_config._data[DEFAULT_PROJECT]['url']
@@ -122,6 +124,7 @@ def test_no_project_url(mock_config, capsys):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 def test_missing_project(mock_config, capsys):
     mock_config.return_value = FakeConfig()
 
@@ -160,6 +163,7 @@ def test_migrate_config(mock_migrate, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_server_error(mock_action, mock_api, mock_config, capsys):
@@ -176,6 +180,7 @@ def test_server_error(mock_action, mock_api, mock_config, capsys):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_apply(mock_action, mock_api, mock_config):
@@ -203,6 +208,7 @@ def test_apply(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_apply__failed(mock_action, mock_api, mock_config, capsys):
@@ -225,6 +231,7 @@ def test_apply__failed(mock_action, mock_api, mock_config, capsys):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(checks, 'action_create')
 def test_check_create(mock_action, mock_api, mock_config):
@@ -263,6 +270,7 @@ def test_check_create(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(checks, 'action_create')
 def test_check_create__no_auth(
@@ -296,6 +304,7 @@ def test_check_create__no_auth(
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(checks, 'action_info')
 def test_check_info(mock_action, mock_api, mock_config):
@@ -307,6 +316,7 @@ def test_check_info(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(checks, 'action_info')
 def test_check_info__no_patch_id(mock_action, mock_api, mock_config):
@@ -318,6 +328,7 @@ def test_check_info__no_patch_id(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(checks, 'action_list')
 def test_check_list(mock_action, mock_api, mock_config):
@@ -329,6 +340,7 @@ def test_check_list(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_get')
 def test_get__numeric_id(mock_action, mock_api, mock_config):
@@ -341,6 +353,7 @@ def test_get__numeric_id(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_get')
 def test_get__multiple_ids(mock_action, mock_api, mock_config):
@@ -359,6 +372,7 @@ def test_get__multiple_ids(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'patch_id_from_hash')
 @mock.patch.object(patches, 'action_get')
@@ -376,6 +390,7 @@ def test_get__hash_ids(mock_action, mock_hash, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_get')
 def test_get__no_ids(mock_action, mock_api, mock_config, capsys):
@@ -392,6 +407,7 @@ def test_get__no_ids(mock_action, mock_api, mock_config, capsys):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__no_args(mock_action, mock_api, mock_config):
@@ -421,6 +437,7 @@ def test_git_am__no_args(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__threeway_option(mock_action, mock_api, mock_config):
@@ -435,6 +452,7 @@ def test_git_am__threeway_option(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__signoff_option(mock_action, mock_api, mock_config):
@@ -450,6 +468,7 @@ def test_git_am__signoff_option(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__threeway_global_conf(mock_action, mock_api, mock_config):
@@ -470,6 +489,7 @@ def test_git_am__threeway_global_conf(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__signoff_global_conf(mock_action, mock_api, mock_config):
@@ -491,6 +511,7 @@ def test_git_am__signoff_global_conf(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__threeway_project_conf(mock_action, mock_api, mock_config):
@@ -511,6 +532,7 @@ def test_git_am__threeway_project_conf(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__signoff_project_conf(mock_action, mock_api, mock_config):
@@ -532,6 +554,7 @@ def test_git_am__signoff_project_conf(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__failure(mock_action, mock_api, mock_config, capsys):
@@ -553,6 +576,7 @@ def test_git_am__failure(mock_action, mock_api, mock_config, capsys):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_info')
 def test_info(mock_action, mock_api, mock_config):
@@ -580,6 +604,7 @@ def test_info(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__no_options(mock_action, mock_api, mock_config):
@@ -603,6 +628,7 @@ def test_list__no_options(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__state_filter(mock_action, mock_api, mock_config):
@@ -626,6 +652,7 @@ def test_list__state_filter(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__archived_filter(mock_action, mock_api, mock_config):
@@ -649,6 +676,7 @@ def test_list__archived_filter(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__project_filter(mock_action, mock_api, mock_config):
@@ -678,6 +706,7 @@ def test_list__project_filter(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__submitter_filter(mock_action, mock_api, mock_config):
@@ -701,6 +730,7 @@ def test_list__submitter_filter(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__delegate_filter(mock_action, mock_api, mock_config):
@@ -724,6 +754,7 @@ def test_list__delegate_filter(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__msgid_filter(mock_action, mock_api, mock_config):
@@ -747,6 +778,7 @@ def test_list__msgid_filter(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__name_filter(mock_action, mock_api, mock_config):
@@ -770,6 +802,7 @@ def test_list__name_filter(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__limit_filter(mock_action, mock_api, mock_config):
@@ -793,6 +826,7 @@ def test_list__limit_filter(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__limit_reverse_filter(mock_action, mock_api, mock_config):
@@ -816,6 +850,7 @@ def test_list__limit_reverse_filter(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_list')
 def test_list__hash_filter(mock_action, mock_api, mock_config):
@@ -839,6 +874,7 @@ def test_list__hash_filter(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(projects, 'action_list')
 def test_projects(mock_action, mock_api, mock_config):
@@ -850,6 +886,7 @@ def test_projects(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(states, 'action_list')
 def test_states(mock_action, mock_api, mock_config):
@@ -861,6 +898,7 @@ def test_states(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__no_options(
@@ -888,6 +926,7 @@ def test_update__no_options(
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__no_auth(
@@ -908,6 +947,7 @@ def test_update__no_auth(
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__state_option(mock_action, mock_api, mock_config):
@@ -932,6 +972,7 @@ def test_update__state_option(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__archive_option(mock_action, mock_api, mock_config):
@@ -952,6 +993,7 @@ def test_update__archive_option(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__commitref_option(mock_action, mock_api, mock_config):
@@ -976,6 +1018,7 @@ def test_update__commitref_option(mock_action, mock_api, mock_config):
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
 @mock.patch.object(patches, 'action_update')
 def test_update__commitref_with_multiple_patches(
@@ -1002,17 +1045,14 @@ def test_update__commitref_with_multiple_patches(
     assert 'Declining update with COMMIT-REF on multiple IDs' in captured.err
 
 
-@mock.patch.object(patches, 'action_view')
 @mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 @mock.patch.object(api, 'XMLRPC')
-def test_view(mock_api, mock_config, mock_view, capsys):
-    fake_config = FakeConfig()
-
-    mock_config.return_value = fake_config
+@mock.patch.object(patches, 'action_view')
+def test_view(mock_action, mock_api, mock_config, capsys):
+    mock_config.return_value = FakeConfig()
     mock_api.return_value.patch_get_mbox.return_value = 'foo'
-
-    # test firstly with a single patch ID
 
     shell.main(['view', '1'])
 
-    mock_view.assert_called_once_with(mock_api.return_value, [1])
+    mock_action.assert_called_once_with(mock_api.return_value, [1])
