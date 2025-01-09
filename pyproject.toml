@@ -61,3 +61,6 @@ ignore = [
     # we make extensive use of printf style formatting and rewriting is a chore
     "UP031",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S"]

@@ -137,7 +137,7 @@ def test_action_list__submitter_filter(mock_list_patches, capsys):
     assert (
         'Patches submitted by Joe Bloggs <joe.bloggs@example.com>:'
         in captured.out
-    )  # noqa: E501
+    )
 
     api.patch_list.assert_called_once_with(
         project='defaultproject',
