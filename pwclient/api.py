@@ -644,7 +644,7 @@ class REST(API):
             )
 
         projects = self._list('projects')
-        return [self._project_to_dict(project) for project in projects]
+        return (self._project_to_dict(project) for project in projects)
 
     def project_get(self, project_id):
         project = self._detail('projects', project_id)
@@ -679,7 +679,7 @@ class REST(API):
             )
 
         people = self._list('people')
-        return [self._person_to_dict(person) for person in people]
+        return (self._person_to_dict(person) for person in people)
 
     def person_get(self, person_id):
         person = self._detail('people', person_id)
@@ -771,7 +771,7 @@ class REST(API):
             filters['delegate'] = delegate
 
         patches = self._list('patches', params=filters)
-        return [self._patch_to_dict(patch) for patch in patches]
+        return (self._patch_to_dict(patch) for patch in patches)
 
     def patch_get(self, patch_id):
         patch = self._detail('patches', patch_id)
