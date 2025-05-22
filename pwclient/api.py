@@ -798,6 +798,9 @@ class REST(API):
         if archived is not None:
             filters['archived'] = archived
 
+        if submitter is not None:
+            filters['submitter'] = submitter
+
         if delegate is not None:
             filters['delegate'] = delegate
 
