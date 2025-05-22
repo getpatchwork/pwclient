@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import itertools
+import operator
 import os
 import re
 import subprocess
@@ -92,7 +93,7 @@ def action_list(
         patches = api.patch_list(**filters)
 
         for person, person_patches in sortgroupby(
-            patches, key=lambda x: x['submitter']
+            patches, key=operator.itemgetter('submitter')
         ):
             print(f'Patches submitted by {person}:')
             _list_patches(list(person_patches), format_str)
@@ -105,7 +106,7 @@ def action_list(
         patches = api.patch_list(**filters)
 
         for delegate, delegate_patches in sortgroupby(
-            patches, key=lambda x: x['delegate']
+            patches, key=operator.itemgetter('delegate')
         ):
             print(f'Patches delegated to {delegate}:')
             _list_patches(list(delegate_patches), format_str)
