@@ -19,6 +19,8 @@ from . import xmlrpc
 from . import __version__
 from .xmlrpc import xmlrpclib
 
+from requests.utils import parse_header_links
+
 
 class API(metaclass=abc.ABCMeta):
     @abc.abstractmethod
@@ -594,8 +596,23 @@ class REST(API):
             url = f'{url}{resource_id}/{subresource_type}/'
         if params:
             url = f'{url}?{urllib.parse.urlencode(params)}'
-        data, _ = self._get(url)
-        return json.loads(data)
+
+        while url:
+            data, headers = self._get(url)
+            ret = json.loads(data)
+
+            yield from ret
+
+            try:
+                link = next(value for name, value in headers if name == 'Link')
+                url = next(
+                    a['url']
+                    for a in parse_header_links(link)
+                    if a['rel'] == "next"
+                )
+
+            except StopIteration:
+                url = None
 
     # project
 
