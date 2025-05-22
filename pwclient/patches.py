@@ -56,6 +56,10 @@ def _list_patches(patches, format_str=None):
             )
 
 
+def sortgroupby(iterable, key=None):
+    return itertools.groupby(sorted(iterable, key=key), key=key)
+
+
 def action_list(
     api,
     project=None,
@@ -89,9 +93,8 @@ def action_list(
         filters['submitter'] = submitter
 
         patches = api.patch_list(**filters)
-        patches.sort(key=lambda x: x['submitter'])
 
-        for person, person_patches in itertools.groupby(
+        for person, person_patches in sortgroupby(
             patches, key=lambda x: x['submitter']
         ):
             print(f'Patches submitted by {person}:')
@@ -103,9 +106,8 @@ def action_list(
         filters['delegate'] = delegate
 
         patches = api.patch_list(**filters)
-        patches.sort(key=lambda x: x['delegate'])
 
-        for delegate, delegate_patches in itertools.groupby(
+        for delegate, delegate_patches in sortgroupby(
             patches, key=lambda x: x['delegate']
         ):
             print(f'Patches delegated to {delegate}:')
