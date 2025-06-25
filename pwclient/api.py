@@ -608,9 +608,9 @@ class REST(API):
         """
         return {
             'id': obj['id'],
-            'linkname': obj['linkname']
-            if 'linkname' in obj
-            else obj['link_name'],
+            'linkname': (
+                obj['linkname'] if 'linkname' in obj else obj['link_name']
+            ),
             'name': obj['name'],
         }
 
