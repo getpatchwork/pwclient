@@ -24,7 +24,7 @@ class Transport(xmlrpclib.SafeTransport):
             self.https = self.proxy.startswith('https')
 
     def set_credentials(self, username=None, password=None):
-        self.credentials = '%s:%s' % (username, password)
+        self.credentials = f'{username}:{password}'
 
     def make_connection(self, host):
         self.host = host
@@ -38,7 +38,7 @@ class Transport(xmlrpclib.SafeTransport):
             return xmlrpclib.Transport.make_connection(self, host)
 
     def send_request(self, host, handler, request_body, debug):
-        handler = '%s://%s%s' % (self.scheme, host, handler)
+        handler = f'{self.scheme}://{host}{handler}'
         return xmlrpclib.Transport.send_request(
             self,
             host,

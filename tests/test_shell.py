@@ -15,7 +15,7 @@ DEFAULT_PROJECT = 'defaultproject'
 _UNSET = object()
 
 
-class FakeConfig(object):
+class FakeConfig:
     def __init__(self, updates=None):
         self._data = {
             'options': {
@@ -119,7 +119,7 @@ def test_no_project_url(mock_config, capsys):
 
     captured = capsys.readouterr()
 
-    assert 'No URL for project %s' % DEFAULT_PROJECT in captured.err
+    assert f'No URL for project {DEFAULT_PROJECT}' in captured.err
     assert captured.out == ''
 
 

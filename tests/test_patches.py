@@ -1,3 +1,4 @@
+import builtins
 from unittest import mock
 
 import pytest
@@ -229,7 +230,7 @@ def test_action_info__invalid_id(capsys):
     assert captured.err == 'foo\n'
 
 
-@mock.patch.object(patches.io, 'open')
+@mock.patch.object(builtins, 'open')
 @mock.patch.object(patches.os.path, 'basename')
 @mock.patch.object(patches.os.path, 'exists')
 def test_action_get(mock_exists, mock_basename, mock_open, capsys):

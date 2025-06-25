@@ -39,7 +39,7 @@ def main(argv=sys.argv[1:]):
     action = args.subcmd
 
     if not os.path.exists(CONFIG_FILE):
-        sys.stderr.write('Config file not found at %s.\n' % CONFIG_FILE)
+        sys.stderr.write(f'Config file not found at {CONFIG_FILE}.\n')
         sys.exit(1)
 
     # grab settings from config files
@@ -52,8 +52,7 @@ def main(argv=sys.argv[1:]):
 
     if not config.has_section('options'):
         sys.stderr.write(
-            'No options section in %s. Did you forget to uncomment it?\n'
-            % CONFIG_FILE
+            f'No options section in {CONFIG_FILE}. Did you forget to uncomment it?\n'
         )
         sys.exit(1)
 
@@ -67,19 +66,19 @@ def main(argv=sys.argv[1:]):
             configparser.NoOptionError,
         ):
             sys.stderr.write(
-                'No default project configured in %s\n' % CONFIG_FILE
+                f'No default project configured in {CONFIG_FILE}\n'
             )
             sys.exit(1)
 
     if not config.has_section(project_str):
         sys.stderr.write(
-            'No section for project %s in %s\n' % (project_str, CONFIG_FILE)
+            f'No section for project {project_str} in {CONFIG_FILE}\n'
         )
         sys.exit(1)
 
     if not config.has_option(project_str, 'url'):
         sys.stderr.write(
-            'No URL for project %s in %s\n' % (project_str, CONFIG_FILE)
+            f'No URL for project {project_str} in {CONFIG_FILE}\n'
         )
         sys.exit(1)
 
@@ -111,9 +110,9 @@ def main(argv=sys.argv[1:]):
                 or config.has_option(project_str, 'token')
             ):
                 sys.stderr.write(
-                    "The %s action requires authentication, but no "
-                    "username/password or\n"
-                    "token is configured\n" % action
+                    f"The {action} action requires authentication, but no "
+                    f"username/password or\n"
+                    f"token is configured\n"
                 )
                 sys.exit(1)
         else:
@@ -122,9 +121,9 @@ def main(argv=sys.argv[1:]):
                 and config.has_option(project_str, 'password')
             ):
                 sys.stderr.write(
-                    "The %s action requires authentication, but no "
-                    "username or password\n"
-                    "is configured\n" % action
+                    f"The {action} action requires authentication, but no "
+                    f"username or password\n"
+                    f"is configured\n"
                 )
                 sys.exit(1)
 
@@ -195,7 +194,7 @@ def main(argv=sys.argv[1:]):
         for patch_id in patch_ids:
             ret = patches.action_apply(api, patch_id)
             if ret:
-                sys.stderr.write("Apply failed with exit status %d\n" % ret)
+                sys.stderr.write(f"Apply failed with exit status {ret}\n")
                 sys.exit(1)
 
     elif action == 'git_am':
@@ -237,7 +236,7 @@ def main(argv=sys.argv[1:]):
         for patch_id in patch_ids:
             ret = patches.action_apply(api, patch_id, cmd)
             if ret:
-                sys.stderr.write("'git am' failed with exit status %d\n" % ret)
+                sys.stderr.write(f"'git am' failed with exit status {ret}\n")
                 sys.exit(1)
 
     elif action == 'update':

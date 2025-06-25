@@ -7,4 +7,13 @@ quote-style = "preserve"
 docstring-code-format = true
 
 [tool.ruff.lint]
-select = ["E4", "E7", "E9", "F"]
+select = ["E4", "E7", "E9", "F", "S", "U"]
+ignore = [
+    # we only use asserts for type narrowing
+    "S101",
+    # this is client tool running on a user's own system: users can open
+    # whatever urls they want to
+    "S310",
+    # ditto for running executables via subprocess
+    "S603",
+]

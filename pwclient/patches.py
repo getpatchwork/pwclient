@@ -4,7 +4,6 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import io
 import itertools
 import os
 import re
@@ -48,12 +47,10 @@ def _list_patches(patches, format_str=None):
         for patch in patches:
             print(format_field_re.sub(patch_field, format_str))
     else:
-        print("%-7s %-12s %s" % ("ID", "State", "Name"))
-        print("%-7s %-12s %s" % ("--", "-----", "----"))
+        print("ID      State        Name")
+        print("--      -----        ----")
         for patch in patches:
-            print(
-                "%-7d %-12s %s" % (patch['id'], patch['state'], patch['name'])
-            )
+            print(f"{patch['id']:<7} {patch['state']:<12} {patch['name']}")
 
 
 def action_list(
@@ -124,14 +121,14 @@ def action_info(api, patch_id):
         print(str(exc), file=sys.stderr)
         sys.exit(1)
 
-    s = "Information for patch id %d" % (patch_id)
+    s = f"Information for patch id {patch_id}"
     print(s)
     print('-' * len(s))
     for key, value in sorted(patch.items()):
         if value != '':
-            print("- %- 14s: %s" % (key, value))
+            print(f"- {key:<14}: {value}")
         else:
-            print("- %- 14s:" % key)
+            print(f"- {key:<14}:")
 
 
 def action_get(api, patch_id):
@@ -145,12 +142,12 @@ def action_get(api, patch_id):
     fname += '.patch'
     i = 0
     while os.path.exists(fname):
-        fname = "%s.%d.patch" % (base_fname, i)
+        fname = f"{base_fname}.{i}.patch"
         i += 1
 
-    with io.open(fname, 'x', encoding='utf-8') as f:
+    with open(fname, 'x', encoding='utf-8') as f:
         f.write(mbox)
-        print('Saved patch to %s' % fname)
+        print(f'Saved patch to {fname}')
 
 
 def action_view(api, patch_ids):
@@ -159,7 +156,7 @@ def action_view(api, patch_ids):
     for patch_id in patch_ids:
         try:
             mbox, _ = api.patch_get_mbox(patch_id)
-        except Exception:
+        except Exception:  # noqa
             # TODO(stephenfin): We skip this for historical reasons, but should
             # we log/raise an error?
             continue
@@ -197,14 +194,13 @@ def action_apply(api, patch_id, apply_cmd=None):
         sys.exit(1)
 
     if apply_cmd is None:
-        print('Applying patch #%d to current directory' % patch_id)
+        print(f'Applying patch #{patch_id} to current directory')
         apply_cmd = ['patch', '-p1']
     else:
-        print(
-            'Applying patch #%d using "%s"' % (patch_id, ' '.join(apply_cmd))
-        )
+        _cmd = ' '.join(apply_cmd)
+        print(f'Applying patch #{patch_id} using "{_cmd}"')
 
-    print('Description: %s' % patch['name'])
+    print(f"Description: {patch['name']}")
 
     try:
         mbox, _ = api.patch_get_mbox(patch_id)
