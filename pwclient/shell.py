@@ -15,6 +15,7 @@ from . import exceptions
 from . import parser
 from . import patches
 from . import projects
+from . import series
 from . import states
 from . import utils
 
@@ -196,6 +197,12 @@ def main(argv=sys.argv[1:]):
             if ret:
                 sys.stderr.write(f"Apply failed with exit status {ret}\n")
                 sys.exit(1)
+
+    elif action == 'linkseries':
+        if len(patch_ids) < 2:
+            sys.stderr.write("At least two ids are necessary to link series")
+            sys.exit(1)
+        series.link(api, patch_ids)
 
     elif action == 'git_am':
         cmd = ['git', 'am']
