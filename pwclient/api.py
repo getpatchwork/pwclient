@@ -627,31 +627,26 @@ class REST(API):
         resource_id=None,
         subresource_type=None,
     ):
-        url = f'{self._server}/{resource_type}/'
-        if resource_id:
-            url = f'{url}{resource_id}/{subresource_type}/'
-        if params:
-            url = f'{url}?{urllib.parse.urlencode(params)}'
-        data, headers = self._get(url)
-
-        items = json.loads(data)
-
-        page_nr = self._get_next_page(headers)
-        if page_nr is None:
-            return items
-
         if params is None:
             params = {}
-        params['page'] = page_nr
 
-        items += self._list(
-            resource_type,
-            params,
-            resource_id=resource_id,
-            subresource_type=subresource_type,
-        )
+        while True:
+            url = f'{self._server}/{resource_type}/'
+            if resource_id:
+                url = f'{url}{resource_id}/{subresource_type}/'
+            if params:
+                url = f'{url}?{urllib.parse.urlencode(params)}'
 
-        return items
+            data, headers = self._get(url)
+            items = json.loads(data)
+
+            yield from items
+
+            page_nr = self._get_next_page(headers)
+            if page_nr is None:
+                break
+
+            params['page'] = page_nr
 
     # project
 
