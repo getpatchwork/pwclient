@@ -16,4 +16,6 @@ ignore = [
     "S310",
     # ditto for running executables via subprocess
     "S603",
+    # we make extensive use of printf style formatting and rewriting is a chore
+    "UP031",
 ]

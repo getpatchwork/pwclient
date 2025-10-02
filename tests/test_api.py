@@ -14,7 +14,7 @@ def test_xmlrpc_init__missing_username():
 def test_xmlrpc_init__invalid_auth():
     """The XML-RPC API doesn't support tokens."""
     with pytest.raises(exceptions.ConfigError) as exc:
-        api.XMLRPC('https://example.com/xmlrpc', token='foo')
+        api.XMLRPC('https://example.com/xmlrpc', token='foo')  # noqa: S106
 
     assert 'The XML-RPC API does not support API tokens' in str(exc.value)
 
