@@ -671,12 +671,12 @@ class REST(API):
         # we could implement these but we don't need them
         if search_str:
             raise NotImplementedError(
-                'The search_str parameter is not supported',
+                'The search_str parameter is not supported'
             )
 
         if max_count:
             raise NotImplementedError(
-                'The max_count parameter is not supported',
+                'The max_count parameter is not supported'
             )
 
         projects = self._list('projects')
@@ -706,12 +706,12 @@ class REST(API):
         # we could implement these but we don't need them
         if search_str:
             raise NotImplementedError(
-                'The search_str parameter is not supported',
+                'The search_str parameter is not supported'
             )
 
         if max_count:
             raise NotImplementedError(
-                'The max_count parameter is not supported',
+                'The max_count parameter is not supported'
             )
 
         people = self._list('people')
@@ -779,7 +779,7 @@ class REST(API):
         # we could implement these but we don't need them
         if max_count:
             raise NotImplementedError(
-                'The max_count parameter is not supported',
+                'The max_count parameter is not supported'
             )
 
         filters = {}
