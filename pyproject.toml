@@ -1,6 +1,48 @@
+[build-system]
+requires = ["pbr>=6.1.1"]
+build-backend = "pbr.build"
+
+[project]
+name = "pwclient"
+description = "The command-line client for the Patchwork patch tracking tool"
+authors = [
+    {name = "Nate Case", email = "ncase@xes-inc.com"},
+    {name = "Stephen Finucane", email = "stephen@that.guru"}
+]
+maintainers = [
+    {name = "Stephen Finucane", email = "stephen@that.guru"}
+]
+readme = {file = "README.rst", content-type = "text/x-rst"}
+license = "GPL-2.0"
+dynamic = ["version", "dependencies"]
+requires-python = ">=3.9"
+keywords = ["patchwork", "api"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/getpatchwork/pwclient/issues"
+"Source Code" = "https://github.com/getpatchwork/pwclient"
+"Documentation" = "https://pwclient.readthedocs.io"
+
+[project.scripts]
+pwclient = "pwclient.shell:main"
+
+[tool.setuptools]
+packages = [
+    "pwclient"
+]
+
 [tool.ruff]
 line-length = 79
-target-version = "py39"
 
 [tool.ruff.format]
 quote-style = "preserve"
