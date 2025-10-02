@@ -22,7 +22,9 @@ from .xmlrpc import xmlrpclib
 
 class API(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def __init__(self, server, *, username=None, password=None, token=None):
+    def __init__(
+        self, server, *, username=None, password=None, token=None, debug=False
+    ):
         if (username and not password) or (password and not username):
             raise exceptions.ConfigError(
                 'You must provide both a username and a password or a token'
