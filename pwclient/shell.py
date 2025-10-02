@@ -129,7 +129,7 @@ def main(argv=sys.argv[1:]):
 
     url = config.get(project_str, 'url')
 
-    kwargs = {}
+    kwargs = {'debug': args.debug}
     if action in auth_actions:
         if config.has_option(project_str, 'token'):
             kwargs['token'] = config.get(project_str, 'token')

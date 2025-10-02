@@ -133,6 +133,11 @@ these variables are already set, make sure that they point to valid and
 installed locales.
 """,
     )
+    action_parser.add_argument(
+        '--debug',
+        action='store_true',
+        help="enable debugging logging (only supported with the REST backend)",
+    )
 
     subparsers = action_parser.add_subparsers(title='Commands')
 

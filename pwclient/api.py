@@ -134,7 +134,9 @@ class API(metaclass=abc.ABCMeta):
 
 
 class XMLRPC(API):
-    def __init__(self, server, *, username=None, password=None, token=None):
+    def __init__(
+        self, server, *, username=None, password=None, token=None, debug=False
+    ):
         super().__init__(
             server,
             username=username,
@@ -421,7 +423,14 @@ class XMLRPC(API):
 
 
 class REST(API):
-    def __init__(self, server, *, username=None, password=None, token=None):
+    def __init__(
+        self, server, *, username=None, password=None, token=None, debug=False
+    ):
+        if debug:
+            # NOTE(stephenfin): Only works on Python 3.12+ due to [1]
+            # [1] https://github.com/python/cpython/issues/99352
+            http.client.HTTPConnection.debuglevel = 10
+
         # TODO(stephenfin): We want to deprecate this behavior at some point
         parsed_server = urllib.parse.urlparse(server)
         scheme = parsed_server.scheme or 'http'
