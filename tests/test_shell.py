@@ -620,6 +620,7 @@ def test_list__no_options(mock_action, mock_api, mock_config):
         state=None,
         archived=None,
         msgid=None,
+        series=None,
         name=None,
         hash=None,
         max_count=None,
@@ -644,6 +645,7 @@ def test_list__state_filter(mock_action, mock_api, mock_config):
         state='Accepted',
         archived=None,
         msgid=None,
+        series=None,
         name=None,
         hash=None,
         max_count=None,
@@ -668,6 +670,7 @@ def test_list__archived_filter(mock_action, mock_api, mock_config):
         state=None,
         archived=True,
         msgid=None,
+        series=None,
         name=None,
         hash=None,
         max_count=None,
@@ -698,6 +701,7 @@ def test_list__project_filter(mock_action, mock_api, mock_config):
         state=None,
         archived=None,
         msgid=None,
+        series=None,
         name=None,
         hash=None,
         max_count=None,
@@ -722,6 +726,7 @@ def test_list__submitter_filter(mock_action, mock_api, mock_config):
         state=None,
         archived=None,
         msgid=None,
+        series=None,
         name=None,
         hash=None,
         max_count=None,
@@ -746,6 +751,7 @@ def test_list__delegate_filter(mock_action, mock_api, mock_config):
         state=None,
         archived=None,
         msgid=None,
+        series=None,
         name=None,
         hash=None,
         max_count=None,
@@ -770,6 +776,7 @@ def test_list__msgid_filter(mock_action, mock_api, mock_config):
         state=None,
         archived=None,
         msgid='fakemsgid',
+        series=None,
         name=None,
         hash=None,
         max_count=None,
@@ -794,6 +801,7 @@ def test_list__name_filter(mock_action, mock_api, mock_config):
         state=None,
         archived=None,
         msgid=None,
+        series=None,
         name='fake patch name',
         hash=None,
         max_count=None,
@@ -818,6 +826,7 @@ def test_list__limit_filter(mock_action, mock_api, mock_config):
         state=None,
         archived=None,
         msgid=None,
+        series=None,
         name=None,
         hash=None,
         max_count=5,
@@ -842,6 +851,7 @@ def test_list__limit_reverse_filter(mock_action, mock_api, mock_config):
         state=None,
         archived=None,
         msgid=None,
+        series=None,
         name=None,
         hash=None,
         max_count=-5,
@@ -866,8 +876,34 @@ def test_list__hash_filter(mock_action, mock_api, mock_config):
         state=None,
         archived=None,
         msgid=None,
+        series=None,
         name=None,
         hash='3143a71a9d33f4f12b4469818d205125cace6535',
+        max_count=None,
+        format_str=None,
+    )
+
+
+@mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
+@mock.patch.object(api, 'XMLRPC')
+@mock.patch.object(patches, 'action_list')
+def test_list__series_filter(mock_action, mock_api, mock_config):
+    mock_config.return_value = FakeConfig()
+
+    shell.main(['list', '-S', '499314'])
+
+    mock_action.assert_called_once_with(
+        mock_api.return_value,
+        project=DEFAULT_PROJECT,
+        submitter=None,
+        delegate=None,
+        state=None,
+        archived=None,
+        msgid=None,
+        series='499314',
+        name=None,
+        hash=None,
         max_count=None,
         format_str=None,
     )
