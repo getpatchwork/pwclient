@@ -1,9 +1,14 @@
-.TH PWCLIENT "1" "2024\-10\-23" "pwclient" "Generated Python Manual"
+.TH PWCLIENT "1" "2026\-04\-10" "pwclient" "Generated Python Manual"
 .SH NAME
 pwclient
 .SH SYNOPSIS
 .B pwclient
-[-h] {apply,git-am,get,info,projects,check-get,check-list,check-info,check-create,states,view,update,list,search} ...
+[-h] [--debug] {apply,git-am,get,info,projects,check-get,check-list,check-info,check-create,event-list,states,view,update,list,search} ...
+
+.SH OPTIONS
+.TP
+\fB\-\-debug\fR
+enable debugging logging (only supported with the REST backend)
 
 .SH
 COMMANDS
@@ -34,6 +39,9 @@ show information for a given check
 .TP
 \fBpwclient\fR \fI\,check\-create\/\fR
 add a check to a patch
+.TP
+\fBpwclient\fR \fI\,event\-list\/\fR
+list events
 .TP
 \fBpwclient\fR \fI\,states\/\fR
 show list of potential patch states
@@ -200,6 +208,26 @@ lookup patch in project
 .TP
 \fB\-d\fR \fI\,DESCRIPTION\/\fR, \fB\-\-description\fR \fI\,DESCRIPTION\/\fR
 
+.SH COMMAND \fI\,'pwclient event\-list'\/\fR
+usage: pwclient event\-list [\-h] [\-p PROJECT] [\-c CATEGORY] [\-\-since SINCE] [\-f FORMAT]
+
+.SH OPTIONS \fI\,'pwclient event\-list'\/\fR
+.TP
+\fB\-p\fR \fI\,PROJECT\/\fR, \fB\-\-project\fR \fI\,PROJECT\/\fR
+filter by project name (see 'projects' for list)
+
+.TP
+\fB\-c\fR \fI\,CATEGORY\/\fR, \fB\-\-category\fR \fI\,CATEGORY\/\fR
+filter by event category (e.g. 'series\-completed')
+
+.TP
+\fB\-\-since\fR \fI\,SINCE\/\fR
+show only events since a given date in ISO 8601 format
+
+.TP
+\fB\-f\fR \fI\,FORMAT\/\fR, \fB\-\-format\fR \fI\,FORMAT\/\fR
+print output in the given format. You can use tags matching fields, e.g. %{id}, %{category}, or %{series_id}.
+
 .SH COMMAND \fI\,'pwclient states'\/\fR
 usage: pwclient states [\-h]
 
@@ -248,7 +276,7 @@ set patch state (e.g., 'Accepted', 'Superseded' etc.)
 set patch archived state
 
 .SH COMMAND \fI\,'pwclient list'\/\fR
-usage: pwclient list [\-h] [\-s STATE] [\-a ARCHIVED] [\-p PROJECT] [\-w WHO] [\-d WHO] [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-H HASH] [\-f FORMAT] [STR]
+usage: pwclient list [\-h] [\-s STATE] [\-a ARCHIVED] [\-p PROJECT] [\-w WHO] [\-d WHO] [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-H HASH] [\-S SERIES_ID] [\-f FORMAT] [STR]
 
 .TP
 \fBSTR\fR
@@ -292,11 +320,15 @@ filter by Message\-Id
 filter by hash
 
 .TP
+\fB\-S\fR \fI\,SERIES_ID\/\fR, \fB\-\-series\fR \fI\,SERIES_ID\/\fR
+filter by series ID
+
+.TP
 \fB\-f\fR \fI\,FORMAT\/\fR, \fB\-\-format\fR \fI\,FORMAT\/\fR
 print output in the given format. You can use tags matching fields, e.g. %{id}, %{state}, or %{msgid}.
 
 .SH COMMAND \fI\,'pwclient search'\/\fR
-usage: pwclient search [\-h] [\-s STATE] [\-a ARCHIVED] [\-p PROJECT] [\-w WHO] [\-d WHO] [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-H HASH] [\-f FORMAT] [STR]
+usage: pwclient search [\-h] [\-s STATE] [\-a ARCHIVED] [\-p PROJECT] [\-w WHO] [\-d WHO] [\-n MAX#] [\-N MAX#] [\-m MESSAGEID] [\-H HASH] [\-S SERIES_ID] [\-f FORMAT] [STR]
 
 .TP
 \fBSTR\fR
@@ -338,6 +370,10 @@ filter by Message\-Id
 .TP
 \fB\-H\fR \fI\,HASH\/\fR, \fB\-\-hash\fR \fI\,HASH\/\fR
 filter by hash
+
+.TP
+\fB\-S\fR \fI\,SERIES_ID\/\fR, \fB\-\-series\fR \fI\,SERIES_ID\/\fR
+filter by series ID
 
 .TP
 \fB\-f\fR \fI\,FORMAT\/\fR, \fB\-\-format\fR \fI\,FORMAT\/\fR
