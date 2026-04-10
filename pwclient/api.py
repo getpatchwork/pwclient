@@ -135,6 +135,12 @@ class API(metaclass=abc.ABCMeta):
     ):
         pass
 
+    # events
+
+    @abc.abstractmethod
+    def event_list(self, project=None, category=None, since=None):
+        pass
+
 
 class XMLRPC(API):
     def __init__(
@@ -427,6 +433,11 @@ class XMLRPC(API):
             )
         except xmlrpclib.Fault as f:
             raise exceptions.APIError(f'Error creating check: {f.faultString}')
+
+    def event_list(self, project=None, category=None, since=None):
+        raise NotImplementedError(
+            'Events are not supported by the XML-RPC API'
+        )
 
 
 class REST(API):
@@ -974,4 +985,39 @@ class REST(API):
                 'target_url': target_url,
                 'description': description,
             },
+        )
+
+    @staticmethod
+    def _event_to_dict(obj):
+        """Serialize an event response."""
+        result = {
+            'id': obj['id'],
+            'category': obj['category'],
+            'date': obj['date'],
+        }
+
+        series = obj.get('payload', {}).get('series', {})
+        if series:
+            result['series_id'] = series.get('id', '')
+            result['series_url'] = series.get('url', '')
+            result['series_name'] = series.get('name', '')
+            result['series_mbox'] = series.get('mbox', '')
+
+        return result
+
+    def event_list(self, project=None, category=None, since=None):
+        filters = {}
+
+        if project:
+            filters['project'] = project
+
+        if category:
+            filters['category'] = category
+
+        if since:
+            filters['since'] = since
+
+        return (
+            self._event_to_dict(event)
+            for event in self._list('events', params=filters)
         )

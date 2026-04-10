@@ -4,6 +4,7 @@ import pytest
 
 from pwclient import api
 from pwclient import checks
+from pwclient import events
 from pwclient import exceptions
 from pwclient import patches
 from pwclient import projects
@@ -337,6 +338,34 @@ def test_check_list(mock_action, mock_api, mock_config):
     shell.main(['check-list'])
 
     mock_action.assert_called_once_with(mock_api.return_value, None, None)
+
+
+@mock.patch.object(utils.configparser, 'ConfigParser')
+@mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
+@mock.patch.object(api, 'XMLRPC')
+@mock.patch.object(events, 'action_list')
+def test_event_list(mock_action, mock_api, mock_config):
+    mock_config.return_value = FakeConfig()
+
+    shell.main(
+        [
+            'event-list',
+            '-p',
+            DEFAULT_PROJECT,
+            '-c',
+            'series-completed',
+            '--since',
+            '2026-04-09T00:00:00Z',
+        ]
+    )
+
+    mock_action.assert_called_once_with(
+        mock_api.return_value,
+        project=DEFAULT_PROJECT,
+        category='series-completed',
+        since='2026-04-09T00:00:00Z',
+        format_str=None,
+    )
 
 
 @mock.patch.object(utils.configparser, 'ConfigParser')
