@@ -53,7 +53,7 @@ jobs:
       - name: Build docs (via tox)
         run: tox -e docs
       - name: Archive build results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: html-docs-build
           path: docs/_build/html
