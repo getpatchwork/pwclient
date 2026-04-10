@@ -67,6 +67,7 @@ class API(metaclass=abc.ABCMeta):
         state,
         archived,
         msgid,
+        series,
         name,
         hash,
         max_count=None,
@@ -248,6 +249,7 @@ class XMLRPC(API):
         state,
         archived,
         msgid,
+        series,
         name,
         hash,
         max_count=None,
@@ -262,6 +264,9 @@ class XMLRPC(API):
 
         if msgid:
             filters['msgid'] = msgid
+
+        if series:
+            filters['series'] = series
 
         if name:
             filters['name__icontains'] = name
@@ -772,6 +777,7 @@ class REST(API):
         state,
         archived,
         msgid,
+        series,
         name,
         hash,
         max_count=None,
@@ -796,6 +802,9 @@ class REST(API):
 
         if msgid is not None:
             filters['msgid'] = msgid
+
+        if series:
+            filters['series'] = series
 
         if archived is not None:
             filters['archived'] = archived

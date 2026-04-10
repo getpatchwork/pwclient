@@ -100,6 +100,9 @@ def _get_filter_parser():
         '-H', '--hash', metavar='HASH', help="filter by hash"
     )
     filter_parser.add_argument(
+        '-S', '--series', metavar='SERIES_ID', help="filter by series ID"
+    )
+    filter_parser.add_argument(
         '-f',
         '--format',
         metavar='FORMAT',
