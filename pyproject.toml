@@ -15,7 +15,7 @@ maintainers = [
 readme = {file = "README.rst", content-type = "text/x-rst"}
 license = "GPL-2.0"
 dynamic = ["version", "dependencies"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 keywords = ["patchwork", "api"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
