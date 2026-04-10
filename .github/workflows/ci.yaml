@@ -63,6 +63,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     if: github.event_name == 'push'
+    permissions:
+      id-token: write
+      contents: write
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -80,13 +83,10 @@ jobs:
         if: ${{ github.ref_type != 'tag' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
       - name: Publish distribution to PyPI
         if: ${{ github.ref_type == 'tag' }}
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
       - name: Create release on GitHub
         id: create_release
         if: ${{ github.ref_type == 'tag' }}
