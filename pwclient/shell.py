@@ -159,143 +159,137 @@ def main(argv=sys.argv[1:]):
             sys.stderr.write('Patch IDs must be integers\n')
             sys.exit(1)
 
-    if action == 'list' or action == 'search':
-        patches.action_list(
-            api,
-            project=project_str,
-            submitter=args.submitter,
-            delegate=args.delegate,
-            state=args.state,
-            archived=args.archived,
-            msgid=args.msgid,
-            series=args.series,
-            name=args.patch_name,
-            hash=args.hash,
-            max_count=args.max_count,
-            format_str=args.format,
-        )
-
-    elif action == 'event_list':
-        events.action_list(
-            api,
-            project=args.project,
-            category=args.category,
-            since=args.since,
-            format_str=args.format,
-        )
-
-    elif action.startswith('project'):
-        projects.action_list(api)
-
-    elif action.startswith('state'):
-        states.action_list(api)
-
-    elif action == 'view':
-        patches.action_view(api, patch_ids)
-
-    elif action == 'info':
-        for patch_id in patch_ids:
-            patches.action_info(api, patch_id)
-
-    elif action == 'get':
-        for patch_id in patch_ids:
-            patches.action_get(api, patch_id)
-
-    elif action == 'apply':
-        for patch_id in patch_ids:
-            ret = patches.action_apply(api, patch_id)
-            if ret:
-                sys.stderr.write(f"Apply failed with exit status {ret}\n")
-                sys.exit(1)
-
-    elif action == 'git_am':
-        cmd = ['git', 'am']
-
-        do_signoff = None
-        if args.signoff:
-            do_signoff = args.signoff
-        elif config.has_option('options', 'signoff'):
-            do_signoff = config.getboolean('options', 'signoff')
-        elif config.has_option(project_str, 'signoff'):
-            do_signoff = config.getboolean(project_str, 'signoff')
-
-        if do_signoff:
-            cmd.append('-s')
-
-        do_three_way = None
-        if args.three_way:
-            do_three_way = args.three_way
-        elif config.has_option('options', '3way'):
-            do_three_way = config.getboolean('options', '3way')
-        elif config.has_option(project_str, '3way'):
-            do_three_way = config.getboolean(project_str, '3way')
-
-        if do_three_way:
-            cmd.append('-3')
-
-        do_msg_id = None
-        if args.msg_id:
-            do_msg_id = args.msg_id
-        elif config.has_option('options', 'msgid'):
-            do_msg_id = config.getboolean('options', 'msgid')
-        elif config.has_option(project_str, 'msgid'):
-            do_msg_id = config.getboolean(project_str, 'msgid')
-
-        if do_msg_id:
-            cmd.append('-m')
-
-        for patch_id in patch_ids:
-            ret = patches.action_apply(api, patch_id, cmd)
-            if ret:
-                sys.stderr.write(f"'git am' failed with exit status {ret}\n")
-                sys.exit(1)
-
-    elif action == 'update':
-        if args.commit_ref and len(patch_ids) > 1:
-            # update multiple IDs with a single commit-hash does not make sense
-            sys.stderr.write(
-                'Declining update with COMMIT-REF on multiple IDs\n'
-            )
-            sys.exit(1)
-
-        if not any([args.state, args.archived]):
-            sys.stderr.write(
-                'Must specify one or more update options (-a or -s)\n'
-            )
-            sys.exit(1)
-
-        for patch_id in patch_ids:
-            patches.action_update(
+    match action:
+        case 'list' | 'search':
+            patches.action_list(
                 api,
-                patch_id,
+                project=project_str,
+                submitter=args.submitter,
+                delegate=args.delegate,
                 state=args.state,
                 archived=args.archived,
-                commit_ref=args.commit_ref,
+                msgid=args.msgid,
+                series=args.series,
+                name=args.patch_name,
+                hash=args.hash,
+                max_count=args.max_count,
+                format_str=args.format,
             )
-
-    elif action == 'check_get':
-        format_str = args.format
-        for patch_id in patch_ids:
-            checks.action_get(api, patch_id, format_str)
-
-    elif action == 'check_list':
-        checks.action_list(api, args.patch_id, args.user)
-
-    elif action == 'check_info':
-        patch_id = args.patch_id
-        check_id = args.check_id
-        checks.action_info(api, patch_id, check_id)
-
-    elif action == 'check_create':
-        for patch_id in patch_ids:
-            checks.action_create(
+        case 'event_list':
+            events.action_list(
                 api,
-                patch_id,
-                args.context,
-                args.state,
-                args.target_url,
-                args.description,
+                project=args.project,
+                category=args.category,
+                since=args.since,
+                format_str=args.format,
             )
+        case 'projects':
+            projects.action_list(api)
+        case 'states':
+            states.action_list(api)
+        case 'view':
+            patches.action_view(api, patch_ids)
+        case 'info':
+            for patch_id in patch_ids:
+                patches.action_info(api, patch_id)
+        case 'get':
+            for patch_id in patch_ids:
+                patches.action_get(api, patch_id)
+        case 'apply':
+            for patch_id in patch_ids:
+                ret = patches.action_apply(api, patch_id)
+                if ret:
+                    sys.stderr.write(f"Apply failed with exit status {ret}\n")
+                    sys.exit(1)
+        case 'git_am':
+            cmd = ['git', 'am']
+
+            do_signoff = None
+            if args.signoff:
+                do_signoff = args.signoff
+            elif config.has_option('options', 'signoff'):
+                do_signoff = config.getboolean('options', 'signoff')
+            elif config.has_option(project_str, 'signoff'):
+                do_signoff = config.getboolean(project_str, 'signoff')
+
+            if do_signoff:
+                cmd.append('-s')
+
+            do_three_way = None
+            if args.three_way:
+                do_three_way = args.three_way
+            elif config.has_option('options', '3way'):
+                do_three_way = config.getboolean('options', '3way')
+            elif config.has_option(project_str, '3way'):
+                do_three_way = config.getboolean(project_str, '3way')
+
+            if do_three_way:
+                cmd.append('-3')
+
+            do_msg_id = None
+            if args.msg_id:
+                do_msg_id = args.msg_id
+            elif config.has_option('options', 'msgid'):
+                do_msg_id = config.getboolean('options', 'msgid')
+            elif config.has_option(project_str, 'msgid'):
+                do_msg_id = config.getboolean(project_str, 'msgid')
+
+            if do_msg_id:
+                cmd.append('-m')
+
+            for patch_id in patch_ids:
+                ret = patches.action_apply(api, patch_id, cmd)
+                if ret:
+                    sys.stderr.write(
+                        f"'git am' failed with exit status {ret}\n"
+                    )
+                    sys.exit(1)
+        case 'update':
+            if args.commit_ref and len(patch_ids) > 1:
+                # update multiple IDs with a single commit-hash does not make sense
+                sys.stderr.write(
+                    'Declining update with COMMIT-REF on multiple IDs\n'
+                )
+                sys.exit(1)
+
+            if not any([args.state, args.archived]):
+                sys.stderr.write(
+                    'Must specify one or more update options (-a or -s)\n'
+                )
+                sys.exit(1)
+
+            for patch_id in patch_ids:
+                patches.action_update(
+                    api,
+                    patch_id,
+                    state=args.state,
+                    archived=args.archived,
+                    commit_ref=args.commit_ref,
+                )
+        case 'check_get':
+            format_str = args.format
+            for patch_id in patch_ids:
+                checks.action_get(api, patch_id, format_str)
+        case 'check_list':
+            checks.action_list(api, args.patch_id, args.user)
+        case 'check_info':
+            patch_id = args.patch_id
+            check_id = args.check_id
+            checks.action_info(api, patch_id, check_id)
+        case 'check_create':
+            for patch_id in patch_ids:
+                checks.action_create(
+                    api,
+                    patch_id,
+                    args.context,
+                    args.state,
+                    args.target_url,
+                    args.description,
+                )
+        case _:
+            # we can't get here under normal circumstances
+            sys.stderr.write('Invalid action')
+            sys.exit(255)
 
 
 if __name__ == "__main__":
