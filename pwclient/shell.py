@@ -11,6 +11,7 @@ import sys
 
 from . import api as pw_api
 from . import checks
+from . import events
 from . import exceptions
 from . import parser
 from . import patches
@@ -171,6 +172,15 @@ def main(argv=sys.argv[1:]):
             name=args.patch_name,
             hash=args.hash,
             max_count=args.max_count,
+            format_str=args.format,
+        )
+
+    elif action == 'event_list':
+        events.action_list(
+            api,
+            project=args.project,
+            category=args.category,
+            since=args.since,
             format_str=args.format,
         )
 

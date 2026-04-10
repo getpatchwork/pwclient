@@ -279,6 +279,38 @@ installed locales.
     )
     check_create_parser.set_defaults(subcmd='check_create')
 
+    event_list_parser = subparsers.add_parser(
+        'event-list',
+        help="list events",
+    )
+    event_list_parser.add_argument(
+        '-p',
+        '--project',
+        metavar='PROJECT',
+        help="filter by project name (see 'projects' for list)",
+    )
+    event_list_parser.add_argument(
+        '-c',
+        '--category',
+        metavar='CATEGORY',
+        help="filter by event category (e.g. 'series-completed')",
+    )
+    event_list_parser.add_argument(
+        '--since',
+        metavar='SINCE',
+        help="show only events since a given date in ISO 8601 format",
+    )
+    event_list_parser.add_argument(
+        '-f',
+        '--format',
+        metavar='FORMAT',
+        help=(
+            "print output in the given format. You can use tags matching "
+            "fields, e.g. %%{id}, %%{category}, or %%{series_id}."
+        ),
+    )
+    event_list_parser.set_defaults(subcmd='event_list')
+
     states_parser = subparsers.add_parser(
         'states', help="show list of potential patch states"
     )

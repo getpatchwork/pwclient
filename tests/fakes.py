@@ -114,3 +114,17 @@ def fake_states():
             'name': 'New',
         }
     ]
+
+
+def fake_events():
+    return [
+        {
+            'id': 1,
+            'category': 'series-completed',
+            'date': '2026-04-10T06:00:02',
+            'series_id': 499401,
+            'series_name': '[v3] growfiles: fix test failure',
+            'series_url': 'http://patchwork.ozlabs.org/api/series/499401/',
+            'series_mbox': 'http://patchwork.ozlabs.org/series/499401/mbox/',
+        },
+    ]
