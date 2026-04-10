@@ -1,0 +1,7 @@
+---
+features:
+  - |
+    Python 3.14 support has been added.
+upgrade:
+  - |
+    Python 3.9 is not longer supported.
