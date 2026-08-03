@@ -45,6 +45,12 @@ On Ubuntu, run:
 
    $ sudo apt-get install python-pbr
 
+On openSUSE, run:
+
+.. code-block:: bash
+
+   $ sudo zypper in -y python3-pbr
+
 Once dependencies are installed, clone this repo and run ``setup.py``:
 
 .. code-block:: bash
