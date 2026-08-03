@@ -39,11 +39,11 @@ dependencies. On Fedora, run:
 
    $ sudo dnf install python-pbr
 
-On Ubuntu, run:
+On Debian/Ubuntu, run:
 
 .. code-block:: bash
 
-   $ sudo apt-get install python-pbr
+   $ sudo apt-get install python3-pbr
 
 On openSUSE, run:
 
