@@ -136,7 +136,7 @@ def test_rest_client__list():
         [
             (
                 'Link',
-                '<https://patchwork.kernel.org/api/patches/?page=2&project=patchwork>; rel="next"',
+                '<https://patchwork.kernel.org/api/patches/?page=2&project=patchwork>; rel="next"',  # noqa: E501
             )
         ],
         [],

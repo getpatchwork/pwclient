@@ -53,7 +53,8 @@ def main(argv=sys.argv[1:]):
 
     if not config.has_section('options'):
         sys.stderr.write(
-            f'No options section in {CONFIG_FILE}. Did you forget to uncomment it?\n'
+            f'No options section in {CONFIG_FILE}. Did you forget to '
+            f'uncomment it?\n'
         )
         sys.exit(1)
 
@@ -246,7 +247,7 @@ def main(argv=sys.argv[1:]):
                     sys.exit(1)
         case 'update':
             if args.commit_ref and len(patch_ids) > 1:
-                # update multiple IDs with a single commit-hash does not make sense
+                # updating multiple IDs with a single hash does not make sense
                 sys.stderr.write(
                     'Declining update with COMMIT-REF on multiple IDs\n'
                 )
