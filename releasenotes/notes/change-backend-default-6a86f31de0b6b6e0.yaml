@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    The default backend has changed from ``xmlrpc`` to ``rest``. A warning is
+    emitted if a backend is not explicitly indicated in ``.pwclientrc``.
+deprecations:
+  - |
+    The ``xmlrpc`` backend is deprecated for removal.

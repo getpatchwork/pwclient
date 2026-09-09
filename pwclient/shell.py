@@ -88,13 +88,14 @@ def main(argv=sys.argv[1:]):
 
     if backend is None:
         sys.stderr.write(
-            f"The default backend will change from 'xmlrpc' to 'rest' in a "
-            f"future version. You should explicitly set "
-            f"'[{project_str}] backend' in pwclientrc to explicitly opt-in "
-            f"to a specific backend\n"
+            f"The default backend changed from 'xmlrpc' to 'rest' in 2.10.0 "
+            f"and the 'xmlrpc' backend is now deprecated for removal. You may "
+            f"need to migrate your configuration if you were previously "
+            f"relying on the 'xmlrpc' backend. Explicitly set "
+            f"'[{project_str}] backend' in pwclientrc to mute this warning\n"
         )
 
-    backend = backend or BACKEND_XMLRPC
+    backend = backend or BACKEND_REST
 
     if action in auth_actions:
         if backend == 'rest':

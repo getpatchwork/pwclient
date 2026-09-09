@@ -720,6 +720,7 @@ def test_list__project_filter(mock_action, mock_api, mock_config):
         updates={
             'fakeproject': {
                 'url': 'https://example.com/fakeproject',
+                'backend': 'xmlrpc',
             }
         }
     )
