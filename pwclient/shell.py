@@ -51,26 +51,20 @@ def main(argv=sys.argv[1:]):
         utils.migrate_old_config_file(CONFIG_FILE, config)
         sys.exit(1)
 
-    if not config.has_section('options'):
-        sys.stderr.write(
-            f'No options section in {CONFIG_FILE}. Did you forget to '
-            f'uncomment it?\n'
-        )
-        sys.exit(1)
-
     if 'project' in args and args.project:
         project_str = args.project
+    elif config.has_option('options', 'default'):
+        project_str = config.get('options', 'default')
+    elif len(config.sections()) == 1 or (
+        len(config.sections()) == 2 and 'options' in config.sections()
+    ):
+        project_str = next(x for x in config.sections() if x != 'options')
     else:
-        try:
-            project_str = config.get('options', 'default')
-        except (
-            configparser.NoSectionError,
-            configparser.NoOptionError,
-        ):
-            sys.stderr.write(
-                f'No default project configured in {CONFIG_FILE}\n'
-            )
-            sys.exit(1)
+        sys.stderr.write(
+            f'No project provided and no default project configured in '
+            f'{CONFIG_FILE}\n'
+        )
+        sys.exit(1)
 
     if not config.has_section(project_str):
         sys.stderr.write(

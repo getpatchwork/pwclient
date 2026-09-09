@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    The ``[options]`` section is no longer required in a ``.pwclientrc`` file
+    if explicitly specifying a project via the ``-p`` / ``--project`` option or
+    if it only contains a single project.

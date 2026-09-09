@@ -17,16 +17,19 @@ _UNSET = object()
 
 
 class FakeConfig:
-    def __init__(self, updates=None):
-        self._data = {
-            'options': {
-                'default': DEFAULT_PROJECT,
-            },
-            DEFAULT_PROJECT: {
-                'url': 'https://example.com/xmlrpc',
-                'backend': 'xmlrpc',
-            },
-        }
+    def __init__(self, *, data=None, updates=None):
+        if data is not None:
+            self._data = data
+        else:
+            self._data = {
+                'options': {
+                    'default': DEFAULT_PROJECT,
+                },
+                DEFAULT_PROJECT: {
+                    'url': 'https://example.com/xmlrpc',
+                    'backend': 'xmlrpc',
+                },
+            }
 
         # merge updates into defaults
         for section in updates or {}:
@@ -50,6 +53,9 @@ class FakeConfig:
 
     def has_option(self, section, option):
         return self.has_section(section) and option in self._data[section]
+
+    def sections(self):
+        return list(self._data)
 
     def set(self, section, option, value):
         if section not in self._data:
@@ -93,8 +99,7 @@ def test_help(capsys):
 @mock.patch.object(utils.configparser, 'ConfigParser')
 @mock.patch.object(shell.os.path, 'exists', new=mock.Mock(return_value=True))
 def test_no_project(mock_config, capsys):
-    fake_config = FakeConfig()
-    del fake_config._data['options']['default']
+    fake_config = FakeConfig(data={})
 
     mock_config.return_value = fake_config
 
@@ -103,7 +108,7 @@ def test_no_project(mock_config, capsys):
 
     captured = capsys.readouterr()
 
-    assert 'No default project configured' in captured.err
+    assert 'No project provided and no default project ' in captured.err
     assert captured.out == ''
 
 
@@ -143,7 +148,7 @@ def test_missing_project(mock_config, capsys):
 @mock.patch.object(utils, 'migrate_old_config_file')
 def test_migrate_config(mock_migrate, mock_config):
     fake_config = FakeConfig(
-        {
+        data={
             'base': {
                 'project': 'foo',
                 'url': 'https://example.com/',
@@ -154,7 +159,6 @@ def test_migrate_config(mock_migrate, mock_config):
             },
         }
     )
-    del fake_config._data['options']
     mock_config.return_value = fake_config
 
     with pytest.raises(SystemExit):
@@ -237,7 +241,7 @@ def test_apply__failed(mock_action, mock_api, mock_config, capsys):
 @mock.patch.object(checks, 'action_create')
 def test_check_create(mock_action, mock_api, mock_config):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             DEFAULT_PROJECT: {
                 'username': 'user',
                 'password': 'pass',
@@ -502,7 +506,7 @@ def test_git_am__signoff_option(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__threeway_global_conf(mock_action, mock_api, mock_config):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             'options': {
                 '3way': True,
             }
@@ -523,7 +527,7 @@ def test_git_am__threeway_global_conf(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__signoff_global_conf(mock_action, mock_api, mock_config):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             'options': {
                 'signoff': True,
             }
@@ -545,7 +549,7 @@ def test_git_am__signoff_global_conf(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__threeway_project_conf(mock_action, mock_api, mock_config):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             DEFAULT_PROJECT: {
                 '3way': True,
             }
@@ -566,7 +570,7 @@ def test_git_am__threeway_project_conf(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_apply')
 def test_git_am__signoff_project_conf(mock_action, mock_api, mock_config):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             DEFAULT_PROJECT: {
                 'signoff': True,
             }
@@ -713,7 +717,7 @@ def test_list__archived_filter(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_list')
 def test_list__project_filter(mock_action, mock_api, mock_config):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             'fakeproject': {
                 'url': 'https://example.com/fakeproject',
             }
@@ -973,7 +977,7 @@ def test_update__no_options(
     capsys,
 ):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             DEFAULT_PROJECT: {
                 'username': 'user',
                 'password': 'pass',
@@ -1017,7 +1021,7 @@ def test_update__no_auth(
 @mock.patch.object(patches, 'action_update')
 def test_update__state_option(mock_action, mock_api, mock_config):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             DEFAULT_PROJECT: {
                 'username': 'user',
                 'password': 'pass',
@@ -1042,7 +1046,7 @@ def test_update__state_option(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_update')
 def test_update__archive_option(mock_action, mock_api, mock_config):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             DEFAULT_PROJECT: {
                 'username': 'user',
                 'password': 'pass',
@@ -1063,7 +1067,7 @@ def test_update__archive_option(mock_action, mock_api, mock_config):
 @mock.patch.object(patches, 'action_update')
 def test_update__commitref_option(mock_action, mock_api, mock_config):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             DEFAULT_PROJECT: {
                 'username': 'user',
                 'password': 'pass',
@@ -1093,7 +1097,7 @@ def test_update__commitref_with_multiple_patches(
     capsys,
 ):
     mock_config.return_value = FakeConfig(
-        {
+        updates={
             DEFAULT_PROJECT: {
                 'username': 'user',
                 'password': 'pass',
