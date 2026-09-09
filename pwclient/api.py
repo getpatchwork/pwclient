@@ -855,7 +855,13 @@ class REST(API):
                 break
         header_re = re.search('filename=(.+)', header)
         if not header_re:
-            raise Exception('filename header was missing from the response')
+            # someone has forgotten to forward the Content-Disposition header
+            # in their reverse proxy
+            raise Exception(
+                'filename header was missing from the response: this '
+                'typically indicates a misconfiguration of the server, not '
+                'the client'
+            )
 
         filename = header_re.group(1)[:-6]  # remove the extension
 
