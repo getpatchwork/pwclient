@@ -6,6 +6,7 @@ XML-RPC API.
 
 import abc
 import base64
+import email.utils
 import json
 import http
 import re
@@ -752,7 +753,9 @@ class REST(API):
                 return ''
 
             if person['name']:
-                return f"{person['name']} <{person['email']}>"
+                return email.utils.formataddr(
+                    (person['name'], person['email'])
+                )
             return person['email']
 
         def _format_user(user):
