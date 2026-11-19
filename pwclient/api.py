@@ -829,6 +829,10 @@ class REST(API):
         if delegate is not None:
             filters['delegate'] = delegate
 
+        if name is not None:
+            # the REST API searches patch names with the 'q' parameter
+            filters['q'] = name
+
         patches = self._list('patches', params=filters)
         return (self._patch_to_dict(patch) for patch in patches)
 

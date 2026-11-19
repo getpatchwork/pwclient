@@ -150,3 +150,31 @@ def test_rest_client__list():
         actual = list(client._list('patches'))
 
         assert expected == actual
+
+
+def test_rest_client__patch_list__name():
+    """Validate that patch_list passes the name filter to the server."""
+    client = api.REST(
+        'https://patchwork.kernel.org/api',
+        username='user',
+        password='pass',
+    )
+
+    with mock.patch.object(client, '_list', return_value=[]) as mock_list:
+        list(
+            client.patch_list(
+                project='patchwork',
+                submitter=None,
+                delegate=None,
+                state=None,
+                archived=None,
+                msgid=None,
+                series=None,
+                name='foo',
+                hash=None,
+            )
+        )
+
+    mock_list.assert_called_once_with(
+        'patches', params={'project': 'patchwork', 'q': 'foo'}
+    )

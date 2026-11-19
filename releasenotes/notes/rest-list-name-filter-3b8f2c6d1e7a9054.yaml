@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    The ``pwclient list`` command now filters patches by name with the REST
+    backend. Previously the ``STR`` argument was ignored and all patches were
+    listed.
